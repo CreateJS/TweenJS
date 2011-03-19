@@ -1,7 +1,7 @@
 TWEENJS LIBRARY:
 ****************************************************************************************************
 
-TweenJS is a simple tweening library for use in Javascript. It was developed to integrate well with the EaselJS library, but is not dependent on it (though it uses the same Ticker class by default).
+TweenJS is a simple tweening library for use in Javascript. It was developed to integrate well with the EaselJS library, but is not dependent on or specific to it (though it uses the same Ticker class by default).
 
 It provides a simple but powerful API, making it easy to create very complex tweens by chaining commands. For example, the following code will create a new tween instance that calls the onStart function, tweens the target to an x value of 300 over 400ms, waits 500 ms, then tweens the target's alpha to 0 over 1s, then sets it's visible to false, and calls the onComplete function.
 
