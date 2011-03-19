@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>EaselJS export from EaselJSExport.fla</title>
+<script src="../lib/easel.js"></script>
+<script src="../src/tweenjs/Tween.js"></script>
+<script>
+function init() {
+	canvas = document.getElementById("canvas1");
+	stage = new Stage(canvas);
+
+	var circle = new Shape();
+	circle.graphics.beginFill("#FF0000").drawCircle(0,0,50);
+	var txt = new Text("fun test!");
+	txt.x = txt.y = 200;
+	stage.addChild(circle,txt);
+
+
+	Ticker.setFPS(20);
+	Ticker.addListener(window);
+
+	tween = Tween.get(circle).to({x:500,y:200,alpha:0.1},1000).set({visible:false},txt).to({x:0},500).to({y:400},0).call(console.log, ["wait..."], console).wait(800).to({y:0,alpha:1},300).call(console.log, ["done!"],console).set({visible:true},txt).loop();
+	Ticker.addListener(stage);
+	tween2 = Tween.get().wait(5000).call(console.log,["5 seconds!"],console).loop();
+
+	//stage.update();
+}
+</script>
+</head>
+
+<body onload="init();" style="background-color:#D4D4D4">
+	<canvas id="canvas1" width="500" height="500" style="background-color:#d6d6d6"></canvas>
+</body>
+</html>
