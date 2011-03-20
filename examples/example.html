@@ -26,13 +26,13 @@ function init() {
 
 	tween = Tween.get(circle) // get a new tween targeting circle
 			.to({x:500,y:200,alpha:0.1},1000) // tween x/y/alpha properties over 1s (1000ms)
-			.to({x:0},500) // tween only x over 0.5s
-			.to({y:400},0) // jump to new y property (duration of 0)
+			.to({x:0},500) // tween x over 0.5s
+			.to({y:400}) // jump to new y property (defaults to a duration of 0)
 			.call(console.log, ["wait..."], console) // call console.log("wait...")
 			.wait(800) // wait for 0.8s
 			.to({y:0,alpha:1},300) // tween y/alpha over 0.3s
 			.call(console.log, ["done!"],console) // call console.log("done!");
-			.loop(); // loop the whole tween.
+			.loop(); // loop the tween.
 
 	// this tween doesn't actually tween anything, it just sequences some actions:
 	tween2 = Tween.get(txt) // get a tween targeting txt
@@ -43,7 +43,6 @@ function init() {
 			.wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
 			.wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
 
-	//stage.update();
 	Ticker.setFPS(20);
 	Ticker.addListener(stage);
 }

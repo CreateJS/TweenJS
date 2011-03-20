@@ -101,19 +101,20 @@ var p = Tween.prototype;
 
 	// queues a delay.
 	p.wait = function(duration) {
+		if (duration == null || duration <= 0) { return; }
 		var o = this._cloneProps(this._curQueueProps);
 		return this._addStep({d:duration, p0:o, e:this._linearEase, p1:o});
 	}
 
 	// queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
 	p.to = function(props, duration, ease) {
-		return this._addStep({d:duration, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
+		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
 	}
 
 	// queues a tween from the target properties to the current properties.
 	p.from = function(props, duration, ease) {
 		var curProps = this._cloneProps(this._curQueueProps);
-		return this._addStep({d:duration, p0:this._cloneProps(this._appendQueueProps(props)), e:ease, p1:curProps});
+		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._appendQueueProps(props)), e:ease, p1:curProps});
 	}
 
 	// queues an action to call the specified function
