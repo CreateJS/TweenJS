@@ -123,7 +123,7 @@ var p = Tween.prototype;
 
 	// queues an action to set the specified props on the specified target. If target is null, it will use this tween's target.
 	p.set = function(props, target) {
-		return this._addAction({f:this._set, o:this, p:[props, target]});
+		return this._addAction({f:this._set, o:this, p:[props, target ? target : this._target]});
 	}
 
 	// queues an action to play the specified tween.
