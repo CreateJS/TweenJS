@@ -129,13 +129,14 @@ var p = Tween.prototype;
 
 	// queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
 	p.to = function(props, duration, ease) {
+		if (isNaN(duration) || duration < 0) { duration = 0; }
 		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
 	}
 
 	// queues a tween from the target properties to the current properties.
 	p.from = function(props, duration, ease) {
-		var curProps = this._cloneProps(this._curQueueProps);
-		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._appendQueueProps(props)), e:ease, p1:curProps});
+		if (isNaN(duration) || duration < 0) { duration = 0; }
+		return this._addStep({d:duration ? duration : 0, p1:this._cloneProps(this._curQueueProps), p0:this._cloneProps(this._appendQueueProps(props)), e:ease});
 	}
 
 	// queues an action to call the specified function
