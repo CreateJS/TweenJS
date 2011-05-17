@@ -54,17 +54,38 @@ var p = Tween.prototype;
 	* Tween.get(obj1).delay(2).to({x:50},4).call(onComplete).play(tween2).pause();
 	* @param target
 	*/
-	Tween.get = function(target) {
+	Tween.get = function(target, override) {
+		if (override && target.tweenjs_tweenCount) {
+			var tweens = Tween._tweens;
+			var l = tweens.length;
+			for (var i=l-1; i>=0; i--) {
+				if (tweens[i]._target == target) { tweens.splice(i,1); }
+			}
+			target.tweenjs_tweenCount = 0;
+		}
 		var tween = new Tween(target);
-		Tween._tweens.push(tween);
+		Tween._register(tween, true);
 		return tween;
 	}
 
 	if (window.Ticker) { Ticker.addListener(Tween); }
 	Tween.tick = function(delta) {
 		var tweens = Tween._tweens;
-		for (var i=0, l=tweens.length; i<l; i++) {
+		var l =tweens.length;
+		for (var i=l-1; i>=0; i--) {
 			tweens[i].tick(delta);
+		}
+	}
+
+	Tween._register = function(tween, value) {
+		if (value) {
+			if (tween._target.tweenjs_tweenCount == null) { tween._target.tweenjs_tweenCount = 1; }
+			else { tween._target.tweenjs_tweenCount++; }
+			Tween._tweens.push(tween);
+		} else {
+			tween._target.tweenjs_tweenCount--;
+			var i = Tween._tweens.indexOf(tween);
+			if (i != -1) { Tween._tweens.splice(i,1); }
 		}
 	}
 
@@ -77,7 +98,7 @@ var p = Tween.prototype;
 	p._steps = null;
 	p._actions = null;
 	p._prevPosition = 0;
-	p._prevPos = 0;
+	p._prevPos = -1;
 	p._prevIndex = -1;
 	p._target = null;
 	p._duration = 0;
@@ -149,6 +170,7 @@ var p = Tween.prototype;
 	// if seek is true, then all actions between the previous position and the new one will be executed. If
 	// it is false, then props will be updated without executing calls and play/pause actions.
 	p.setPosition = function(value, seek) {
+		if (value == this._prevPosition) { return; }
 		if (seek == null) { seek = true; }
 		var t = value;
 		var looped = false;
@@ -158,14 +180,20 @@ var p = Tween.prototype;
 				looped = (t<this._prevPos);
 			} else { t = this._duration; }
 		}
-		if (value == this._prevPosition) { return; }
 		if (t != this._prevPos) {
-			// find our new tween index:
-			for (var i=0, l=this._steps.length; i<l; i++) {
-				if (this._steps[i].t > t) { break; }
+			if (t == this._duration && !this._loop) {
+				// addresses problems with an ending zero length step.
+				for (var n in this._curQueueProps) {
+					this._target[n] = this._curQueueProps[n];
+				}
+			} else if (this._steps.length > 0) {
+				// find our new tween index:
+				for (var i=0, l=this._steps.length; i<l; i++) {
+					if (this._steps[i].t > t) { break; }
+				}
+				var tween = this._steps[i-1];
+				this._updateTargetProps(tween,(t-tween.t)/tween.d);
 			}
-			var tween = this._steps[i-1];
-			this._updateTargetProps(tween,(t-tween.t)/tween.d);
 		}
 
 		// GDS: deal with actions, looping, and reverse properly!
@@ -179,6 +207,10 @@ var p = Tween.prototype;
 		}
 		this._prevPos = t;
 		this._prevPosition = value;
+
+		if (t == this._duration && !this._loop) {
+			this.setPaused(true);
+		}
 	}
 
 	p.tick = function(delta) {
@@ -189,6 +221,7 @@ var p = Tween.prototype;
 	// pauses or plays this tween.
 	p.setPaused = function(value) {
 		this._paused = !!value;
+		Tween._register(this, !value);
 	}
 
 	// tiny api (primarily for tool output):

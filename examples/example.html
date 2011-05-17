@@ -24,6 +24,8 @@ function init() {
 
 	stage.addChild(circle,highlight,txt);
 
+	tmpTween = Tween.get(circle).wait(5).to({scaleX:0.5},0);
+
 	tween = Tween.get(circle) // get a new tween targeting circle
 			.to({x:500,y:200,alpha:0.1},1000) // tween x/y/alpha properties over 1s (1000ms)
 			.to({x:0},500) // tween x over 0.5s
