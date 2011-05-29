@@ -144,7 +144,7 @@ var p = Tween.prototype;
 
 	// queues an action to call the specified function
 	p.call = function(callback, params, scope) {
-		return this._addAction({f:callback, p:params ? params : [], o:scope ? scope : this._target});
+		return this._addAction({f:callback, p:params ? params : [this], o:scope ? scope : this._target});
 	}
 
 	// queues an action to set the specified props on the specified target. If target is null, it will use this tween's target.
@@ -281,7 +281,7 @@ var p = Tween.prototype;
 		}
 		
 	}
-		// GDS: not sure we need includeStart.
+		// GDS: there is a bug that causes actions at the start of a looping tween to be ignored.
 	p._runActions = function(startPos, endPos, includeStart) {
 		var sPos = startPos;
 		var ePos = endPos;

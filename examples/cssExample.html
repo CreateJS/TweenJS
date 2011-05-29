@@ -5,35 +5,40 @@
 <script src="../lib/easel.js"></script> <!-- included for Ticker -->
 <script src="../src/tweenjs/Tween.js"></script>
 <script>
+var colorSeed=0;
 function init() {
+	Ticker.setFPS(20);
+	
+	// add width and height to the css suffix map:
 	Tween.cssSuffixMap.width = Tween.cssSuffixMap.height = "px";
-	var container = document.getElementById("container");
-	var w = 2;
 	var count = 1000;
 	while (--count > 0) {
 		var box = document.createElement("div");
-		box.style.backgroundColor = "hsl("+(Math.random()*90-20)+",100%,50%)";
-		box.style.width = w+"px";
-		box.style.height = w+"px";
-		box.style.top = "300px";
-		box.style.left = "300px";
+		box.style.width = box.style.height = "2px";
+		box.style.top = box.style.left = "300px";
 		box.style.position = "absolute";
 		document.body.appendChild(box);
 		var a = Math.random()*Math.PI*2;
-		var d = (Math.random()*0.7+0.3)*300;
+		var d = (Math.random()*0.6+0.4)*300;
 		var x = 300+Math.cos(a)*d;
 		var y = 300+Math.sin(a)*d;
-		Tween.get(box.style, true).wait(Math.random()*1000|0).to({top:x,left:y,width:w*5,height:w*5},Math.random()*800+800).loop();
+		Tween.get(box.style, true).wait(Math.random()*1000+1|0).call(updateColor).to({top:x,left:y,width:8,height:8},Math.random()*500+800,easeOut).loop();
 	}
-	/*
-	var redBox = document.getElementById("redBox");
-	Tween.get(redBox.style, true).to({top:200},1000).loop();
-*/
-	Ticker.setFPS(20);
+	// tween the base color that divs will be assigned when they start moving:
+	Tween.get(this).to({colorSeed:360},3000).loop();
+}
+
+function updateColor(tween) {
+	// grab the tween's target (the style object), and update it's color
+	tween._target.backgroundColor = "hsl("+(Math.random()*90+colorSeed|0)+",100%,50%)";
+}
+
+// very simple easing equation:
+function easeIn(ratio) {
+	return ratio*ratio;
 }
 </script>
 </head>
 
-<body onload="init();" style="background-color:#111111">
-</body>
+<body onload="init();" style="background-color:#111111"></body>
 </html>
