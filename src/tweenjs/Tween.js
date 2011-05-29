@@ -41,20 +41,21 @@
 * @class Tween
 * @constructor
 **/
-Tween = function(target) {
-  this.initialize(target);
+Tween = function(target, css) {
+  this.initialize(target, css);
 }
 var p = Tween.prototype;
 
 // static interface:
 	Tween._tweens = [];
+	Tween.cssSuffixMap = {top:"px",left:"px"};
 
 	/**
 	* var tween2 = Tween.get(obj2).pause().to({alpha:1});
 	* Tween.get(obj1).delay(2).to({x:50},4).call(onComplete).play(tween2).pause();
 	* @param target
 	*/
-	Tween.get = function(target, override) {
+	Tween.get = function(target, css, override) {
 		if (override && target.tweenjs_tweenCount) {
 			var tweens = Tween._tweens;
 			var l = tweens.length;
@@ -63,7 +64,7 @@ var p = Tween.prototype;
 			}
 			target.tweenjs_tweenCount = 0;
 		}
-		var tween = new Tween(target);
+		var tween = new Tween(target, css);
 		Tween._register(tween, true);
 		return tween;
 	}
@@ -102,6 +103,7 @@ var p = Tween.prototype;
 	p._prevIndex = -1;
 	p._target = null;
 	p._duration = 0;
+	p._css = false;
 	
 // constructor:
 	/** 
@@ -109,8 +111,9 @@ var p = Tween.prototype;
 	* @method initialize
 	* @protected
 	**/
-	p.initialize = function(target) {
+	p.initialize = function(target, css) {
 		this._target = target;
+		this._css = css;
 		this._curQueueProps = {};
 		this._initQueueProps = {};
 		this._steps = [];
@@ -122,7 +125,7 @@ var p = Tween.prototype;
 
 	// queues a delay.
 	p.wait = function(duration) {
-		if (duration == null || duration <= 0) { return; }
+		if (duration == null || duration <= 0) { return this; }
 		var o = this._cloneProps(this._curQueueProps);
 		return this._addStep({d:duration, p0:o, e:this._linearEase, p1:o});
 	}
@@ -184,9 +187,7 @@ var p = Tween.prototype;
 		if (t != this._prevPos) {
 			if (t == this._duration && !this._loop) {
 				// addresses problems with an ending zero length step.
-				for (var n in this._curQueueProps) {
-					this._target[n] = this._curQueueProps[n];
-				}
+				this._updateTargetProps(null,1);
 			} else if (this._steps.length > 0) {
 				// find our new tween index:
 				for (var i=0, l=this._steps.length; i<l; i++) {
@@ -250,29 +251,33 @@ var p = Tween.prototype;
 	* @return {Tween} A clone of the current Tween instance.
 	**/
 	p.clone = function() {
+		// TODO: NOT IMPLEMENTED.
 		return new Tween();
 	}
 
 // private methods:
 	p._updateTargetProps = function(tween, ratio) {
-		// check if we can do this a fast way:
-		var p0 = tween.p0;
-		var p1 = tween.p1;
-		if (tween.e) { ratio = tween.e(ratio,0,1,1); }
-		if (ratio == 1 || ratio == 0 || p0 == p1) {
-			var p = (ratio == 0) ? p0 : p1;
-			for (var n in this._initQueueProps) {
-				var value = p[n];
-				if (value == null) { this._target[n] = this._initQueueProps[n]; }
-				else { this._target[n] = value; }
-			}
+		if (this._css) { var map = this.cssSuffixMap || Tween.cssSuffixMap; }
+		var p0,p1,v0,v1;
+		if (!tween && ratio == 1) {
+			p0 = p1 = this._curQueueProps;
 		} else {
 			// apply ease to ratio.
-			for (n in this._initQueueProps) {
-				value = p0[n];
-				if (value == null) { p0[n] = value = this._initQueueProps[n]; }
-				this._target[n] = value+(p1[n]-value)*ratio;
+			if (tween.e) { ratio = tween.e(ratio,0,1,1); }
+			p0 = tween.p0;
+			p1 = tween.p1;
+		}
+
+		for (n in this._initQueueProps) {
+			if ((v0=p0[n]) == (v1=p1[n]) || ratio == 0 || ratio == 1) {
+				// no interpolation - either at start, end, or values don't change.
+				if (ratio == 1) { v0 = v1; }
+				if (v0 == null) { v0 = this._initQueueProps[n]; }
+			} else {
+				if (v0 == null) { p0[n] = v0 = this._initQueueProps[n]; }
+				v0 += (v1-v0)*ratio;
 			}
+			this._target[n] = map && map[n] ? v0+map[n] : v0;
 		}
 		
 	}
@@ -300,9 +305,22 @@ var p = Tween.prototype;
 	}
 
 	p._appendQueueProps = function(o) {
+		if (this._css) { var map = this.cssSuffixMap || Tween.cssSuffixMap; }
+		var sfx0,sfx1;
 		for (var n in o) {
 			if (this._initQueueProps[n] == null) {
-				this._initQueueProps[n] = this._target[n];
+				if (map && (sfx0 = map[n])) {
+					// css string.
+					var str = this._target[n];
+					var i = str.length-sfx0.length;
+					if ((sfx1 = str.substr(i)) != sfx0) {
+						throw("TweenJS Error: Suffixes do not match. ("+sfx0+":"+sfx1+")");
+					} else {
+						this._initQueueProps[n] = parseInt(str.substr(0,i));
+					}
+				} else {
+					this._initQueueProps[n] = this._target[n];
+				}
 			}
 			this._curQueueProps[n] = o[n];
 		}
