@@ -22,7 +22,7 @@ function init() {
 		var d = (Math.random()*0.6+0.4)*300;
 		var x = 300+Math.cos(a)*d;
 		var y = 300+Math.sin(a)*d;
-		Tween.get(box.style, true).wait(Math.random()*1000+1|0).call(updateColor).to({top:x,left:y,width:8,height:8},Math.random()*500+800,easeOut).loop();
+		Tween.get(box.style, true).wait(Math.random()*1000+1|0).call(updateColor).to({top:x,left:y,width:8,height:8},Math.random()*500+800,easeIn).loop();
 	}
 	// tween the base color that divs will be assigned when they start moving:
 	Tween.get(this).to({colorSeed:360},3000).loop();
