@@ -48,7 +48,8 @@ var p = Tween.prototype;
 
 // static interface:
 	Tween._tweens = [];
-	Tween.cssSuffixMap = {top:"px",left:"px"};
+	Tween.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",
+						opacity:""};
 
 	/**
 	* var tween2 = Tween.get(obj2).pause().to({alpha:1});
@@ -309,7 +310,7 @@ var p = Tween.prototype;
 		var sfx0,sfx1;
 		for (var n in o) {
 			if (this._initQueueProps[n] == null) {
-				if (map && (sfx0 = map[n])) {
+				if (map && (sfx0 = map[n]) != null) {
 					// css string.
 					var str = this._target[n];
 					var i = str.length-sfx0.length;
