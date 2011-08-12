@@ -43,9 +43,7 @@
 * example: 
 * Tween.get(shape).to({x:100},1000,Transition.ease.in)
 * .to({y:100},1000,Transition.ease.in(Transition.bounce))
-* .to({x:100},1000,Transition.ease.in)
 * .to({x:1},1000,Transition.elastic)
-* .to({x:100},1000,Transition.ease.in)
 * .to({y:1},1000,Transition.ease.inout(Transition.cubic));
 * @class Transitions
 * @constructor
