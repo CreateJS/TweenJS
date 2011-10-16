@@ -28,21 +28,17 @@
 */
 
 /**
-* The Easel Javascript library provides a retained graphics mode for canvas 
-* including a full, hierarchical display list, a core interaction model, and 
-* helper classes to make working with Canvas much easier.
+* The TweenJS Javascript library provides a simple but powerful tweening interface.
 * @module EaselJS
 **/
 
 (function(window) {
-
 /**
-* Base class that all filters should inherit from.
 * @class Tween
 * @constructor
 **/
-Tween = function(target, css) {
-  this.initialize(target, css);
+Tween = function(target, props) {
+  this.initialize(target, props);
 }
 var p = Tween.prototype;
 
@@ -52,11 +48,11 @@ var p = Tween.prototype;
 						opacity:""};
 
 	/**
-	* var tween2 = Tween.get(obj2).pause().to({alpha:1});
+	* var tween2 = Tween.get(obj2,props,override).pause().to({alpha:1});
 	* Tween.get(obj1).delay(2).to({x:50},4).call(onComplete).play(tween2).pause();
 	* @param target
 	*/
-	Tween.get = function(target, css, override) {
+	Tween.get = function(target, props, override) {
 		if (override && target.tweenjs_tweenCount) {
 			var tweens = Tween._tweens;
 			var l = tweens.length;
@@ -65,17 +61,19 @@ var p = Tween.prototype;
 			}
 			target.tweenjs_tweenCount = 0;
 		}
-		var tween = new Tween(target, css);
+		var tween = new Tween(target, props||{});
 		Tween._register(tween, true);
 		return tween;
 	}
 
-	if (window.Ticker) { Ticker.addListener(Tween); }
+	Ticker.addListener(Tween,false);
 	Tween.tick = function(delta) {
 		var tweens = Tween._tweens;
-		var l =tweens.length;
-		for (var i=l-1; i>=0; i--) {
-			tweens[i].tick(delta);
+		var paused = Ticker.getPaused();
+		for (var i=tweens.length-1; i>=0; i--) {
+			var tween = tweens[i];
+			if (paused && tween.pauseable) { continue; }
+			tween.tick(tween._useTicks?1:delta);
 		}
 	}
 
@@ -92,6 +90,8 @@ var p = Tween.prototype;
 	}
 
 // public properties:
+	p.pauseable = true;
+	p.loop = false;
 
 // private properties:
 	p._paused = false;
@@ -105,16 +105,22 @@ var p = Tween.prototype;
 	p._target = null;
 	p._duration = 0;
 	p._css = false;
+	p._useTicks = false;
 	
 // constructor:
 	/** 
-	* Initialization method.
+	* Initialization method. Props supported: useTicks (uses ticks for duration instead of time), css (tweens CSS properties),
+	* pauseable (if true, tween pauses when Ticker is paused), loop (loops the full tween when it reaches the end).
 	* @method initialize
 	* @protected
 	**/
-	p.initialize = function(target, css) {
+	p.initialize = function(target, props) {
 		this._target = target;
-		this._css = css;
+		this._useTicks = props.useTicks;
+		this._css = props.css;
+		this.pauseable = props.pauseable == null ? true : props.pauseable;
+		this.loop = props.loop;
+		
 		this._curQueueProps = {};
 		this._initQueueProps = {};
 		this._steps = [];
@@ -123,7 +129,6 @@ var p = Tween.prototype;
 	}
 	
 // public methods:
-
 	// queues a delay.
 	p.wait = function(duration) {
 		if (duration == null || duration <= 0) { return this; }
@@ -164,13 +169,6 @@ var p = Tween.prototype;
 		return this.call(target.setPaused, [true], target);
 	}
 
-	
-	// queues a loop of the full tween. Any actions queued after the loop will be ignored.
-	p.loop = function() {
-		this._loop = true;
-		return this;
-	}
-
 	// advances the tween to a specified position in time.
 	// if seek is true, then all actions between the previous position and the new one will be executed. If
 	// it is false, then props will be updated without executing calls and play/pause actions.
@@ -180,13 +178,13 @@ var p = Tween.prototype;
 		var t = value;
 		var looped = false;
 		if (t > this._duration) {
-			if (this._loop) {
+			if (this.loop) {
 				t = t%this._duration;
 				looped = (t<this._prevPos);
 			} else { t = this._duration; }
 		}
 		if (t != this._prevPos) {
-			if (t == this._duration && !this._loop) {
+			if (t == this._duration && !this.loop) {
 				// addresses problems with an ending zero length step.
 				this._updateTargetProps(null,1);
 			} else if (this._steps.length > 0) {
@@ -211,7 +209,7 @@ var p = Tween.prototype;
 		this._prevPos = t;
 		this._prevPosition = value;
 
-		if (t == this._duration && !this._loop) {
+		if (t == this._duration && !this.loop) {
 			this.setPaused(true);
 		}
 	}
@@ -235,7 +233,6 @@ var p = Tween.prototype;
 	p.pl = p.play;
 	p.c = p.call;
 	p.s = p.set;
-	p.l = p.loop;
 
 	/**
 	* Returns a string representation of this object.
@@ -252,8 +249,7 @@ var p = Tween.prototype;
 	* @return {Tween} A clone of the current Tween instance.
 	**/
 	p.clone = function() {
-		// TODO: NOT IMPLEMENTED.
-		return new Tween();
+		throw("Tween is not cloneable.")
 	}
 
 // private methods:

@@ -8,8 +8,8 @@
 var colorSeed=0;
 function init() {
 	Ticker.setFPS(20);
-	var count = 500;
-	while (--count > 0) {
+	var count = 600;
+	while (--count >= 0) {
 		var box = document.createElement("div");
 		box.style.width = "4px";
 		box.style.height = "2px";
@@ -21,15 +21,15 @@ function init() {
 		var a = (Math.random()*Math.PI*2*16|0)/16;
 		box.style.webkitTransform = "rotate("+a+"rad)";
 		var d = 50;
-		box.style.left = 350+Math.cos(a)*d+"px";
-		box.style.top = 350+Math.sin(a)*d+"px";
-		var d = 350*(Math.random()*0.3+0.7);
-		var x = 350+Math.cos(a)*d;
-		var y = 350+Math.sin(a)*d;
-		Tween.get(box.style, true).wait(Math.random()*700+1|0).call(updateColor).to({top:y,left:x,width:16,height:4,opacity:1},Math.random()*1500+700,easeIn).set({opacity:"0"}).loop();
+		box.style.left = window.innerWidth/2+Math.cos(a-0.2-Math.random())*d+"px";
+		box.style.top = window.innerHeight/2+Math.sin(a-0.2-Math.random())*d+"px";
+		d = (Math.min(window.innerWidth,window.innerHeight)-16)/2*(Math.random()*0.3+0.7);
+		var x = window.innerWidth/2+Math.cos(a)*d;
+		var y = window.innerHeight/2+Math.sin(a)*d;
+		Tween.get(box.style, {loop:true,css:true}, true).wait(Math.random()*1000+1|0).call(updateColor).to({top:y,left:x,width:16,height:4,opacity:1},Math.random()*1500+1000,easeIn).set({opacity:"0"});
 	}
 	// tween the base color that divs will be assigned when they start moving:
-	Tween.get(this).to({colorSeed:360},5000).loop();
+	Tween.get(this,{loop:true}).to({colorSeed:360},5000);
 }
 
 function updateColor(tween) {
