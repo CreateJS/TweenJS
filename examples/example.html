@@ -35,22 +35,22 @@ function init() {
 	// this will override any previous tweens on the circle and replace them with this tween
 	// resulting in the scaling tween above being cleared.
 	Tween.get(circle, {loop:true}, false) // get a new tween targeting circle
-			.to({x:500,y:200,alpha:0.1},1000) // tween x/y/alpha properties over 1s (1000ms)
-			.to({x:0},500) // tween x over 0.5s
-			.to({y:400}) // jump to new y property (defaults to a duration of 0)
-			.call(console.log, ["wait..."], console) // call console.log("wait...")
-			.wait(800) // wait for 0.8s
-			.to({y:0,alpha:1},300) // tween y/alpha over 0.3s
-			.call(console.log, ["done!"],console) // call console.log("done!");
+		.to({x:500,y:200,alpha:0.1},1000) // tween x/y/alpha properties over 1s (1000ms)
+		.to({x:0},500) // tween x over 0.5s
+		.to({y:400}) // jump to new y property (defaults to a duration of 0)
+		.call(console.log, ["wait..."], console) // call console.log("wait...")
+		.wait(800) // wait for 0.8s
+		.to({y:0,alpha:1},300) // tween y/alpha over 0.3s
+		.call(console.log, ["done!"],console) // call console.log("done!");
 
 	// this tween doesn't actually tween anything, it just sequences some actions:
 	// note that it has pauseable set to false, so it will keep playing even when Ticker is paused.
 	Tween.get(txt,{loop:true, pauseable:false}) // get a tween targeting txt
-			.wait(1500) // wait 1.5s
-			.set({visible:false},highlight) // set visible=false on highlight
-			.set({text:"the new javascript tweening engine"}) // set the text property of the target
-			.wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
-			.wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
+		.wait(1500) // wait 1.5s
+		.set({visible:false},highlight) // set visible=false on highlight
+		.set({text:"the new javascript tweening engine"}) // set the text property of the target
+		.wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
+		.wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
 
 	Ticker.setFPS(20);
 	// in order for the stage to continue to redraw when the Ticker is paused we need to add it with
