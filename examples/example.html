@@ -46,11 +46,18 @@ function init() {
 	// this tween doesn't actually tween anything, it just sequences some actions:
 	// note that it has pauseable set to false, so it will keep playing even when Ticker is paused.
 	Tween.get(txt,{loop:true, pauseable:false}) // get a tween targeting txt
+		.to({text:"the new javascript tweening engine"},1500) // change text after 1.5s
+		.set({visible:false},highlight) // set visible=false on highlight
+		.to({text:"by Grant Skinner, gskinner.com"},1500) // change text after 1.5s
+		.to({text:"TweenJS"},1500).set({visible:true},highlight); // change text after 1.5s & set visible=true on highlight
+		/*
+		// We could also do the above using wait and set:
 		.wait(1500) // wait 1.5s
 		.set({visible:false},highlight) // set visible=false on highlight
 		.set({text:"the new javascript tweening engine"}) // set the text property of the target
 		.wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
 		.wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
+		*/
 
 	Ticker.setFPS(20);
 	// in order for the stage to continue to redraw when the Ticker is paused we need to add it with

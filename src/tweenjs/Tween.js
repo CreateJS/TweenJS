@@ -266,12 +266,11 @@ var p = Tween.prototype;
 		}
 
 		for (n in this._initQueueProps) {
-			if ((v0=p0[n]) == (v1=p1[n]) || ratio == 0 || ratio == 1) {
-				// no interpolation - either at start, end, or values don't change.
+			if ((v0 = p0[n]) == null) { p0[n] = v0 = this._initQueueProps[n]; }
+			if (v0 == (v1=p1[n]) || ratio == 0 || ratio == 1 || (typeof(v0) != "number")) {
+				// no interpolation - either at start, end, values don't change, or the value is non-numeric.
 				if (ratio == 1) { v0 = v1; }
-				if (v0 == null) { v0 = this._initQueueProps[n]; }
 			} else {
-				if (v0 == null) { p0[n] = v0 = this._initQueueProps[n]; }
 				v0 += (v1-v0)*ratio;
 			}
 			this._target[n] = map && map[n] ? v0+map[n] : v0;
