@@ -11,7 +11,7 @@ function init() {
 	var count = 600;
 	while (--count >= 0) {
 		var box = document.createElement("div");
-		box.style.width = "4px";
+		box.style.width = "6px";
 		box.style.height = "2px";
 		box.style.position = "absolute";
 		box.style.borderRadius = "32px"; // render a circle
@@ -20,7 +20,7 @@ function init() {
 		document.body.appendChild(box);
 		var a = (Math.random()*Math.PI*2*16|0)/16;
 		box.style.webkitTransform = "rotate("+a+"rad)";
-		var d = 50;
+		var d = 30;
 		box.style.left = window.innerWidth/2+Math.cos(a-0.2-Math.random())*d+"px";
 		box.style.top = window.innerHeight/2+Math.sin(a-0.2-Math.random())*d+"px";
 		d = (Math.min(window.innerWidth,window.innerHeight)-16)/2*(Math.random()*0.3+0.7);

@@ -36,7 +36,6 @@
 
 (function(window) {
 
-
 // private properties:
 	p._paused = false;
 	p._tweens = null;
@@ -47,8 +46,8 @@
 * @class Timeline
 * @constructor
 **/
-Timeline = function() {
-  this.initialize();
+Timeline = function(tweens, labels) {
+  this.initialize(tweens, labels);
 }
 var p = Timeline.prototype;
 	
@@ -58,9 +57,10 @@ var p = Timeline.prototype;
 	* @method initialize
 	* @protected
 	**/
-	p.initialize = function() {
+	p.initialize = function(tweens, labels) {
 		this._tweens = [];
-		this._labels = {};
+		if (tweens) { this.addTween.apply(this, tweens); }
+		this._labels = labels ? labels : {};
 	}
 	
 // public methods:
@@ -70,7 +70,7 @@ var p = Timeline.prototype;
 		if (l > 1) {
 			for (var i=0; i<l; i++) { this.addTween(arguments[i]); }
 			return arguments[l-1];
-		}
+		} else if (l == 0) { return; }
 		this.removeTween(tween);
 		this._tweens.push(tween);
 		return tween;
@@ -83,7 +83,7 @@ var p = Timeline.prototype;
 			var good = true;
 			for (var i=0; i<l; i++) { good = good && this.removeTween(arguments[i]); }
 			return good;
-		}
+		} else if (l == 0) { return; }
 		var index = this._tweens.indexOf(tween);
 		if (index != -1) {
 			this._tweens.splice(index,1);
@@ -98,6 +98,16 @@ var p = Timeline.prototype;
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
 	}
+	
+	p.gotoAndPlay = function(positionOrLabel) {
+		this.setPaused(false);
+		this._goto(positionOrLabel);
+	}
+	
+	p.gotoAndStop = function(positionOrLabel) {
+		this.setPaused(true);
+		this._goto(positionOrLabel);
+	}
 
 	//
 	p.setPosition = function(value) {
@@ -109,7 +119,8 @@ var p = Timeline.prototype;
 
 	//
 	p.setPaused = function(value) {
-		this._paused = value;
+		this._paused = !!value;
+		Tween._register(this, !value);
 	}
 
 	/**
@@ -129,6 +140,17 @@ var p = Timeline.prototype;
 	**/
 	p.clone = function() {
 		return new Timeline();
+	}
+	
+// private methods:
+	p._goto = function(positionOrLabel) {
+		var pos = parseFloat(position);
+		if (isNaN(pos)) {
+			pos = this._labels[pos];
+		}
+		if (pos != null) {
+			this.setPosition(pos);
+		}
 	}
 	
 window.Timeline = Timeline;
