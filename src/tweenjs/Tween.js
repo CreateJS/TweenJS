@@ -72,7 +72,7 @@ var p = Tween.prototype;
 		var paused = Ticker.getPaused();
 		for (var i=tweens.length-1; i>=0; i--) {
 			var tween = tweens[i];
-			if (paused && tween.pauseable) { continue; }
+			if (paused && !tween.ignoreGlobalPause) { continue; }
 			tween.tick(tween._useTicks?1:delta);
 		}
 	}
@@ -90,7 +90,7 @@ var p = Tween.prototype;
 	}
 
 // public properties:
-	p.pauseable = true;
+	p.ignoreGlobalPause = true;
 	p.loop = false;
 
 // private properties:
@@ -110,7 +110,7 @@ var p = Tween.prototype;
 // constructor:
 	/** 
 	* Initialization method. Props supported: useTicks (uses ticks for duration instead of time), css (tweens CSS properties),
-	* pauseable (if true, tween pauses when Ticker is paused), loop (loops the full tween when it reaches the end).
+	* ignoreGlobalPause (if true, tween pauses when Ticker is paused), loop (loops the full tween when it reaches the end).
 	* @method initialize
 	* @protected
 	**/
@@ -118,7 +118,7 @@ var p = Tween.prototype;
 		this._target = target;
 		this._useTicks = props.useTicks;
 		this._css = props.css;
-		this.pauseable = props.pauseable == null ? true : props.pauseable;
+		this.ignoreGlobalPause = props.ignoreGlobalPause == null ? true : props.ignoreGlobalPause;
 		this.loop = props.loop;
 		
 		this._curQueueProps = {};
@@ -140,12 +140,6 @@ var p = Tween.prototype;
 	p.to = function(props, duration, ease) {
 		if (isNaN(duration) || duration < 0) { duration = 0; }
 		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
-	}
-
-	// queues a tween from the target properties to the current properties.
-	p.from = function(props, duration, ease) {
-		if (isNaN(duration) || duration < 0) { duration = 0; }
-		return this._addStep({d:duration ? duration : 0, p1:this._cloneProps(this._curQueueProps), p0:this._cloneProps(this._appendQueueProps(props)), e:ease});
 	}
 
 	// queues an action to call the specified function
@@ -227,7 +221,6 @@ var p = Tween.prototype;
 
 	// tiny api (primarily for tool output):
 	p.w = p.wait;
-	p.f = p.from;
 	p.t = p.to;
 	p.p = p.pause;
 	p.pl = p.play;
