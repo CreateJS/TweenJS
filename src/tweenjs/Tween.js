@@ -28,12 +28,17 @@
 */
 
 /**
-* The TweenJS Javascript library provides a simple but powerful tweening interface.
+* The TweenJS Javascript library provides a simple but powerful tweening interface. It allows you to chain tweens and
+ * actions together to create complex sequences. For example:<br/>
+ * Tween.get(target).wait(500).to({alpha:0,visible:false},1000).call(onComplete);<br/>
+ * This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the onComplete function.
 * @module EaselJS
 **/
 
+//TODO: when CSS is true, use the style property for all prop targets.
 (function(window) {
 /**
+ * Returns a new Tween instance. See Tween.get for param documentation.
 * @class Tween
 * @constructor
 **/
@@ -43,129 +48,304 @@ Tween = function(target, props) {
 var p = Tween.prototype;
 
 // static interface:
+	/** 
+	 * @property _listeners
+	 * @type Array[Tween]
+	 * @static
+	 * @protected 
+	 **/
 	Tween._tweens = [];
-	Tween.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",
-						opacity:""};
+	
+	/** 
+	 * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
+	 * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
+	 * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
+	 * the "top" CSS property, it should use the "px" suffix (ex. target.style.top = "20.5px"). This only applies
+	 * to tweens with the "css" config property set to true.
+	 * @property cssSuffixMap
+	 * @type Object
+	 * @static
+	 **/
+	Tween.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
 
 	/**
-	* var tween2 = Tween.get(obj2,props,override).pause().to({alpha:1});
-	* Tween.get(obj1).delay(2).to({x:50},4).call(onComplete).play(tween2).pause();
-	* @param target
-	*/
-	Tween.get = function(target, props, override) {
-		if (override && target.tweenjs_tweenCount) {
-			var tweens = Tween._tweens;
-			var l = tweens.length;
-			for (var i=l-1; i>=0; i--) {
-				if (tweens[i]._target == target) { tweens.splice(i,1); }
-			}
-			target.tweenjs_tweenCount = 0;
-		}
-		var tween = new Tween(target, props||{});
-		Tween._register(tween, true);
-		return tween;
+	 * Returns a new tween instance. This is functionally identical to using "new Tween(...)", but looks cleaner
+	 * with the chained syntax of TweenJS.
+	 * @method get
+	 * @static
+	 * @param target The target object that will have its properties tweened.
+	 * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). Supported props are:<UL>
+	 *    <LI> loop: sets the loop property on this tween.</LI>
+	 *    <LI> css: indicates this is a CSS tween. This causes it to use the style property of the target as the default target
+	 *    		for property changes, and to use the cssSuffixMap property for generating CSS value strings.</LI>
+	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
+	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
+	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
+	 * </UL>
+	 **/
+	Tween.get = function(target, props) {
+		return new Tween(target, props);
 	}
-
-	Ticker.addListener(Tween,false);
-	Tween.tick = function(delta) {
+	
+	/**
+	 * Advances all tweens. This typically uses the Ticker class, but you can call it manually if you prefer to use
+	 * your own "heartbeat" implementation.
+	 * @method tick
+	 * @static
+	 * @param delta The change in time in milliseconds since the last tick. Required unless all tweens have useTicks set to true.
+	 * @param paused Indicates whether a global pause is in effect. Tweens with ignoreGlobalPause will ignore this, but all others will pause if this is true.
+	 **/
+	Tween.tick = function(delta,paused) {
 		var tweens = Tween._tweens;
-		var paused = Ticker.getPaused();
 		for (var i=tweens.length-1; i>=0; i--) {
 			var tween = tweens[i];
 			if (paused && !tween.ignoreGlobalPause) { continue; }
 			tween.tick(tween._useTicks?1:delta);
 		}
 	}
-
+	if (Ticker) { Ticker.addListener(Tween,false); }
+	
+	
+	/** 
+	 * Removes all existing tweens for a target. This is called automatically if a tween's override config prop is true.
+	 * @method removeTweens
+	 * @static
+	 * @param target
+	 **/
+	Tween.removeTweens = function(target) {
+		if (!target.tweenjs_count) { return; }
+		var tweens = Tween._tweens;
+		for (var i=tweens.length-1; i>=0; i--) {
+			if (tweens[i]._target == target) { tweens.splice(i,1); }
+		}
+		target.tweenjs_count = 0;
+	}
+	
+	/** 
+	 * Registers or unregisters a tween with the ticking system.
+	 * @method _register
+	 * @static
+	 * @protected 
+	 **/
 	Tween._register = function(tween, value) {
+		var target = tween._target;
 		if (value) {
-			if (tween._target.tweenjs_tweenCount == null) { tween._target.tweenjs_tweenCount = 1; }
-			else { tween._target.tweenjs_tweenCount++; }
+			target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1;
 			Tween._tweens.push(tween);
 		} else {
-			tween._target.tweenjs_tweenCount--;
+			target.tweenjs_count--;
 			var i = Tween._tweens.indexOf(tween);
 			if (i != -1) { Tween._tweens.splice(i,1); }
 		}
 	}
 
 // public properties:
-	p.ignoreGlobalPause = true;
+	/**
+	 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using Ticker,
+	 * then setting this to true (the default) will cause this tween to be paused when Ticker.setPaused(true) is called.
+	 * See Tween.tick() for more info. Can be set via the props param.
+	 * @property ignoreGlobalPause
+	 * @type Boolean
+	 **/
+	p.ignoreGlobalPause = false;
+	
+	/**
+	 * If true, the tween will loop when it reaches the end. Can be set via the props param.
+	 * @property loop
+	 * @type Boolean
+	 **/
 	p.loop = false;
+	
+	/**
+	 * Overrides Tween.cssSuffixMap for this tween.
+	 * @property cssSuffixMap
+	 * @type Object
+	 **/
+	p.cssSuffixMap = null;
 
 // private properties:
+	
+	/**
+	 * @property _paused
+	 * @type Boolean
+	 * @protected
+	 **/
 	p._paused = false;
+	
+	/**
+	 * @property _curQueueProps
+	 * @type Object
+	 * @protected
+	 **/
 	p._curQueueProps = null;
+	
+	/**
+	 * @property _initQueueProps
+	 * @type Object
+	 * @protected
+	 **/
 	p._initQueueProps = null;
+	
+	/**
+	 * @property _steps
+	 * @type Array
+	 * @protected
+	 **/
 	p._steps = null;
+	
+	/**
+	 * @property _actions
+	 * @type Array
+	 * @protected
+	 **/
 	p._actions = null;
+	
+	/**
+	 * Total position.
+	 * @property _prevPosition
+	 * @type Number
+	 * @protected
+	 **/
 	p._prevPosition = 0;
+	
+	/**
+	 * Normalized position.
+	 * @property _prevPos
+	 * @type Number
+	 * @protected
+	 **/
 	p._prevPos = -1;
+	
+	/**
+	 * @property _prevIndex
+	 * @type Number
+	 * @protected
+	 **/
 	p._prevIndex = -1;
+	
+	/**
+	 * @property _target
+	 * @type Object
+	 * @protected
+	 **/
 	p._target = null;
+	
+	/**
+	 * @property _duration
+	 * @type Number
+	 * @protected
+	 **/
 	p._duration = 0;
+	
+	/**
+	 * @property _css
+	 * @type Boolean
+	 * @protected
+	 **/
 	p._css = false;
+	
+	/**
+	 * @property _useTicks
+	 * @type Boolean
+	 * @protected
+	 **/
 	p._useTicks = false;
 	
 // constructor:
 	/** 
-	* Initialization method. Props supported: useTicks (uses ticks for duration instead of time), css (tweens CSS properties),
-	* ignoreGlobalPause (if true, tween pauses when Ticker is paused), loop (loops the full tween when it reaches the end).
-	* @method initialize
-	* @protected
-	**/
+	 * @method initialize
+	 * @protected
+	 **/
 	p.initialize = function(target, props) {
 		this._target = target;
 		this._useTicks = props.useTicks;
 		this._css = props.css;
-		this.ignoreGlobalPause = props.ignoreGlobalPause == null ? true : props.ignoreGlobalPause;
+		this.ignoreGlobalPause = props.ignoreGlobalPause;
 		this.loop = props.loop;
+		if (props.override) { Tween.removeTweens(target); }
 		
 		this._curQueueProps = {};
 		this._initQueueProps = {};
 		this._steps = [];
 		this._actions = [];
 		this._catalog = [];
+		
+		Tween._register(this, true);
 	}
 	
 // public methods:
-	// queues a delay.
+	/** 
+	 * Queues a wait (essentially an empty tween).
+	 * @method wait
+	 * @param duration The duration of the wait in milliseconds (or in ticks if useTicks is true).
+	 **/
 	p.wait = function(duration) {
 		if (duration == null || duration <= 0) { return this; }
 		var o = this._cloneProps(this._curQueueProps);
 		return this._addStep({d:duration, p0:o, e:this._linearEase, p1:o});
 	}
 
-	// queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
+	/** 
+	 * Queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
+	 * Numeric properties will be tweened from their current value in the tween to the target value. Non-numeric
+	 * properties will be set at the end of the specified duration.
+	 * @method to
+	 * @param props An object specifying property target values for this tween (Ex. {x:300} would tween the x property of the target to 300).
+	 * @param duration The duration of the wait in milliseconds (or in ticks if useTicks is true).
+	 * @param ease The easing function to use for this tween.
+	 **/
 	p.to = function(props, duration, ease) {
 		if (isNaN(duration) || duration < 0) { duration = 0; }
 		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
 	}
-
-	// queues an action to call the specified function
+	
+	/** 
+	 * Queues an action to call the specified function. For example: myTween.wait(1000).call(myFunction); would call myFunction() after 1s.
+	 * @method call
+	 * @param callback The function to call.
+	 * @param params The parameters to call the function with. If this is omitted, then the function will be called with a single param pointing to this tween.
+	 * @param scope The scope to call the function in. If omitted, it will be called in the target's scope.
+	 **/
 	p.call = function(callback, params, scope) {
 		return this._addAction({f:callback, p:params ? params : [this], o:scope ? scope : this._target});
 	}
-
-	// queues an action to set the specified props on the specified target. If target is null, it will use this tween's target.
+	
+	/** 
+	 * Queues an action to set the specified props on the specified target. If target is null, it will use this tween's target.
+	 * @method set
+	 * @param props The properties to set (ex. {visible:false}).
+	 * @param target The target to set the properties on. If omitted, they will be set on the tween's target.
+	 **/
 	p.set = function(props, target) {
 		return this._addAction({f:this._set, o:this, p:[props, target ? target : this._target]});
 	}
-
-	// queues an action to play the specified tween.
-	p.play = function(target) {
-		return this.call(target.setPaused, [false], target);
+	
+	/** 
+	 * Queues an action to to play (unpause) the specified tween. This enables you to sequence multiple tweens.
+	 * @method play
+	 * @param tween The tween to play.
+	 **/
+	p.play = function(tween) {
+		return this.call(tween.setPaused, [false], tween);
 	}
 
-	// queues a pause action. If target is not specified, it defaults to the current tween.
-	p.pause = function(target) {
-		if (!target) { target = this; }
-		return this.call(target.setPaused, [true], target);
+	/** 
+	 * Queues an action to to pause the specified tween.
+	 * @method pause
+	 * @param tween The tween to play. If null, it pauses this tween.
+	 **/
+	p.pause = function(tween) {
+		if (!tween) { tween = this; }
+		return this.call(tween.setPaused, [true], tween);
 	}
-
-	// advances the tween to a specified position in time.
-	// if seek is true, then all actions between the previous position and the new one will be executed. If
-	// it is false, then props will be updated without executing calls and play/pause actions.
+	
+	// TODO: rename params.
+	/** 
+	 * Advances the tween to a specified position in milliseconds (or ticks if useTicks is true).
+	 * @method setPosition
+	 * @param value The position to seek to.
+	 * @param seek If true, then all actions (ex. call, play, pause, set) between the previous position and the new one will be executed.
+	 **/
 	p.setPosition = function(value, seek) {
 		if (value == this._prevPosition) { return; }
 		if (seek == null) { seek = true; }
@@ -191,7 +371,7 @@ var p = Tween.prototype;
 			}
 		}
 
-		// GDS: deal with actions, looping, and reverse properly!
+		// TODO: deal with multiple loops?
 		if (seek && this._actions.length > 0) {
 			if (looped) {
 				this._runActions(this._prevPos, this._duration);
@@ -208,11 +388,22 @@ var p = Tween.prototype;
 		}
 	}
 
+	/** 
+	 * Advances this tween by the specified amount of time in milliseconds (or ticks if useTicks is true).
+	 * This is normally called automatically by the Tween engine (via Tween.tick), but is exposed for advanced uses.
+	 * @method tick
+	 * @param delta The time to advance in milliseconds (or ticks if useTicks is true).
+	 **/
 	p.tick = function(delta) {
 		if (this._paused) { return; }
 		this.setPosition(this._prevPosition+delta);
 	}
 
+	/** 
+	 * Pauses or plays this tween.
+	 * @method setPaused
+	 * @param value Indicates whether the tween should be paused (true) or played (false).
+	 **/
 	// pauses or plays this tween.
 	p.setPaused = function(value) {
 		this._paused = !!value;
@@ -228,24 +419,27 @@ var p = Tween.prototype;
 	p.s = p.set;
 
 	/**
-	* Returns a string representation of this object.
-	* @method toString
-	* @return {String} a string representation of the instance.
-	**/
+	 * Returns a string representation of this object.
+	 * @method toString
+	 * @return {String} a string representation of the instance.
+	 **/
 	p.toString = function() {
 		return "[Tween]";
 	}
 	
 	/**
-	* Returns a clone of this Tween instance.
-	* @method clone
-	* @return {Tween} A clone of the current Tween instance.
-	**/
+	 * @method clone
+	 * @protected
+	 **/
 	p.clone = function() {
 		throw("Tween is not cloneable.")
 	}
 
 // private methods:
+	/**
+	 * @method _updateTargetProps
+	 * @protected
+	 **/
 	p._updateTargetProps = function(tween, ratio) {
 		if (this._css) { var map = this.cssSuffixMap || Tween.cssSuffixMap; }
 		var p0,p1,v0,v1;
@@ -270,8 +464,13 @@ var p = Tween.prototype;
 		}
 		
 	}
-		// GDS: there is a bug that causes actions at the start of a looping tween to be ignored.
+	
+	/**
+	 * @method _runActions
+	 * @protected
+	 **/
 	p._runActions = function(startPos, endPos, includeStart) {
+		// TODO: Test: there may be a bug that causes actions at the start of a looping tween to be ignored.
 		var sPos = startPos;
 		var ePos = endPos;
 		var i = -1;
@@ -293,6 +492,10 @@ var p = Tween.prototype;
 		}
 	}
 
+	/**
+	 * @method _appendQueueProps
+	 * @protected
+	 **/
 	p._appendQueueProps = function(o) {
 		if (this._css) { var map = this.cssSuffixMap || Tween.cssSuffixMap; }
 		var sfx0,sfx1;
@@ -316,6 +519,10 @@ var p = Tween.prototype;
 		return this._curQueueProps;
 	}
 
+	/**
+	 * @method _cloneProps
+	 * @protected
+	 **/
 	p._cloneProps = function(props) {
 		var o = {};
 		for (var n in props) {
@@ -324,6 +531,10 @@ var p = Tween.prototype;
 		return o;
 	}
 
+	/**
+	 * @method _addStep
+	 * @protected
+	 **/
 	p._addStep = function(o) {
 		if (o.d > 0) {
 			this._steps.push(o);
@@ -333,12 +544,20 @@ var p = Tween.prototype;
 		return this;
 	}
 	
+	/**
+	 * @method _addAction
+	 * @protected
+	 **/
 	p._addAction = function(o) {
 		o.t = this._duration;
 		this._actions.push(o);
 		return this;
 	}
 
+	/**
+	 * @method _set
+	 * @protected
+	 **/
 	p._set = function(props,o) {
 		for (var n in props) {
 			o[n] = props[n];

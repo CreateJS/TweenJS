@@ -3,6 +3,7 @@
 <head>
 <title>TweenJS: Canvas Tweening Example</title>
 <script src="../lib/easel.js"></script>
+<script src="../lib/Ticker.js"></script> <!-- use the latest version of Ticker -->
 <script src="../src/tweenjs/Tween.js"></script>
 <script>
 function init() {
@@ -45,7 +46,7 @@ function init() {
 
 	// this tween doesn't actually tween anything, it just sequences some actions:
 	// note that it has pauseable set to false, so it will keep playing even when Ticker is paused.
-	Tween.get(txt,{loop:true, pauseable:false}) // get a tween targeting txt
+	Tween.get(txt,{loop:true, ignoreGlobalPause:true}) // get a tween targeting txt
 		.to({text:"the new javascript tweening engine"},1500) // change text after 1.5s
 		.set({visible:false},highlight) // set visible=false on highlight
 		.to({text:"by Grant Skinner, gskinner.com"},1500) // change text after 1.5s
