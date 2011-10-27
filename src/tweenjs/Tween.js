@@ -130,10 +130,10 @@ var p = Tween.prototype;
 	Tween._register = function(tween, value) {
 		var target = tween._target;
 		if (value) {
-			target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1;
+			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
 			Tween._tweens.push(tween);
 		} else {
-			target.tweenjs_count--;
+			if (target) { target.tweenjs_count--; }
 			var i = Tween._tweens.indexOf(tween);
 			if (i != -1) { Tween._tweens.splice(i,1); }
 		}
@@ -162,6 +162,14 @@ var p = Tween.prototype;
 	 * @type Object
 	 **/
 	p.cssSuffixMap = null;
+	
+	/**
+	 * Read-only property specifying the total duration of this tween in milliseconds (or ticks if useTicks is true).
+	 * This value is automatically updated as you modify the tween.
+	 * @property duration
+	 * @type Number
+	 **/
+	p.duration = 0;
 
 // private properties:
 	
@@ -231,13 +239,6 @@ var p = Tween.prototype;
 	p._target = null;
 	
 	/**
-	 * @property _duration
-	 * @type Number
-	 * @protected
-	 **/
-	p._duration = 0;
-	
-	/**
 	 * @property _css
 	 * @type Boolean
 	 * @protected
@@ -258,11 +259,13 @@ var p = Tween.prototype;
 	 **/
 	p.initialize = function(target, props) {
 		this._target = target;
-		this._useTicks = props.useTicks;
-		this._css = props.css;
-		this.ignoreGlobalPause = props.ignoreGlobalPause;
-		this.loop = props.loop;
-		if (props.override) { Tween.removeTweens(target); }
+		if (props) {
+			this._useTicks = props.useTicks;
+			this._css = props.css;
+			this.ignoreGlobalPause = props.ignoreGlobalPause;
+			this.loop = props.loop;
+			if (props.override) { Tween.removeTweens(target); }
+		}
 		
 		this._curQueueProps = {};
 		this._initQueueProps = {};
@@ -296,7 +299,7 @@ var p = Tween.prototype;
 	 **/
 	p.to = function(props, duration, ease) {
 		if (isNaN(duration) || duration < 0) { duration = 0; }
-		return this._addStep({d:duration ? duration : 0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
+		return this._addStep({d:duration||0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
 	}
 	
 	/** 
@@ -345,20 +348,21 @@ var p = Tween.prototype;
 	 * @method setPosition
 	 * @param value The position to seek to.
 	 * @param seek If true, then all actions (ex. call, play, pause, set) between the previous position and the new one will be executed.
+	 * @return Boolean Returns true if the tween is complete (ie. the full tween has run & loop is false).
 	 **/
 	p.setPosition = function(value, seek) {
 		if (value == this._prevPosition) { return; }
 		if (seek == null) { seek = true; }
 		var t = value;
 		var looped = false;
-		if (t > this._duration) {
+		if (t > this.duration) {
 			if (this.loop) {
-				t = t%this._duration;
+				t = t%this.duration;
 				looped = (t<this._prevPos);
-			} else { t = this._duration; }
+			} else { t = this.duration; }
 		}
 		if (t != this._prevPos) {
-			if (t == this._duration && !this.loop) {
+			if (t == this.duration && !this.loop) {
 				// addresses problems with an ending zero length step.
 				this._updateTargetProps(null,1);
 			} else if (this._steps.length > 0) {
@@ -374,7 +378,7 @@ var p = Tween.prototype;
 		// TODO: deal with multiple loops?
 		if (seek && this._actions.length > 0) {
 			if (looped) {
-				this._runActions(this._prevPos, this._duration);
+				this._runActions(this._prevPos, this.duration);
 				this._runActions(0, t);
 			} else {
 				this._runActions(this._prevPos, t);
@@ -383,8 +387,10 @@ var p = Tween.prototype;
 		this._prevPos = t;
 		this._prevPosition = value;
 
-		if (t == this._duration && !this.loop) {
+		if (t == this.duration && !this.loop) {
+			// ended:
 			this.setPaused(true);
+			return true;
 		}
 	}
 
@@ -413,8 +419,6 @@ var p = Tween.prototype;
 	// tiny api (primarily for tool output):
 	p.w = p.wait;
 	p.t = p.to;
-	p.p = p.pause;
-	p.pl = p.play;
 	p.c = p.call;
 	p.s = p.set;
 
@@ -538,8 +542,8 @@ var p = Tween.prototype;
 	p._addStep = function(o) {
 		if (o.d > 0) {
 			this._steps.push(o);
-			o.t = this._duration;
-			this._duration += o.d;
+			o.t = this.duration;
+			this.duration += o.d;
 		}
 		return this;
 	}
@@ -549,7 +553,7 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p._addAction = function(o) {
-		o.t = this._duration;
+		o.t = this.duration;
 		this._actions.push(o);
 		return this;
 	}
