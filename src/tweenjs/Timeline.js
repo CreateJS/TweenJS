@@ -36,20 +36,27 @@
 
 (function(window) {
 
-// private properties:
-	p._paused = false;
-	p._tweens = null;
-	p._labels = null;
 
 /**
 * Base class that all filters should inherit from.
 * @class Timeline
 * @constructor
 **/
-Timeline = function(tweens, labels) {
-  this.initialize(tweens, labels);
+Timeline = function(tweens, labels, props) {
+  this.initialize(tweens, labels, props);
 }
 var p = Timeline.prototype;
+
+// public properties:
+	p.duration = 0;
+	p.loop = false;
+
+// private properties:
+	p._paused = false;
+	p._tweens = null;
+	p._labels = null;
+	p._prevPosition = 0;
+	p._useTicks = false;
 	
 // constructor:
 	/** 
@@ -57,10 +64,15 @@ var p = Timeline.prototype;
 	* @method initialize
 	* @protected
 	**/
-	p.initialize = function(tweens, labels) {
+	p.initialize = function(tweens, labels, props) {
 		this._tweens = [];
 		if (tweens) { this.addTween.apply(this, tweens); }
-		this._labels = labels ? labels : {};
+		this.setLabels(labels);
+		this.setPaused(false);
+		if (props) {
+			this._useTicks = props.useTicks;
+			this.loop = props.loop;
+		}
 	}
 	
 // public methods:
@@ -73,6 +85,9 @@ var p = Timeline.prototype;
 		} else if (l == 0) { return; }
 		this.removeTween(tween);
 		this._tweens.push(tween);
+		tween.setPaused(true);
+		tween._paused = false;
+		if (tween.duration > this.duration) { this.duration = tween.duration; }
 		return tween;
 	}
 
@@ -87,6 +102,7 @@ var p = Timeline.prototype;
 		var index = this._tweens.indexOf(tween);
 		if (index != -1) {
 			this._tweens.splice(index,1);
+			if (tween.duration >= this.duration) { this.updateDuration(); }
 			return true;
 		} else { return false; }
 	}
@@ -111,16 +127,41 @@ var p = Timeline.prototype;
 
 	//
 	p.setPosition = function(value) {
+		if (value == this._prevPosition) { return; }
+		this._prevPosition = value;
+		var completeCount = 0;
+		var pos = this.loop ? value%this.duration : value; // TODO: address issues with looping and actions.
+		var looped = pos < value;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			var tween = this._tweens[i];
-			tween.setPosition(value);
+			completeCount += tween.setPosition(pos);
 		}
+		if (!this.loop && completeCount == l) { this.setPaused(true); } // end
 	}
 
 	//
 	p.setPaused = function(value) {
 		this._paused = !!value;
 		Tween._register(this, !value);
+	}
+	
+	// updates duration, useful if you modify a tween that was already added to the timeline.
+	p.updateDuration = function(tween) {
+		if (tween) {
+			if (tween.duration > this.duration) { this.duration = tween.duration; }
+		} else {
+			this.duration = 0;
+			for (var i=0,l=this._tweens.length; i<l; i++) {
+				tween = this._tweens[i];
+				if (tween.duration > this.duration) { this.duration = tween.duration; }
+			}
+		}
+		return this.duration;
+	}
+	
+	//
+	p.tick = function(delta) {
+		this.setPosition(this._prevPosition+delta);
 	}
 
 	/**
@@ -144,9 +185,9 @@ var p = Timeline.prototype;
 	
 // private methods:
 	p._goto = function(positionOrLabel) {
-		var pos = parseFloat(position);
+		var pos = parseFloat(positionOrLabel);
 		if (isNaN(pos)) {
-			pos = this._labels[pos];
+			pos = this._labels[positionOrLabel];
 		}
 		if (pos != null) {
 			this.setPosition(pos);
