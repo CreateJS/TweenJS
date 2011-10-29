@@ -5,6 +5,7 @@
 <script src="../lib/easel.js"></script>
 <script src="../lib/Ticker.js"></script> <!-- use the latest version of Ticker -->
 <script src="../src/tweenjs/Tween.js"></script>
+<script src="../src/tweenjs/Ease.js"></script>
 <script>
 function init() {
 	canvas = document.getElementById("canvas1");
@@ -25,19 +26,19 @@ function init() {
 
 	stage.addChild(circle,highlight,txt);
 	
-	// set up a tween that jumps between scale 0.3 and 1 every second.
+	// set up a tween that tweens between scale 0.3 and 1 every second.
 	Tween.get(circle,{loop:true})
 		.wait(1000) // wait for 1 second
-		.to({scaleX:0.5,scaleY:0.5}) // jump to the new scale properties (default duration of 0)
+		.to({scaleX:0.2,scaleY:0.2}) // jump to the new scale properties (default duration of 0)
 		.wait(1000)
-		.to({scaleX:1,scaleY:1},2000) // this is actually redundant, because it will loop to the original values
+		.to({scaleX:1,scaleY:1},1000,Ease.bounceOut) // tween to scaleX/Y of 1 with ease bounce out
 	
 	// for demonstration purposes, try setting the override (third) parameter to true
 	// this will override any previous tweens on the circle and replace them with this tween
 	// resulting in the scaling tween above being cleared.
-	Tween.get(circle, {loop:true}, false) // get a new tween targeting circle
-		.to({x:500,y:200,alpha:0.1},1000) // tween x/y/alpha properties over 1s (1000ms)
-		.to({x:0},500) // tween x over 0.5s
+	Tween.get(circle, {loop:true}, true) // get a new tween targeting circle
+		.to({x:500,y:200,alpha:0.1},1000,Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
+		.to({x:0},1000,Ease.get(-1)) // tween x over 0.5s with ease in
 		.to({y:400}) // jump to new y property (defaults to a duration of 0)
 		.call(console.log, ["wait..."], console) // call console.log("wait...")
 		.wait(800) // wait for 0.8s
@@ -64,6 +65,8 @@ function init() {
 	// in order for the stage to continue to redraw when the Ticker is paused we need to add it with
 	// the second ("pauseable") param set to false.
 	Ticker.addListener(stage,false);
+	
+	Ease.ease(90)();
 }
 </script>
 </head>

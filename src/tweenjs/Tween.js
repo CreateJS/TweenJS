@@ -351,7 +351,7 @@ var p = Tween.prototype;
 	 * @return Boolean Returns true if the tween is complete (ie. the full tween has run & loop is false).
 	 **/
 	p.setPosition = function(value, seek) {
-		if (value == this._prevPosition) { return; }
+		if (value == this._prevPosition) { return false; }
 		if (seek == null) { seek = true; }
 		var t = value;
 		var looped = false;
