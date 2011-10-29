@@ -52,6 +52,8 @@ var Ease = function() {
 
 // public static methods:
 	
+	Ease.none = Ease.linear = function(t) { return t; }
+	
 	Ease.get = function(amount) {
 		if (amount < -1) { amount = -1; }
 		if (amount > 1) { amount = 1; }
@@ -83,32 +85,24 @@ var Ease = function() {
 	}
 	
 	
-	Ease.cubeIn = function(t) {
-		return t*t*t;
-	}
-	
-	Ease.cubeOut = function(t) {
-		return 1-(t=1-t)*t*t;
-	}
-	
-	Ease.cubeInOut = function(t) {
-		if ((t*=2)<1) return t*t*t*0.5;
-		return 0.5*((t-=2)*t*t+2);
-	}
+	Ease.quadIn = Ease.getPowIn(2);
+	Ease.quadOut = Ease.getPowOut(2);
+	Ease.quadInOut = Ease.getPowInOut(2);
 	
 	
-	Ease.quadIn = function(t) {
-		return t*t;
-	}
+	Ease.cubicIn = Ease.getPowIn(3);
+	Ease.cubicOut = Ease.getPowOut(3);
+	Ease.cubicInOut = Ease.getPowInOut(3);
 	
-	Ease.quadOut = function(t) {
-		return 1-(t=1-t)*t;
-	}
 	
-	Ease.quadInOut = function(t) {
-		if ((t*=2)<1) return 0.5*t*t;
-		return -0.5*(--t*(t-2)-1);
-	}
+	Ease.quartIn = Ease.getPowIn(4);
+	Ease.quartOut = Ease.getPowOut(4);
+	Ease.quartInOut = Ease.getPowInOut(4);
+	
+	
+	Ease.quintIn = Ease.getPowIn(5);
+	Ease.quintOut = Ease.getPowOut(5);
+	Ease.quintInOut = Ease.getPowInOut(5);
 	
 	
 	Ease.sineIn = function(t) {
