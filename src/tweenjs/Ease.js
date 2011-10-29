@@ -55,78 +55,78 @@ var Ease = function() {
 	Ease.get = function(amount) {
 		if (amount < -1) { amount = -1; }
 		if (amount > 1) { amount = 1; }
-		return function(n) {
-			if (amount==0) { return n; }
-			if (amount<0) { return n*(n*-amount+1+amount); }
-			return n*((2-n)*amount+(1-amount));
+		return function(t) {
+			if (amount==0) { return t; }
+			if (amount<0) { return t*(t*-amount+1+amount); }
+			return t*((2-t)*amount+(1-amount));
 		}
 	}
 	
 	
 	Ease.getPowIn = function(pow) {
-		return function(n) {
-			return Math.pow(n,pow);
+		return function(t) {
+			return Math.pow(t,pow);
 		}
 	}
 	
 	Ease.getPowOut = function(pow) {
-		return function(n) {
-			return 1-Math.pow(1-n,pow);
+		return function(t) {
+			return 1-Math.pow(1-t,pow);
 		}
 	}
 	
 	Ease.getPowInOut = function(pow) {
-		return function(n) {
-			if ((n*=2)<1) return 0.5*Math.pow(n,pow);
-			return 1-0.5*Math.abs(Math.pow(2-n,pow));
+		return function(t) {
+			if ((t*=2)<1) return 0.5*Math.pow(t,pow);
+			return 1-0.5*Math.abs(Math.pow(2-t,pow));
 		}
 	}
 	
 	
-	Ease.cubeIn = function(n) {
-		return n*n*n;
+	Ease.cubeIn = function(t) {
+		return t*t*t;
 	}
 	
-	Ease.cubeOut = function(n) {
-		return 1-(n=1-n)*n*n;
+	Ease.cubeOut = function(t) {
+		return 1-(t=1-t)*t*t;
 	}
 	
-	Ease.cubeInOut = function(n) {
-		if ((n*=2)<1) return n*n*n*0.5;
-		return 0.5*((n-=2)*n*n+2);
-	}
-	
-	
-	Ease.quadIn = function(n) {
-		return n*n;
-	}
-	
-	Ease.quadOut = function(n) {
-		return 1-(n=1-n)*n;
-	}
-	
-	Ease.quadInOut = function(n) {
-		if ((n*=2)<1) return 0.5*n*n;
-		return -0.5*(--n*(n-2)-1);
+	Ease.cubeInOut = function(t) {
+		if ((t*=2)<1) return t*t*t*0.5;
+		return 0.5*((t-=2)*t*t+2);
 	}
 	
 	
-	Ease.sineIn = function(n) {
-		return 1-Math.cos(n*Math.PI/2);
+	Ease.quadIn = function(t) {
+		return t*t;
 	}
 	
-	Ease.sineOut = function(n) {
-		return Math.sin(n*Math.PI/2);
+	Ease.quadOut = function(t) {
+		return 1-(t=1-t)*t;
 	}
 	
-	Ease.sineInOut = function(n) {
-		return -0.5*(Math.cos(Math.PI*n) - 1)
+	Ease.quadInOut = function(t) {
+		if ((t*=2)<1) return 0.5*t*t;
+		return -0.5*(--t*(t-2)-1);
+	}
+	
+	
+	Ease.sineIn = function(t) {
+		return 1-Math.cos(t*Math.PI/2);
+	}
+	
+	Ease.sineOut = function(t) {
+		return Math.sin(t*Math.PI/2);
+	}
+	
+	Ease.sineInOut = function(t) {
+		return -0.5*(Math.cos(Math.PI*t) - 1)
 	}
 	
 	
 	Ease.getBackIn = function(amount) {
-		return function(n) {
-			return n*n*((amount+1)*n-amount);
+		return function(t) {
+			return t*t*((amount+1)*t-amount);
 		}
 	}
 	Ease.backIn = Ease.getBackIn(1.7);
