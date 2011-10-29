@@ -32,3 +32,6 @@ ignoreGlobalPause - the tween will continue ticking even when Ticker is paused.
 
 When using Tween.get, you can also specify true as the third parameter to override any active tweens on the target.
 Tween.get(target,null,true); // this will remove any existing tweens on the target.
+
+--
+Special thanks to Robert Penner for his easing equations, which form the basis for the Ease class.
