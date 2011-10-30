@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<title>Tests</title>
+		<script language="JavaScript" src="../lib/Ticker.js"></script>
+		<script language="JavaScript" src="../src/tweenjs/PositionLabel.js"></script>
+		<script language="JavaScript" src="../src/tweenjs/Timeline.js"></script>
+		<script language="JavaScript" src="../src/tweenjs/Tween.js"></script>
+		<script language="JavaScript" src="BasicUnit.js"></script>
+		<style type="text/css">
+			.pass {color:green;}
+			.fail {color:red;}
+		</style>
+	</head>
+	<body>
+		
+		<h1>PositionLabel</h1>
+		
+		<script language="JavaScript">
+			var bu = new BasicUnit();
+		
+			try {
+				var obj1 = new PositionLabel(10, 'Label 1');
+				document.write(obj1.toString() + '<br>\n');
+				bu.assertNotEquals(obj1, null, 'Object created successfully');
+				bu.assertEquals(obj1.getPosition(), 10, ".getPosition() check");
+				bu.assertEquals(obj1.getName(), 'Label 1', ".getName() check");
+			} catch(e) {
+				bu.fail(e);
+			}
+
+			try {
+				var obj2 = new PositionLabel(-1, 'Label 1');
+			} catch(e) {
+				bu.assertEquals(e, 'Position must be a positive number', 'Correctly required position');
+			}
+
+			try {
+				var obj3 = new PositionLabel(12, null);
+			} catch(e) {
+				bu.assertEquals(e, 'Name must be a string with one or more characters', 'Correctly required name');
+			}
+			
+			document.write(bu.getPassCount() + ' of ' + bu.getTestCount() + ' tests passed.');
+		</script>
+		
+		<h1>Timeline</h1>
+		
+		<script language="JavaScript">
+			var bu = new BasicUnit();
+			
+			try {
+				var obj1 = new Timeline();
+				document.write(obj1.toString() + '<br>\n');
+				bu.assertNotEquals(obj1, null, 'Object created successfully');
+				obj1.addLabel(
+					new PositionLabel(10, 'Label 1'),
+					new PositionLabel(20, 'Label 2'),
+					new PositionLabel(15, 'Label 3'),
+					new PositionLabel(1000, 'Label 4')
+				);
+				var lbls = obj1.getLabels();
+				document.write('<ol><li>' + lbls.join('</li><li>') + '</li></ol>');
+				bu.assertEquals(lbls[0].getPosition(), 10, '.addLabel() check 1');
+				bu.assertEquals(lbls[2].getPosition(), 20, 'addLabel() check 2');
+				bu.assertEquals(lbls[1].getName(), 'Label 3', 'addLabel() check 3');
+				bu.assertEquals(lbls[3].getName(), 'Label 4', 'addLabel() check 4');
+				obj1.gotoAndStop(16);
+				bu.assertEquals(obj1.currentPosition(), 16, '.currentPosition() check');
+				bu.assertEquals(obj1.currentLabel(), 'Label 3', '.currentLabel() check');
+				bu.assertEquals(obj1.currentPositionLabel(), null, '.currentPositionLabel() check 1');
+				obj1.gotoAndStop(20);
+				bu.assertEquals(obj1.currentPositionLabel(), 'Label 2', '.currentPositionLabel() check 2');
+				
+			} catch(e) {
+				bu.fail(e);
+			}
+			
+			document.write(bu.getPassCount() + ' of ' + bu.getTestCount() + ' tests passed.');
+		</script>
+		
+	</body>
+</html>
