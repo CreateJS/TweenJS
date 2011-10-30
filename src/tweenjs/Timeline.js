@@ -131,10 +131,13 @@ var p = Timeline.prototype;
 		this._prevPosition = value;
 		var completeCount = 0;
 		var pos = this.loop ? value%this.duration : value; // TODO: address issues with looping and actions.
-		var looped = pos < value;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			var tween = this._tweens[i];
-			completeCount += tween.setPosition(pos);
+			if (tween._prevPosition >= tween.duration) {
+				completeCount++;
+			} else {
+				completeCount += tween.setPosition(pos);
+			}
 		}
 		if (!this.loop && completeCount == l) { this.setPaused(true); } // end
 	}

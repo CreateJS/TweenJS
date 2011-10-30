@@ -48,6 +48,11 @@ Tween = function(target, props) {
 var p = Tween.prototype;
 
 // static interface:
+	// TODO: document:
+	Tween.NONE = 0;
+	Tween.REVERSE = 1;
+	Tween.LOOP = 2;
+	
 	/** 
 	 * @property _listeners
 	 * @type Array[Tween]
@@ -347,18 +352,17 @@ var p = Tween.prototype;
 	 * Advances the tween to a specified position in milliseconds (or ticks if useTicks is true).
 	 * @method setPosition
 	 * @param value The position to seek to.
-	 * @param seek If true, then all actions (ex. call, play, pause, set) between the previous position and the new one will be executed.
+	 * @param actionsMode One of the following values: Tween.NONE (0) - run no actions. Tween.REVERSE (1) - if new position is less than old, run all actions between them in reverse. Tween.LOOP (2) - if new position is less than old, then run all actions between old and duration, then all actions between 0 and new. Defaults to LOOP. 
 	 * @return Boolean Returns true if the tween is complete (ie. the full tween has run & loop is false).
 	 **/
-	p.setPosition = function(value, seek) {
+	p.setPosition = function(value, actionsMode) {
 		if (value == this._prevPosition) { return false; }
-		if (seek == null) { seek = true; }
+		if (actionsMode == null) { mode = 2; }
 		var t = value;
-		var looped = false;
 		if (t > this.duration) {
 			if (this.loop) {
 				t = t%this.duration;
-				looped = (t<this._prevPos);
+				//looped = (t<this._prevPos);
 			} else { t = this.duration; }
 		}
 		if (t != this._prevPos) {
@@ -376,8 +380,8 @@ var p = Tween.prototype;
 		}
 
 		// TODO: deal with multiple loops?
-		if (seek && this._actions.length > 0) {
-			if (looped) {
+		if (actionsMode != 0 && this._actions.length > 0) {
+			if (actionsMode == 2 && t<this._prevPos) {
 				this._runActions(this._prevPos, this.duration);
 				this._runActions(0, t);
 			} else {
@@ -490,7 +494,7 @@ var p = Tween.prototype;
 		while ((i+=k) != j) {
 			var action = this._actions[i];
 			var pos = action.t;
-			if ( (pos > sPos && pos <= ePos) || (includeStart && pos == startPos) ) {
+			if (pos == ePos || (pos > sPos && pos < ePos) || (includeStart && pos == startPos) ) {
 				action.f.apply(action.o, action.p);
 			}
 		}

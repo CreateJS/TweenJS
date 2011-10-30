@@ -14,7 +14,7 @@ function init() {
 		box.style.width = "6px";
 		box.style.height = "2px";
 		box.style.position = "absolute";
-		box.style.borderRadius = "32px"; // render a circle
+		box.style.borderRadius = "2px";
 		box.style.backgroundColor = "#0F0";
 		box.style.opacity = "0";
 		document.body.appendChild(box);
@@ -26,7 +26,7 @@ function init() {
 		d = (Math.min(window.innerWidth,window.innerHeight)-16)/2*(Math.random()*0.3+0.7);
 		var x = window.innerWidth/2+Math.cos(a)*d;
 		var y = window.innerHeight/2+Math.sin(a)*d;
-		Tween.get(box.style, {loop:true,css:true}, true).wait(Math.random()*1000+1|0).call(updateColor).to({top:y,left:x,width:16,height:4,opacity:1},Math.random()*1500+1000,easeIn).set({opacity:"0"});
+		Tween.get(box.style, {loop:true,css:true}, true).wait(Math.random()*1000+1|0).call(updateColor).to({top:y,left:x,width:16,height:4,opacity:1},Math.random()*1500+1000,easeIn);
 	}
 	// tween the base color that divs will be assigned when they start moving:
 	Tween.get(this,{loop:true}).to({colorSeed:360},5000);
