@@ -56,6 +56,7 @@ var p = Timeline.prototype;
 	p._tweens = null;
 	p._labels = null;
 	p._prevPosition = 0;
+	p._prevPos = 0;
 	p._useTicks = false;
 	
 // constructor:
@@ -130,15 +131,17 @@ var p = Timeline.prototype;
 		if (value == this._prevPosition) { return; }
 		this._prevPosition = value;
 		var completeCount = 0;
-		var pos = this.loop ? value%this.duration : value; // TODO: address issues with looping and actions.
+		var t = this.loop ? value%this.duration : value;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			var tween = this._tweens[i];
-			if (tween._prevPosition >= tween.duration) {
+			// TODO: add support for tweens with loop=true.
+			if (tween._prevPosition >= tween.duration && t>this._prevPos) {
 				completeCount++;
 			} else {
-				completeCount += tween.setPosition(pos);
+				completeCount += tween.setPosition(t);
 			}
 		}
+		this._prevPos = t;
 		if (!this.loop && completeCount == l) { this.setPaused(true); } // end
 	}
 

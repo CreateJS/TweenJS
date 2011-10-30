@@ -357,7 +357,7 @@ var p = Tween.prototype;
 	 **/
 	p.setPosition = function(value, actionsMode) {
 		if (value == this._prevPosition) { return false; }
-		if (actionsMode == null) { mode = 2; }
+		if (actionsMode == null) { actionsMode = 2; }
 		var t = value;
 		if (t > this.duration) {
 			if (this.loop) {
@@ -365,6 +365,7 @@ var p = Tween.prototype;
 				//looped = (t<this._prevPos);
 			} else { t = this.duration; }
 		}
+		
 		if (t != this._prevPos) {
 			if (t == this.duration && !this.loop) {
 				// addresses problems with an ending zero length step.
@@ -382,7 +383,7 @@ var p = Tween.prototype;
 		// TODO: deal with multiple loops?
 		if (actionsMode != 0 && this._actions.length > 0) {
 			if (actionsMode == 2 && t<this._prevPos) {
-				this._runActions(this._prevPos, this.duration);
+				if (this._prevPos != this.duration) { this._runActions(this._prevPos, this.duration); }
 				this._runActions(0, t);
 			} else {
 				this._runActions(this._prevPos, t);
