@@ -463,7 +463,8 @@ var p = Tween.prototype;
 
 		for (n in this._initQueueProps) {
 			if ((v0 = p0[n]) == null) { p0[n] = v0 = this._initQueueProps[n]; }
-			if (v0 == (v1=p1[n]) || ratio == 0 || ratio == 1 || (typeof(v0) != "number")) {
+			if ((v1 = p1[n]) == null) { p1[n] = v1 = v0; }
+			if (v0 == v1 || ratio == 0 || ratio == 1 || (typeof(v0) != "number")) {
 				// no interpolation - either at start, end, values don't change, or the value is non-numeric.
 				if (ratio == 1) { v0 = v1; }
 			} else {
