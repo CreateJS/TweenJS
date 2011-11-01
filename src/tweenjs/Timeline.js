@@ -110,7 +110,7 @@ var p = Timeline.prototype;
 
 	/**
 	 * The current playback position
-	 * @method currentLabel
+	 * @method currentPosition
 	 * @return (Float) The current playback position
 	 **/
 	p.currentPosition = function() {
@@ -119,7 +119,7 @@ var p = Timeline.prototype;
 
 	/**
 	 * The label of the current playback position
-	 * @method currentLabel
+	 * @method currentPositionLabel
 	 * @return (String) The label of the current position
 	 **/
 	p.currentPositionLabel = function() {
@@ -150,7 +150,7 @@ var p = Timeline.prototype;
 	/**
 	 * Adds one or more labels to this timeline.
 	 * @method addLabel
-	 * @param {PositionLabel) label A label object containing the position and name of the label
+	 * @param (PositionLabel) label A label object containing the position and name of the label
 	 * @return (Timeline) A reference to the Timeline for method chaining
 	 **/
 	p.addLabel = function(label) {
@@ -163,14 +163,19 @@ var p = Timeline.prototype;
 		return this;
 	}
 
+	/**
+	 * Returns an Array of all the labels assigned to this Timeline
+	 * @method getLabels
+	 * @return (Array) A list of PositionLabel objects
+	 **/
 	p.getLabels = function() {
-		var list = []
+		var list = [];
 		for (label in this._labels) {
 			list.push(new PositionLabel(this._labels[label], label));
 		}
 		list.sort(function(a,b){
 			return a.getPosition() - b.getPosition();
-		})
+		});
 		return list;
 	}
 	
