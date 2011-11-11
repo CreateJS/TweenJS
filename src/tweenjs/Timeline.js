@@ -52,7 +52,7 @@ var p = Timeline.prototype;
 	p.loop = false;
 
 // private properties:
-	p._paused = false;
+	p._paused = true;
 	p._tweens = null;
 	p._labels = null;
 	p._prevPosition = 0;
@@ -147,6 +147,7 @@ var p = Timeline.prototype;
 
 	//
 	p.setPaused = function(value) {
+		if (this._paused == !!value) { return; }
 		this._paused = !!value;
 		Tween._register(this, !value);
 	}

@@ -381,16 +381,22 @@ var p = Tween.prototype;
 		}
 
 		// TODO: deal with multiple loops?
+		var prevPos = this._prevPos;
+		var prevPosition = this._prevPosition;
+		// set these in advance in case an action modifies position.
+		this._prevPos = t;
+		this._prevPosition = value;
 		if (actionsMode != 0 && this._actions.length > 0) {
-			if (actionsMode == 2 && t<this._prevPos) {
+			if (this._useTicks) {
+				// only run the actions we landed on.
+				this._runActions(t,t);
+			} else if (actionsMode == 2 && t<this._prevPos) {
 				if (this._prevPos != this.duration) { this._runActions(this._prevPos, this.duration); }
 				this._runActions(0, t);
 			} else {
 				this._runActions(this._prevPos, t);
 			}
 		}
-		this._prevPos = t;
-		this._prevPosition = value;
 
 		if (t == this.duration && !this.loop) {
 			// ended:
@@ -417,6 +423,7 @@ var p = Tween.prototype;
 	 **/
 	// pauses or plays this tween.
 	p.setPaused = function(value) {
+		if (this._paused == !!value) { return; }
 		this._paused = !!value;
 		Tween._register(this, !value);
 	}
