@@ -129,19 +129,21 @@ var p = Timeline.prototype;
 	//
 	p.setPosition = function(value) {
 		if (value == this._prevPosition) { return; }
-		this._prevPosition = value;
-		var completeCount = 0;
 		var t = this.loop ? value%this.duration : value;
+		this._prevPosition = value;
+		var prevPos = this._prevPos;
+		this._prevPos = t; // in case an action changes the current frame.
+		var completeCount = 0;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			var tween = this._tweens[i];
 			// TODO: add support for tweens with loop=true.
-			if (tween._prevPosition >= tween.duration && t>this._prevPos) {
+			if (tween._prevPosition >= tween.duration && t>prevPos) {
 				completeCount++;
 			} else {
 				completeCount += tween.setPosition(t);
+				if (t != this._prevPos) { return; } // an action changed this timeline.
 			}
 		}
-		this._prevPos = t;
 		if (!this.loop && completeCount == l) { this.setPaused(true); } // end
 	}
 
