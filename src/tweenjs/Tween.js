@@ -381,20 +381,19 @@ var p = Tween.prototype;
 		}
 
 		// TODO: deal with multiple loops?
+		// set this in advance in case an action modifies position.
 		var prevPos = this._prevPos;
-		var prevPosition = this._prevPosition;
-		// set these in advance in case an action modifies position.
 		this._prevPos = t;
 		this._prevPosition = value;
 		if (actionsMode != 0 && this._actions.length > 0) {
 			if (this._useTicks) {
 				// only run the actions we landed on.
 				this._runActions(t,t);
-			} else if (actionsMode == 2 && t<this._prevPos) {
-				if (this._prevPos != this.duration) { this._runActions(this._prevPos, this.duration); }
+			} else if (actionsMode == 2 && t<prevPos) {
+				if (prevPos != this.duration) { this._runActions(prevPos, this.duration); }
 				this._runActions(0, t);
 			} else {
-				this._runActions(this._prevPos, t);
+				this._runActions(prevPos, t);
 			}
 		}
 
