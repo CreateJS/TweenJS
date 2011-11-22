@@ -108,10 +108,77 @@ var p = Timeline.prototype;
 		} else { return false; }
 	}
 
-	p.addLabel = function(label, position) {
-		this._labels[label] = position;
+	/**
+	 * The current playback position
+	 * @method currentPosition
+	 * @return (Float) The current playback position
+	 **/
+	p.currentPosition = function() {
+		return this._prevPosition;
 	}
 
+	/**
+	 * The label of the current playback position
+	 * @method currentPositionLabel
+	 * @return (String) The label of the current position
+	 **/
+	p.currentPositionLabel = function() {
+		var lbls = this.getLabels();
+		for (var i=lbls.length-1; i>=0; i--) {
+			if (lbls[i].getPosition() == this.currentPosition()) {
+				return lbls[i].getName();
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * The current label in which the position is located in
+	 * @method currentLabel
+	 * @return (String) The current label in which the position is located in
+	 **/
+	p.currentLabel = function() {
+		var lbls = this.getLabels();
+		for (var i=lbls.length-1; i>=0; i--) {
+			if (lbls[i].getPosition() <= this.currentPosition()) {
+				return lbls[i].getName();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Adds one or more labels to this timeline.
+	 * @method addLabel
+	 * @param (PositionLabel) label A label object containing the position and name of the label
+	 * @return (Timeline) A reference to the Timeline for method chaining
+	 **/
+	p.addLabel = function(label) {
+		var l = arguments.length;
+		if (l > 1) {
+			for (var i=0; i<l; i++) { this.addLabel(arguments[i]); }
+			return arguments[l-1];
+		} else if (l == 0) { return; }
+		this._labels[label.getName()] = label.getPosition();
+		return this;
+	}
+
+	/**
+	 * Returns an Array of all the labels assigned to this Timeline
+	 * @method getLabels
+	 * @return (Array) A list of PositionLabel objects
+	 **/
+	p.getLabels = function() {
+		var list = [];
+		for (label in this._labels) {
+			list.push(new PositionLabel(this._labels[label], label));
+		}
+		list.sort(function(a,b){
+			return a.getPosition() - b.getPosition();
+		});
+		return list;
+	}
+	
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
 	}
