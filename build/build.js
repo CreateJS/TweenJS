@@ -1,5 +1,56 @@
 #!/usr/bin/env node
 
+/************************************************************
+CONFIGURATION
+*/
+// listing of all source files, with dependencies listed in order:
+var SOURCE_FILES = [
+	"../src/tweenjs/Tween.js",
+	"../src/tweenjs/Timeline.js",
+	"../src/tweenjs/Ease.js",
+];
+
+// default name for lib output:
+var JS_FILE_NAME = "tween.js";
+
+// project name:
+var PROJECT_NAME = "TweenJS";
+
+// url for website or github repo for project:
+var PROJECT_URL = "http://tweenjs.com/";
+
+
+// name of directory for docs:
+var DOCS_DIR_NAME = PROJECT_NAME+"_docs";
+
+// name of file for zipped docs:
+var DOCS_FILE_NAME = DOCS_DIR_NAME+".zip";
+
+// name of directory where generated files are placed
+var OUTPUT_DIR_NAME = "output";
+
+
+// path to directory that includes YUI Doc templates
+var TEMPLATE_DIR_PATH = "template";
+
+// tmp directory used when running scripts:
+var TMP_DIR_NAME = "tmp";
+
+// paths to tools:
+var GOOGLE_CLOSURE_PATH = "tools/google-closure/compiler.jar";
+var YUI_DOC_PATH = "tools/yuidoc/bin/yuidoc.py";
+
+// yui version being used
+var YUI_VERSION = 2;
+
+/*
+END CONFIGURATION
+************************************************************/
+
+
+// TODO: add support for recursively checking to see if we are ommiting any files
+
+
 var FILE = require("fs");
 var PATH = require("path");
 var CHILD_PROCESS = require("child_process");
@@ -28,43 +79,13 @@ OPTIMIST.describe("v", "Enable verbose output")
 	.alias("s", "source")
 	.describe("o", "Name of minified JavaScript file.")
 	.alias("o", "output")
-	.default("o", "tween.js")
-	.usage("Build Task Manager for TweenJS\nUsage\n$0 [-v] [-h] [-l] --tasks=TASK [--version=DOC_VERSION] [--source=FILE] [--output=FILENAME.js]");
+	.default("o", JS_FILE_NAME)
+	.usage("Build Task Manager for "+PROJECT_NAME+"\nUsage\n$0 [-v] [-h] [-l] --tasks=TASK [--version=DOC_VERSION] [--source=FILE] [--output=FILENAME.js]");
 
-//included in TweenJS repository
-var GOOGLE_CLOSURE_PATH = "tools/google-closure/compiler.jar";
-var YUI_DOC_PATH = "tools/yuidoc/bin/yuidoc.py";
 
-//all source files in TweenJS. The order matters (for Google Closure)
-//which is why we have to list them here.
-//TODO: add support for recursively checking to see if we are ommiting
-//any files
-var SOURCE_FILES = [
-	"../src/tweenjs/Tween.js",
-	"../src/tweenjs/Timeline.js",
-	"../src/tweenjs/Ease.js",
-];
 
-//directory where generated files are placed
-var OUTPUT_DIR = "output";
-
-//tmp directory used when running scripts
-var TMP_DIR = "tmp";
-
-//directory that includes YUI Doc templates
-var TEMPLATE_DIR = "template";
-
-//project name
-var PROJECT_NAME = "TweenJS";
-
-//yui version being used
-var YUI_VERSION = 2;
-
-//name of file for zipped docs
-var DOC_ZIP_NAME="tweenjs_docs.zip";
-
-//name of minified TweenJS file.
-var output_file_name = "tween.js";
+//name of minified js file.
+var js_file_name = JS_FILE_NAME;
 
 var version;
 var verbose;
@@ -113,7 +134,7 @@ function main(argv)
 	
 	if(argv.o)
 	{
-		output_file_name = argv.o;
+		js_file_name = argv.o;
 	}
 
 	var shouldBuildSource = (task == TASK.BUILDSOURCE);
@@ -176,22 +197,22 @@ function main(argv)
 
 function cleanTask(completeHandler)
 {
-	if(PATH.existsSync(TMP_DIR))
+	if(PATH.existsSync(TMP_DIR_NAME))
 	{	
-		WRENCH.rmdirSyncRecursive(TMP_DIR);
+		WRENCH.rmdirSyncRecursive(TMP_DIR_NAME);
 	}
 	
-	if(PATH.existsSync(OUTPUT_DIR))
+	if(PATH.existsSync(OUTPUT_DIR_NAME))
 	{
-		WRENCH.rmdirSyncRecursive(OUTPUT_DIR);
+		WRENCH.rmdirSyncRecursive(OUTPUT_DIR_NAME);
 	}
 }
 
 function buildSourceTask(completeHandler)
 {	
-	if(!PATH.existsSync(OUTPUT_DIR))
+	if(!PATH.existsSync(OUTPUT_DIR_NAME))
 	{
-		FILE.mkdirSync(OUTPUT_DIR);
+		FILE.mkdirSync(OUTPUT_DIR_NAME);
 	}
 
 	var file_args = [];
@@ -213,8 +234,8 @@ function buildSourceTask(completeHandler)
 	}
 	
 	
-	var tmp_file = PATH.join(OUTPUT_DIR,"tmp.js");
-	var final_file = PATH.join(OUTPUT_DIR, output_file_name);
+	var tmp_file = PATH.join(OUTPUT_DIR_NAME,"tmp.js");
+	var final_file = PATH.join(OUTPUT_DIR_NAME, js_file_name);
 
 	var cmd = [
 		"java", "-jar", GOOGLE_CLOSURE_PATH
@@ -263,22 +284,22 @@ function buildSourceTask(completeHandler)
 function buildDocsTask(version, completeHandler)
 {	
 	var parser_in="../src";
-	var	parser_out= PATH.join(TMP_DIR , "parser");
+	var	parser_out= PATH.join(TMP_DIR_NAME , "parser");
 
-	var doc_dir="tweenjs_docs";
+	var doc_dir=DOCS_DIR_NAME;
 	
-	var generator_out=PATH.join(OUTPUT_DIR, doc_dir);
+	var generator_out=PATH.join(OUTPUT_DIR_NAME, doc_dir);
 	
 	var cmd = [
 		"python", YUI_DOC_PATH,
 		parser_in,
 		"-p", parser_out,
 		"-o", generator_out,
-		"-t", TEMPLATE_DIR,
+		"-t", TEMPLATE_DIR_PATH,
 		"-v", version,
 		"-Y", YUI_VERSION,
 		"-m", PROJECT_NAME,
-		"-u", "http://www.tweenjs.com"
+		"-u", PROJECT_URL
 	];
 	
 	CHILD_PROCESS.exec(
@@ -305,7 +326,7 @@ function buildDocsTask(version, completeHandler)
 		    }
 		
 			CHILD_PROCESS.exec(
-				"cd " + OUTPUT_DIR + ";zip -r " + DOC_ZIP_NAME + " " + doc_dir + " -x *.DS_Store",
+				"cd " + OUTPUT_DIR_NAME + ";zip -r " + DOCS_FILE_NAME + " " + doc_dir + " -x *.DS_Store",
 				function(error, stdout, stderr)
 				{
 					if(verbose)
@@ -327,7 +348,7 @@ function buildDocsTask(version, completeHandler)
 						exitWithFailure();
 				    }
 				
-					WRENCH.rmdirSyncRecursive(TMP_DIR);
+					WRENCH.rmdirSyncRecursive(TMP_DIR_NAME);
 				
 					completeHandler(true);				
 				});		
