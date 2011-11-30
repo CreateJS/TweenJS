@@ -15,7 +15,7 @@ The example above will create a new tween instance that:
 
 Tweens are composed of two elements: steps and actions.
 
-Steps define the tweened properties and always have a duration associated with them (even if that duration is 0). Steps are defined with the "to" and "wait" methods. Steps are entirely deterministic. You can arbitrarily set a tween's position, and it will always set the same properties for that position.
+Steps define the tweened properties and always have a duration associated with them (even if that duration is 0). Steps are defined with the "to" and "wait" methods. Steps are entirely deterministic. You can arbitrarily set a tween's position, and it will always set the same properties for that position. 
 
 Actions do not have a duration, and are executed between steps. They are defined with the "call", "set", "play", and "pause" methods. They are guaranteed to execute in the correct order, but not at the precise moment in time that is indicated in the sequence. This can lead to indeterminate results, especially when tweens are interacting via the play and pause actions.
 
