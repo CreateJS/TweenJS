@@ -35,7 +35,6 @@
 * @module TweenJS
 **/
 
-//TODO: when CSS is true, use the style property for all prop targets.
 (function(window) {
 /**
  * Returns a new Tween instance. See Tween.get for param documentation.
@@ -71,6 +70,14 @@ var p = Tween.prototype;
 	 * @static
 	 **/
 	Tween.REVERSE = 2;
+
+	/**
+	 * Constant returned by plugins to tell the tween not to use default assignment.
+	 * @property IGNORE
+	 * @type Object
+	 * @static
+	 */
+	Tween.IGNORE = {};
 	
 	/** 
 	 * @property _listeners
@@ -81,16 +88,12 @@ var p = Tween.prototype;
 	Tween._tweens = [];
 	
 	/** 
-	 * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
-	 * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
-	 * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
-	 * the "top" CSS property, it should use the "px" suffix (ex. target.style.top = "20.5px"). This only applies
-	 * to tweens with the "css" config property set to true.
-	 * @property cssSuffixMap
+	 * @property _plugins
 	 * @type Object
 	 * @static
+	 * @protected 
 	 **/
-	Tween.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
+	Tween._plugins = {};
 
 	/**
 	 * Returns a new tween instance. This is functionally identical to using "new Tween(...)", but looks cleaner
@@ -100,8 +103,6 @@ var p = Tween.prototype;
 	 * @param target The target object that will have its properties tweened.
 	 * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). Supported props are:<UL>
 	 *    <LI> loop: sets the loop property on this tween.</LI>
-	 *    <LI> css: indicates this is a CSS tween. This causes it to use the style property of the target as the default target
-	 *    		for property changes, and to use the cssSuffixMap property for generating CSS value strings.</LI>
 	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
 	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
 	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
@@ -146,6 +147,28 @@ var p = Tween.prototype;
 	}
 	
 	/** 
+	 * Removes all existing tweens for a target. This is called automatically by new tweens if the "override" prop is true.
+	 * @method removeTweens
+	 * @static
+	 * @param target The target object to remove existing tweens from.
+	 **/
+	Tween.installPlugin = function(plugin, properties) {
+		var priority = plugin.priority;
+		if (priority == null) { plugin.priority = priority = 0; }
+		for (var i=0,l=properties.length,p=Tween._plugins;i<l;i++) {
+			var n = properties[i];
+			if (!p[n]) { p[n] = [plugin]; }
+			else {
+				var arr = p[n];
+				for (var j=0,jl=arr.length;j<jl;j++) {
+					if (priority < arr[j].priority) { break; }
+				}
+				p[n].splice(j,0,plugin);
+			}
+		}
+	}
+	
+	/** 
 	 * Registers or unregisters a tween with the ticking system.
 	 * @method _register
 	 * @static
@@ -181,19 +204,28 @@ var p = Tween.prototype;
 	p.loop = false;
 	
 	/**
-	 * Overrides Tween.cssSuffixMap for this tween.
-	 * @property cssSuffixMap
-	 * @type Object
-	 **/
-	p.cssSuffixMap = null;
-	
-	/**
 	 * Read-only property specifying the total duration of this tween in milliseconds (or ticks if useTicks is true).
 	 * This value is automatically updated as you modify the tween.
 	 * @property duration
 	 * @type Number
 	 **/
 	p.duration = 0;
+	
+	
+	/**
+	 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
+	 * you specify data by setting it to a property of pluginData with the same name as the plugin class.<br/>
+	 * Ex. myTween.pluginData.PluginClassName = data;<br/>
+	 * <br/>
+	 * Also, most plugins support a property to enable or disable them. This is typically the plugin class name followed by "_enabled".<br/>
+	 * Ex. myTween.pluginData.PluginClassName_enabled = false;<br/>
+	 * <br/>
+	 * Some plugins also store instance data in this object, usually in a property named _PluginClassName.
+	 * See the documentation for individual plugins for more details.
+	 * @property pluginData
+	 * @type Object
+	 **/
+	p.pluginData = null;
 
 // private properties:
 	
@@ -263,13 +295,6 @@ var p = Tween.prototype;
 	p._target = null;
 	
 	/**
-	 * @property _css
-	 * @type Boolean
-	 * @protected
-	 **/
-	p._css = false;
-	
-	/**
 	 * @property _useTicks
 	 * @type Boolean
 	 * @protected
@@ -281,16 +306,16 @@ var p = Tween.prototype;
 	 * @method initialize
 	 * @protected
 	 **/
-	p.initialize = function(target, props) {
+	p.initialize = function(target, props, pluginData) {
 		this._target = target;
 		if (props) {
 			this._useTicks = props.useTicks;
-			this._css = props.css;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
 			this.loop = props.loop;
 			if (props.override) { Tween.removeTweens(target); }
 		}
 		
+		this.pluginData = pluginData || {};
 		this._curQueueProps = {};
 		this._initQueueProps = {};
 		this._steps = [];
@@ -394,7 +419,7 @@ var p = Tween.prototype;
 		if (t == this._prevPos) { return end; }
 		
 		// handle tweens:
-		if (t != this._prevPos) {
+		if (t != this._prevPos && this._target) {
 			if (end) {
 				// addresses problems with an ending zero length step.
 				this._updateTargetProps(null,1);
@@ -403,8 +428,8 @@ var p = Tween.prototype;
 				for (var i=0, l=this._steps.length; i<l; i++) {
 					if (this._steps[i].t > t) { break; }
 				}
-				var tween = this._steps[i-1];
-				this._updateTargetProps(tween,(t-tween.t)/tween.d);
+				var step = this._steps[i-1];
+				this._updateTargetProps(step,(t-step.t)/step.d,t);
 			}
 		}
 		
@@ -478,16 +503,15 @@ var p = Tween.prototype;
 	 * @method _updateTargetProps
 	 * @protected
 	 **/
-	p._updateTargetProps = function(tween, ratio) {
-		if (this._css) { var map = this.cssSuffixMap || Tween.cssSuffixMap; }
-		var p0,p1,v0,v1;
-		if (!tween && ratio == 1) {
+	p._updateTargetProps = function(step, ratio, position) {
+		var p0,p1,v,v0,v1,arr;
+		if (!step && ratio == 1) {
 			p0 = p1 = this._curQueueProps;
 		} else {
 			// apply ease to ratio.
-			if (tween.e) { ratio = tween.e(ratio,0,1,1); }
-			p0 = tween.p0;
-			p1 = tween.p1;
+			if (step.e) { ratio = step.e(ratio,0,1,1); }
+			p0 = step.p0;
+			p1 = step.p1;
 		}
 
 		for (n in this._initQueueProps) {
@@ -495,11 +519,22 @@ var p = Tween.prototype;
 			if ((v1 = p1[n]) == null) { p1[n] = v1 = v0; }
 			if (v0 == v1 || ratio == 0 || ratio == 1 || (typeof(v0) != "number")) {
 				// no interpolation - either at start, end, values don't change, or the value is non-numeric.
-				if (ratio == 1) { v0 = v1; }
+				v = ratio == 1 ? v1 : v0;
 			} else {
-				v0 += (v1-v0)*ratio;
+				v = v0+(v1-v0)*ratio;
 			}
-			this._target[n] = map && map[n] ? v0+map[n] : v0;
+			
+			var ignore = false;
+			
+			if (arr = Tween._plugins[n]) {
+				for (var i=0,l=arr.length;i<l;i++) {
+					var v2 = arr[i].tween(this, n, v, v0, v1, ratio, position, !step);
+					if (v2 = Tween.IGNORE) { ignore = true; }
+					else { v = v2; }
+				}
+			}
+			if (!ignore) { this._target[n] = v; }
+			
 		}
 		
 	}
@@ -535,22 +570,19 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p._appendQueueProps = function(o) {
-		if (this._css) { var map = this.cssSuffixMap || Tween.cssSuffixMap; }
-		var sfx0,sfx1;
+		var arr,value;
 		for (var n in o) {
 			if (this._initQueueProps[n] == null) {
-				if (map && (sfx0 = map[n]) != null) {
-					// css string.
-					var str = this._target[n];
-					var i = str.length-sfx0.length;
-					if ((sfx1 = str.substr(i)) != sfx0) {
-						throw("TweenJS Error: Suffixes do not match. ("+sfx0+":"+sfx1+")");
-					} else {
-						this._initQueueProps[n] = parseInt(str.substr(0,i));
+				value = this._target[n];
+				
+				// init plugins:
+				if (arr = Tween._plugins[n]) {
+					for (var i=0,l=arr.length;i<l;i++) {
+						value = arr[i].init(this, n, value);
 					}
-				} else {
-					this._initQueueProps[n] = this._target[n];
 				}
+				
+				this._initQueueProps[n] = value;
 			}
 			this._curQueueProps[n] = o[n];
 		}
