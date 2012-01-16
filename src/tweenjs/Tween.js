@@ -103,11 +103,12 @@ var p = Tween.prototype;
 	 * @method get
 	 * @static
 	 * @param target The target object that will have its properties tweened.
-	 * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). Supported props are:<UL>
+	 * @param props The configuration properties to apply to this tween instance (ex. {loop:true, paused:true}). All properties default to false. Supported props are:<UL>
 	 *    <LI> loop: sets the loop property on this tween.</LI>
 	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
 	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
 	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
+	 *    <LI> paused: indicates whether to start the tween paused.</LI>
 	 * </UL>
 	 **/
 	Tween.get = function(target, props) {
@@ -331,8 +332,7 @@ var p = Tween.prototype;
 		this._steps = [];
 		this._actions = [];
 		this._catalog = [];
-		
-		Tween._register(this, true);
+		if (!props||!props.paused) { Tween._register(this,true); }
 	}
 	
 // public methods:

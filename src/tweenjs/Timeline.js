@@ -42,10 +42,11 @@
  * @class Timeline
  * @param tweens An array of Tweens to add to this timeline. See addTween for more info.
  * @param labels An object defining labels for using gotoAndPlay/Stop. See setLabels for details.
- * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). Supported props are:<UL>
+ * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). All properties default to false. Supported props are:<UL>
  *    <LI> loop: sets the loop property on this tween.</LI>
  *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
  *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
+ *    <LI> paused: indicates whether to start the tween paused.</LI>
  * </UL>
  * @constructor
  **/
@@ -137,7 +138,7 @@ var p = Timeline.prototype;
 		}
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
-		this.setPaused(false);
+		if (!props||!props.paused) { Tween._register(this,true); }
 	}
 	
 // public methods:
