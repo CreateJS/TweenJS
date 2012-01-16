@@ -35,6 +35,8 @@
 * @module TweenJS
 **/
 
+// TODO: possibly add a END actionsMode (only runs actions that == position)
+// TODO: evaluate a way to decouple paused from tick registration.
 (function(window) {
 /**
  * Returns a new Tween instance. See Tween.get for param documentation.
@@ -271,6 +273,14 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p._prevPosition = 0;
+
+	/**
+	 * The position within the current step.
+	 * @property _stepPosition
+	 * @type Number
+	 * @protected
+	 */
+	p._stepPosition = 0;
 	
 	/**
 	 * Normalized position.
@@ -429,7 +439,7 @@ var p = Tween.prototype;
 					if (this._steps[i].t > t) { break; }
 				}
 				var step = this._steps[i-1];
-				this._updateTargetProps(step,(t-step.t)/step.d,t);
+				this._updateTargetProps(step,(this._stepPosition = t-step.t)/step.d,t);
 			}
 		}
 		

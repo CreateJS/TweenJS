@@ -130,14 +130,14 @@ var p = Timeline.prototype;
 	**/
 	p.initialize = function(tweens, labels, props) {
 		this._tweens = [];
-		if (tweens) { this.addTween.apply(this, tweens); }
-		this.setLabels(labels);
-		this.setPaused(false);
 		if (props) {
 			this._useTicks = props.useTicks;
 			this.loop = props.loop;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
 		}
+		if (tweens) { this.addTween.apply(this, tweens); }
+		this.setLabels(labels);
+		this.setPaused(false);
 	}
 	
 // public methods:
@@ -158,6 +158,7 @@ var p = Timeline.prototype;
 		this._tweens.push(tween);
 		tween.setPaused(true);
 		tween._paused = false;
+		tween._useTicks = this._useTicks;
 		if (tween.duration > this.duration) { this.duration = tween.duration; }
 		return tween;
 	}
@@ -226,15 +227,16 @@ var p = Timeline.prototype;
 	 * Advances the timeline to the specified position.
 	 * @method setPosition
 	 * @param value The position to seek to in milliseconds (or ticks if useTicks is true).
+	 * @param actionsMode Optional parameter specifying how actions are handled. See Tween.setPosition for more details.
 	 * @return Boolean Returns true if the timeline is complete (ie. the full timeline has run & loop is false).
 	 **/
-	p.setPosition = function(value) {
+	p.setPosition = function(value, actionsMode) {
 		var t = this.loop ? value%this.duration : value;
 		var end = !this.loop && value >= this.duration;
 		this._prevPosition = value;
 		this._prevPos = t; // in case an action changes the current frame.
 		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i].setPosition(t);
+			this._tweens[i].setPosition(t, actionsMode);
 			if (t != this._prevPos) { return false; } // an action changed this timeline's position.
 		}
 		if (end) { this.setPaused(true); }
