@@ -35,7 +35,7 @@
 * @module TweenJS
 **/
 
-// TODO: possibly add a END actionsMode (only runs actions that == position)
+// TODO: possibly add a END actionsMode (only runs actions that == position)?
 // TODO: evaluate a way to decouple paused from tick registration.
 (function(window) {
 /**
@@ -109,6 +109,7 @@ var p = Tween.prototype;
 	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
 	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
 	 *    <LI> paused: indicates whether to start the tween paused.</LI>
+	 *    <LI> position: indicates the initial position for this timeline</LI>
 	 * </UL>
 	 **/
 	Tween.get = function(target, props) {
@@ -333,6 +334,7 @@ var p = Tween.prototype;
 		this._actions = [];
 		this._catalog = [];
 		if (!props||!props.paused) { Tween._register(this,true); }
+		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
 	}
 	
 // public methods:

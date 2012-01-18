@@ -47,6 +47,7 @@
  *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
  *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
  *    <LI> paused: indicates whether to start the tween paused.</LI>
+ *    <LI> position: indicates the initial position for this timeline</LI>
  * </UL>
  * @constructor
  **/
@@ -139,6 +140,7 @@ var p = Timeline.prototype;
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		if (!props||!props.paused) { Tween._register(this,true); }
+		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
 	}
 	
 // public methods:
@@ -161,6 +163,7 @@ var p = Timeline.prototype;
 		tween._paused = false;
 		tween._useTicks = this._useTicks;
 		if (tween.duration > this.duration) { this.duration = tween.duration; }
+		tween.setPosition(this._prevPos, Tween.NONE);
 		return tween;
 	}
 
@@ -234,6 +237,7 @@ var p = Timeline.prototype;
 	p.setPosition = function(value, actionsMode) {
 		var t = this.loop ? value%this.duration : value;
 		var end = !this.loop && value >= this.duration;
+		if (t == this._prevPos) { return end; }
 		this._prevPosition = value;
 		this._prevPos = t; // in case an action changes the current frame.
 		for (var i=0, l=this._tweens.length; i<l; i++) {
