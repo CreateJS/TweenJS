@@ -43,7 +43,7 @@
 * @class Tween
 * @constructor
 **/
-Tween = function(target, props) {
+var Tween = function(target, props) {
   this.initialize(target, props);
 }
 var p = Tween.prototype;
@@ -151,10 +151,11 @@ var p = Tween.prototype;
 	}
 	
 	/** 
-	 * Removes all existing tweens for a target. This is called automatically by new tweens if the "override" prop is true.
-	 * @method removeTweens
+	 * TODO: doc.
+	 * @method installPlugin
 	 * @static
-	 * @param target The target object to remove existing tweens from.
+	 * @param plugin
+	 * @param properties
 	 **/
 	Tween.installPlugin = function(plugin, properties) {
 		var priority = plugin.priority;

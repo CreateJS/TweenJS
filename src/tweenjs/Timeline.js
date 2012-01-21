@@ -51,7 +51,7 @@
  * </UL>
  * @constructor
  **/
-Timeline = function(tweens, labels, props) {
+var Timeline = function(tweens, labels, props) {
   this.initialize(tweens, labels, props);
 }
 var p = Timeline.prototype;

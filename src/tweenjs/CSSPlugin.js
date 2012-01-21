@@ -37,7 +37,7 @@
  * @class CSSPlugin
  * @constructor
  **/
-CSSPlugin = function() {
+var CSSPlugin = function() {
   throw("CSSPlugin cannot be instantiated.")
 }
 var p = CSSPlugin.prototype;
