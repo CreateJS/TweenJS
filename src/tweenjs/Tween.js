@@ -417,6 +417,7 @@ var p = Tween.prototype;
 	 * @return Boolean Returns true if the tween is complete (ie. the full tween has run & loop is false).
 	 **/
 	p.setPosition = function(value, actionsMode) {
+		if (value < 0) { value = 0; }
 		if (actionsMode == null) { actionsMode = 1; }
 		
 		// normalize position:

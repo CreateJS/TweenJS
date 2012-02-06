@@ -235,6 +235,7 @@ var p = Timeline.prototype;
 	 * @return Boolean Returns true if the timeline is complete (ie. the full timeline has run & loop is false).
 	 **/
 	p.setPosition = function(value, actionsMode) {
+		if (value < 0) { value = 0; }
 		var t = this.loop ? value%this.duration : value;
 		var end = !this.loop && value >= this.duration;
 		if (t == this._prevPos) { return end; }
