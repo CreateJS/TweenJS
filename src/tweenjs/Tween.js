@@ -539,11 +539,10 @@ var p = Tween.prototype;
 			}
 			
 			var ignore = false;
-			
 			if (arr = Tween._plugins[n]) {
 				for (var i=0,l=arr.length;i<l;i++) {
-					var v2 = arr[i].tween(this, n, v, v0, v1, ratio, position, !step);
-					if (v2 = Tween.IGNORE) { ignore = true; }
+					var v2 = arr[i].tween(this, n, v, p0, p1, ratio, position, !step);
+					if (v2 == Tween.IGNORE) { ignore = true; }
 					else { v = v2; }
 				}
 			}
@@ -584,7 +583,7 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p._appendQueueProps = function(o) {
-		var arr,value;
+		var arr,value,v2;
 		for (var n in o) {
 			if (this._initQueueProps[n] == null) {
 				value = this._target[n];
@@ -592,10 +591,10 @@ var p = Tween.prototype;
 				// init plugins:
 				if (arr = Tween._plugins[n]) {
 					for (var i=0,l=arr.length;i<l;i++) {
-						value = arr[i].init(this, n, value);
+						v2 = arr[i].init(this, n, value);
+						if (v2 != Tween.IGNORE) { value = v2; }
 					}
 				}
-				
 				this._initQueueProps[n] = value;
 			}
 			this._curQueueProps[n] = o[n];

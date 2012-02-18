@@ -85,7 +85,7 @@ var p = CSSPlugin.prototype;
 	/** 
 	 * 
 	 **/
-	CSSPlugin.tween = function(tween, prop, value, startValue, endValue, ratio, position, end) {
+	CSSPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, position, end) {
 		var style,map = CSSPlugin.cssSuffixMap;
 		if (map[prop] == null || !(style = tween._target.style)) { return value; }
 		style[prop] = value+map[prop];

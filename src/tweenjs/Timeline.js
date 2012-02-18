@@ -283,6 +283,12 @@ var p = Timeline.prototype;
 	p.tick = function(delta) {
 		this.setPosition(this._prevPosition+delta);
 	}
+	
+	p.resolve = function(positionOrLabel) {
+		var pos = parseFloat(positionOrLabel);
+		if (isNaN(pos)) { pos = this._labels[positionOrLabel]; }
+		return pos;
+	}
 
 	/**
 	* Returns a string representation of this object.
@@ -307,13 +313,8 @@ var p = Timeline.prototype;
 	 * @protected
 	 **/
 	p._goto = function(positionOrLabel) {
-		var pos = parseFloat(positionOrLabel);
-		if (isNaN(pos)) {
-			pos = this._labels[positionOrLabel];
-		}
-		if (pos != null) {
-			this.setPosition(pos);
-		}
+		var pos = this.resolve(positionOrLabel);
+		if (pos != null) { this.setPosition(pos); }
 	}
 	
 window.Timeline = Timeline;
