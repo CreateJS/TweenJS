@@ -28,11 +28,15 @@
 */
 
 /**
+ * The Tween Javascript library provides a retained graphics mode for canvas 
+ * including a full, hierarchical display list, a core interaction model, and 
+ * helper classes to make working with Canvas much easier.
  * @module TweenJS
  **/
 
 (function(window) {
 /**
+ * TODO.
  * @protected
  * @class CSSPlugin
  * @constructor
@@ -63,7 +67,7 @@ var p = CSSPlugin.prototype;
 	CSSPlugin.install = function() {
 		var arr = [], map = CSSPlugin.cssSuffixMap;
 		for (var n in map) { arr.push(n); }
-		Tween.installPlugin(CSSPlugin, arr); 
+		Tween.installPlugin(CSSPlugin, arr);
 	}
 	
 	/**

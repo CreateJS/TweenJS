@@ -115,7 +115,7 @@ var p = Timeline.prototype;
 	 * @type Number
 	 * @protected
 	 **/
-	p._prevPos = 0;
+	p._prevPos = -1;
 	
 	/**
 	 * @property _useTicks
@@ -163,7 +163,7 @@ var p = Timeline.prototype;
 		tween._paused = false;
 		tween._useTicks = this._useTicks;
 		if (tween.duration > this.duration) { this.duration = tween.duration; }
-		tween.setPosition(this._prevPos, Tween.NONE);
+		if (this._prevPos >= 0) { tween.setPosition(this._prevPos, Tween.NONE); }
 		return tween;
 	}
 

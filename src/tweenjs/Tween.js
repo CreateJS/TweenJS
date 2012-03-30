@@ -29,9 +29,9 @@
 
 /**
 * The TweenJS Javascript library provides a simple but powerful tweening interface. It allows you to chain tweens and
- * actions together to create complex sequences. For example:<br/>
- * Tween.get(target).wait(500).to({alpha:0,visible:false},1000).call(onComplete);<br/>
- * This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the onComplete function.
+* actions together to create complex sequences. For example:<br/>
+* Tween.get(target).wait(500).to({alpha:0,visible:false},1000).call(onComplete);<br/>
+* This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the onComplete function.
 * @module TweenJS
 **/
 
@@ -39,7 +39,7 @@
 // TODO: evaluate a way to decouple paused from tick registration.
 (function(window) {
 /**
- * Returns a new Tween instance. See Tween.get for param documentation.
+* Returns a new Tween instance. See Tween.get for param documentation.
 * @class Tween
 * @constructor
 **/
@@ -294,13 +294,6 @@ var p = Tween.prototype;
 	p._prevPos = -1;
 	
 	/**
-	 * @property _prevIndex
-	 * @type Number
-	 * @protected
-	 **/
-	p._prevIndex = -1;
-	
-	/**
 	 * @property _target
 	 * @type Object
 	 * @protected
@@ -433,7 +426,7 @@ var p = Tween.prototype;
 		if (t == this._prevPos) { return end; }
 		
 		// handle tweens:
-		if (t != this._prevPos && this._target) {
+		if (this._target) {
 			if (end) {
 				// addresses problems with an ending zero length step.
 				this._updateTargetProps(null,1);

@@ -11,7 +11,7 @@ var SOURCE_FILES = [
 ];
 
 // default name for lib output:
-var JS_FILE_NAME = "tween.js";
+var JS_FILE_NAME = "tweenjs-%VERSION%.min.js";
 
 // project name:
 var PROJECT_NAME = "TweenJS";
@@ -21,7 +21,7 @@ var PROJECT_URL = "http://tweenjs.com/";
 
 
 // name of directory for docs:
-var DOCS_DIR_NAME = PROJECT_NAME+"_docs";
+var DOCS_DIR_NAME = PROJECT_NAME+"_docs-%VERSION%";
 
 // name of file for zipped docs:
 var DOCS_FILE_NAME = DOCS_DIR_NAME+".zip";
@@ -129,7 +129,7 @@ function main(argv)
 
 	verbose = argv.v != undefined;
 	version = argv.version;
-
+	
 	extraSourceFiles = argv.s;
 	
 	if(argv.o)
@@ -214,6 +214,8 @@ function buildSourceTask(completeHandler)
 	{
 		FILE.mkdirSync(OUTPUT_DIR_NAME);
 	}
+	
+	js_file_name = js_file_name.split("%VERSION%").join(version);
 
 	var file_args = [];
 	var len = SOURCE_FILES.length;
@@ -286,7 +288,8 @@ function buildDocsTask(version, completeHandler)
 	var parser_in="../src";
 	var	parser_out= PATH.join(TMP_DIR_NAME , "parser");
 
-	var doc_dir=DOCS_DIR_NAME;
+	var doc_dir=DOCS_DIR_NAME.split("%VERSION%").join(version);
+	var doc_file=DOCS_FILE_NAME.split("%VERSION%").join(version);
 	
 	var generator_out=PATH.join(OUTPUT_DIR_NAME, doc_dir);
 	
@@ -326,7 +329,7 @@ function buildDocsTask(version, completeHandler)
 		    }
 		
 			CHILD_PROCESS.exec(
-				"cd " + OUTPUT_DIR_NAME + ";zip -r " + DOCS_FILE_NAME + " " + doc_dir + " -x *.DS_Store",
+				"cd " + OUTPUT_DIR_NAME + ";zip -r " + doc_file + " " + doc_dir + " -x *.DS_Store",
 				function(error, stdout, stderr)
 				{
 					if(verbose)
