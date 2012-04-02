@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TweenJS: Canvas Tweening Example</title>
+<script src="../lib/easel.js"></script>
+<script src="../src/tweenjs/Ease.js"></script>
+<script>
+
+var eases = [Ease.none,Ease.quadIn,Ease.getPowIn(2.5),Ease.cubicIn,Ease.quartIn,Ease.quintIn];
+
+function init() {
+	canvas = document.getElementById("canvas1");
+	stage = new Stage(canvas);
+
+	var graph = new Shape();
+	var g = graph.graphics;
+	stage.addChild(graph);
+	
+	var w = canvas.width-10;
+	var h = canvas.height-10;
+	
+	for (var j=0,l=eases.length;j<l;j++) {
+		g.beginFill(Graphics.getHSL(j/l*360,50,50));
+		var ease = eases[j];
+		for (var i=0; i<100; i++) {
+			var x = i/100*w+5;
+			var y = h-ease(i/100)*h+5;
+			g.drawCircle(x,y,3);
+			g.closePath();
+		}
+	}
+	stage.update();
+	
+}
+</script>
+</head>
+
+<body onload="init();" style="background-color:#D4D4D4">
+	<canvas id="canvas1" width="500" height="500" style="background-color:#d6d6d6"></canvas><br/>
+	You can edit this file to test different easing equations.
+</body>
+</html>
+		
