@@ -112,8 +112,8 @@ var p = Tween.prototype;
 	 *    <LI> position: indicates the initial position for this timeline</LI>
 	 * </UL>
 	 **/
-	Tween.get = function(target, props) {
-		return new Tween(target, props);
+	Tween.get = function(target, props, pluginData) {
+		return new Tween(target, props, pluginData);
 	}
 	
 	/**
