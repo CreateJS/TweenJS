@@ -1,9 +1,8 @@
 /*
-* Tween by Grant Skinner. Mar 7, 2011
-* Visit http://easeljs.com/ for documentation, updates and examples.
+* Tween
+* Visit http://createjs.com/ for documentation, updates and examples.
 *
-*
-* Copyright (c) 2010 Grant Skinner
+* Copyright (c) 2010 gskinner.com, inc.
 * 
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -477,9 +476,11 @@ var p = Tween.prototype;
 	 * @param value Indicates whether the tween should be paused (true) or played (false).
 	 **/
 	p.setPaused = function(value) {
-		if (this._paused == !!value) { return; }
-		this._paused = !!value;
-		Tween._register(this, !value);
+		if (this._paused != !!value) {
+			this._paused = !!value;
+			Tween._register(this, !value);
+		}
+		return this;
 	}
 
 	// tiny api (primarily for tool output):
