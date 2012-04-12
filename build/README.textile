@@ -1,4 +1,4 @@
-For building the compiled library and API documentation, we use a custom build script written in node.js. It uses the following libraries:
+For building the compiled library and API documentation, we use a custom build script written in node.js. It uses the following libraries which are included in the tools directory:
 
 * "Google Closure compiler":http://code.google.com/closure/compiler/docs/gettingstarted_app.html
 * "YUI Doc":http://developer.yahoo.com/yui/yuidoc/
