@@ -238,7 +238,7 @@ var p = Tween.prototype;
 	 * @type Boolean
 	 * @protected
 	 **/
-	p._paused = false;
+	p._paused = true;
 	
 	/**
 	 * @property _curQueueProps
@@ -326,7 +326,7 @@ var p = Tween.prototype;
 		this._steps = [];
 		this._actions = [];
 		this._catalog = [];
-		if (!props||!props.paused) { Tween._register(this,true); }
+		if (!props||!props.paused) { this.setPaused(false); }
 		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
 	}
 	

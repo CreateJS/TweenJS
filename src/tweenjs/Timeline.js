@@ -131,7 +131,7 @@ var p = Timeline.prototype;
 		}
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
-		if (!props||!props.paused) { Tween._register(this,true); }
+		if (!props||!props.paused) { this.setPaused(false); }
 		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
 	}
 	
