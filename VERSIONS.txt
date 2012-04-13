@@ -1,7 +1,12 @@
-Version 0.1.1
+Version 0.2.0 [Apr 13, 2012]
 ****************************************************************************************************
 - implemented a plugin model, and moved CSS support to CSSPlugin
+- Timeline now forces its useTicks setting on child tweens
+- can set paused & position in config props
+- fix for negative positions in tweens
+- added Timeline.resolve()
+- minor bug fixes and doc updates
 
-Version 0.1
+Version 0.1 [Nov 28, 2011]
 ****************************************************************************************************
 Initial release.
