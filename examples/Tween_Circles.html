@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>EaselJS Example: Rollovers and Drag & Drop</title>
+
+	<link rel="stylesheet" href="assets/demoStyles.css" />
+	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+	<script src="http://code.createjs.com/tweenjs-0.2.0.min.js"></script>
+
+    <script>
+        var canvas;
+        var stage;
+        var tweens;
+        var activeCount;
+        var circleCount=25;
+        var text;
+
+        function init() {
+	        if (window.top != window) {
+                document.getElementById("header").style.display = "none";
+            }
+
+            canvas = document.getElementById("testCanvas");
+            stage = new Stage(canvas);
+            tweens = [];
+            stage.enableMouseOver(10);
+            if (Touch.isSupported()) { Touch.enable(stage); }
+
+            for (var i=0; i<circleCount; i++) {
+                // draw the circle, and put it on stage:
+                var circle = new Shape();
+                circle.graphics.setStrokeStyle(15);
+                circle.graphics.beginStroke("#113355");
+                circle.graphics.drawCircle(0,0,(i+1)*4);
+                circle.alpha = 1-i*0.02;
+                circle.x = Math.random()*550;
+                circle.y = Math.random()*400;
+                circle.compositeOperation = "lighter";
+
+                var tween = Tween.get(circle).to({x:275,y:200}, (0.5+i*0.04)*1500, Ease.bounceOut).call(tweenComplete);
+                tweens.push({tween:tween, ref:circle});
+                stage.addChild(circle);
+            }
+            activeCount = circleCount;
+            stage.onMouseUp = handleMouseUp;
+
+	        text = new Text("Click Anywhere to Tween", "24px Arial", "#777");
+	        text.x = 350;
+	        text.y = 200;
+	        stage.addChild(text);
+
+            Ticker.addListener(window);
+        }
+
+
+        function handleMouseUp(event) {
+	        //if (text) { stage.removeChild(text); }
+            for (var i=0; i<circleCount; i++) {
+                var ref = tweens[i].ref;
+                var tween = tweens[i].tween;
+                Tween.get(ref,{override:true}).to({x:stage.mouseX,y:stage.mouseY}, (0.5+i*0.04)*1500, Ease.bounceOut).call(tweenComplete);
+            }
+            activeCount = circleCount;
+        }
+
+        function tweenComplete() {
+            activeCount--;
+        }
+
+        function tick() {
+            if (activeCount) { stage.update(); }
+        }
+
+
+    </script>
+</head>
+<body onload="init();">
+
+	<header id="header" class="TweenJS">
+	    <h1><span class="text-product">Tween<strong>JS</strong></span> CSS Plugin Example</h1>
+	    <p>This example shows how a plugin can be used to override values in TweenJS. The CSSPlugin ensures the CSS position and size parameters all receive the "px" suffix required by CSS.</p>
+	</header>
+
+    <canvas id="testCanvas" width="960" height="400"></canvas>
+
+</body>
+</html>

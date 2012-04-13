@@ -1,0 +1,274 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<title>TweenJS Example: Spark Demo</title>
+	<link rel="stylesheet" href="assets/demoStyles.css"/>
+	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+	<script src="http://code.createjs.com/tweenjs-0.2.0.min.js"></script>
+
+	<script>
+		var canvas;
+		var stage;
+		var count = 0;
+		var prevPoint;
+		var bar;
+		var container;
+		var oldX;
+		var dataProvider;
+		var tweenType;
+		var currentClip;
+		var selectedFunction;
+		var selectedItem;
+		var resetRuninng;
+		var hue;
+		var selectedIndex = 0;
+		var clips = [];
+
+		function init() {
+			if (window.top != window) {
+				document.getElementById("header").style.display = "none";
+			}
+
+			canvas = document.getElementById("testCanvas");
+			stage = new Stage(canvas);
+
+			resetRuninng = false;
+			graphics = new Graphics();
+
+			dataProvider = [
+				{type:"divider", label:"Ease Equations"},
+				{type:Ease.backIn, label:"backIn"},
+				{type:Ease.backInOut, label:"backInOut"},
+				{type:Ease.backOut, label:"backOut"},
+				{type:Ease.bounceIn, label:"bounceIn"},
+				{type:Ease.bounceInOut, label:"bounceInOut"},
+				{type:Ease.bounceOut, label:"bounceOut"},
+				{type:Ease.circIn, label:"circIn"},
+				{type:Ease.circInOut, label:"circInOut"},
+				{type:Ease.circOut, label:"circOut"},
+				{type:Ease.cubicIn, label:"cubicIn"},
+				{type:Ease.cubicInOut, label:"cubicInOut"},
+				{type:Ease.cubicOut, label:"cubicOut"},
+				{type:Ease.elasticIn, label:"elasticIn"},
+				{type:Ease.elasticInOut, label:"elasticInOut"},
+				{type:Ease.elasticOut, label:"elasticOut"},
+				{type:Ease.linear, label:"linear"},
+				{type:Ease.none, label:"none"},
+				{type:Ease.quadIn, label:"quadIn"},
+				{type:Ease.quadInOut, label:"quadInOut"},
+				{type:Ease.quadOut, label:"quadOut"},
+				{type:Ease.quartIn, label:"quartIn"},
+				{type:Ease.quartInOut, label:"quartInOut"},
+				{type:Ease.quartOut, label:"quartOut"},
+				{type:Ease.quintIn, label:"quintIn"},
+				{type:Ease.quintInOut, label:"quintInOut"},
+				{type:Ease.quintOut, label:"quintOut"},
+				{type:Ease.sineIn, label:"sineIn"},
+				{type:Ease.sineInOut, label:"sineInOut"},
+				{type:Ease.sineOut, label:"sineOut"},
+
+				{type:"divider", label:"Custom Eases"},
+				{type:Ease.getBackIn(2.5), label:"getBackIn"},
+				{type:Ease.getBackInOut(2.5), label:"getBackInOut"},
+				{type:Ease.getBackOut(2.5), label:"getBackOut"},
+				{type:Ease.getElasticIn(2,5), label:"getElasticIn"},
+				{type:Ease.getElasticInOut(2,5), label:"getElasticInOut"},
+				{type:Ease.getElasticOut(2,5), label:"getElasticOut"},
+				{type:Ease.getPowIn(2.5), label:"getPowIn"},
+				{type:Ease.getPowInOut(20.5), label:"getPowInOut"},
+				{type:Ease.getPowOut(2.5), label:"getPowOut"}
+			];
+
+			var eases = document.getElementById("eases");
+			var cloneElement = document.createElement("a");
+			cloneElement.href = "#";
+
+			for (var i=0, l=dataProvider.length; i<l; i++) {
+				var item = dataProvider[i];
+
+				if (item.type == "divider") {
+					element = document.createElement("span");
+					element.innerHTML = item.label;
+					eases.appendChild(element);
+					continue;
+				}
+
+				var element = cloneElement.cloneNode(true);
+				element.id = i;
+				element.onclick = selectItem;
+				element.innerHTML = item.label;
+				eases.appendChild(element);
+
+				if (item.label == "linear") {
+					selectedItem = element;
+					element.className = "selected";
+				}
+			}
+
+			container = new Container();
+			container.x = 20
+			container.y = 20;
+			stage.addChild(container);
+
+			prevPoint = new Point(212, 0);
+
+			bar = new Shape();
+			bar.graphics.f("#FFFFFF").ss(1).dr(2, 0,4,15).dr(2, 330, 4, 15).ef().ss(1).f("#FFFFFF").dr(3, 10, 2, 320);
+			bar.alpha = 0.7;
+			container.addChild(bar);
+
+			var bounds = new Shape();
+			bounds.graphics.ss(1).s("#FFFFFF").mt(0, 0).lt(0, 350).lt(700, 350).lt(700, 0);
+			bounds.alpha = 0.7;
+			container.addChild(bounds);
+
+			stage.update();
+
+			run();
+		}
+
+		function stop() {
+			Ticker.removeListener(window);
+		}
+
+		function selectItem() {
+			//if (library.selectedIndex == 0) { return; }
+			if (clips.length > 0) {
+				fade();
+			}
+
+			if (selectedItem != null && selectedItem != this) {
+				selectedItem.className = "";
+			}
+
+			selectedItem = this;
+			selectedIndex = this.id;
+			selectedItem.className = "selected";
+			//selectedIndex = library.selectedIndex-1;
+			selectedFunction = dataProvider[selectedIndex].type;
+
+			resetRuninng = true;
+			Tween.get(bar, {override:true}).to({x:695}, 500).call(resetComplete);
+			return false;
+		}
+
+		function run(easeType) {
+			Ticker.addListener(window);
+
+			currentClip = new Shape();
+			clips.push(currentClip);
+			stage.addChild(currentClip);
+			oldX = 0;
+			prevPoint.x = prevPoint.y = 0;
+
+			Tween.get(bar, {override:true}).to({x:695}, 1500, easeType).call(tweenComplete);
+
+		}
+
+		function tweenComplete() {
+			Ticker.removeListener(window)
+		}
+
+
+		function resetComplete() {
+			count = 0;
+			bar.x = 0;
+			resetRuninng = false;
+			currentClip = null;
+			run(selectedFunction);
+		}
+
+		function tick() {
+			if (bar.x != oldX && !resetRuninng) {
+				var g = currentClip.graphics;
+				var pt = new Point(container.x+prevPoint.x, container.y+prevPoint.y);
+
+				g.moveTo(pt.x, pt.y);
+
+				prevPoint.x = bar.x;
+				prevPoint.y = (30+count*10);
+
+				g.setStrokeStyle(1, "round", "round");
+				hue = (selectedIndex/dataProvider.length) * 360;
+
+				g.beginStroke(Graphics.getHSL(hue,50,50));
+				g.lineTo(container.x+prevPoint.x, container.y+prevPoint.y);
+				g.beginStroke(Graphics.getHSL(hue, 100, 50));
+				g.beginFill(Graphics.getHSL(hue, 100, 50));
+				g.drawCircle(pt.x, pt.y, 2);
+				g.endFill();
+
+				count++;
+				stage.update();
+			} else if (resetRuninng) {
+				stage.update();
+			}
+			oldX = bar.x;
+		}
+
+		function fade() {	
+			for(var i=0;i<clips.length;i++) {
+				var clip = clips[i];
+				Tween.get(clip, {override:true}).to({alpha:clip.alpha - 0.4}, 500).call(fadeTweenComplete);
+			}
+		}
+
+		function fadeTweenComplete(tween) {
+			var clip = tween._target;
+			if (clip.alpha <= 0) {
+				stage.removeChild(clip);
+				var index = clips.indexOf(clip);
+				clips.splice(index, 1);
+			}	
+		}
+	</script>
+
+	<style type="text/css">
+		#eases {
+			width: 200px;
+			height: 400px;
+			padding: 5px;
+			border-left: 2px solid #777;
+			position: absolute;
+			left: 755px;
+		}
+		#eases SPAN {
+			font-weight: bold;
+			clear: left;
+			display: block;
+			padding-top: 10px;
+		}
+		#eases A {
+			float:left;
+			padding: 1px 3px;
+		}
+		#eases A:after {
+			content: ", ";
+		}
+		#eases A:last-child:after {
+			content: "";
+		}
+		#eases A.selected {
+			background-color: #f90;
+			color: #333;
+		}
+	</style>
+
+</head>
+<body onload="init();" bgcolor="#000000" >
+
+	<header id="header" class="TweenJS">
+		<h1><span class="text-product">Tween<strong>JS</strong></span> Spark Table</h1>
+		<p>Preview a number of different ease functions.</p>
+	</header>
+
+	<div id="eases"></div>
+	<canvas id="testCanvas" width="960" height="400"></canvas>
+
+	<!--<select id="library" size="20" multiple="multiple" onchange="selectItem(this)" class="select">
+			<option value="-1">-- Eases--</option>
+	</select>-->
+
+</body>
+</html>

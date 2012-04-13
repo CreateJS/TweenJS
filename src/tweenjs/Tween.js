@@ -325,8 +325,8 @@ var p = Tween.prototype;
 		this._initQueueProps = {};
 		this._steps = [];
 		this._actions = [];
-		this._catalog = [];
-		if (!props||!props.paused) { Tween._register(this,true); }
+		if (props&&props.paused) { this._paused=true; }
+		else { Tween._register(this,true); }
 		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
 	}
 	
