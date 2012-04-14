@@ -1,4 +1,4 @@
-Version 0.2.0 [Apr 13, 2012]
+Version 0.2.0 [Apr 13, 2012] 
 ****************************************************************************************************
 - implemented a plugin model, and moved CSS support to CSSPlugin
 - Timeline now forces its useTicks setting on child tweens
