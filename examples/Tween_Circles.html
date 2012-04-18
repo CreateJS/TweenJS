@@ -5,7 +5,7 @@
     <title>EaselJS Example: Rollovers and Drag & Drop</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+	<script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
 	<script src="http://code.createjs.com/tweenjs-0.2.0.min.js"></script>
 
     <script>
@@ -45,7 +45,7 @@
             activeCount = circleCount;
             stage.onMouseUp = handleMouseUp;
 
-	        text = new Text("Click Anywhere to Tween", "24px Arial", "#777");
+	        text = new Text("Click Anywhere to Tween", "36px Arial", "#777");
 	        text.x = 350;
 	        text.y = 200;
 	        stage.addChild(text);
@@ -55,7 +55,7 @@
 
 
         function handleMouseUp(event) {
-	        //if (text) { stage.removeChild(text); }
+	        if (text) { stage.removeChild(text); }
             for (var i=0; i<circleCount; i++) {
                 var ref = tweens[i].ref;
                 var tween = tweens[i].tween;
