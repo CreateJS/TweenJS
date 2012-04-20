@@ -4,7 +4,7 @@
 <head>
 	<title>TweenJS Example: Spark Demo</title>
 	<link rel="stylesheet" href="assets/demoStyles.css"/>
-	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+	<script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
 	<script src="http://code.createjs.com/tweenjs-0.2.0.min.js"></script>
 
 	<script>
@@ -105,7 +105,10 @@
 					element.className = "selected";
 				}
 			}
-
+			
+			
+			Ticker.addListener(window);
+			
 			container = new Container();
 			container.x = 20
 			container.y = 20;
@@ -129,11 +132,10 @@
 		}
 
 		function stop() {
-			Ticker.removeListener(window);
+			//Ticker.removeListener(window);
 		}
 
 		function selectItem() {
-			//if (library.selectedIndex == 0) { return; }
 			if (clips.length > 0) {
 				fade();
 			}
@@ -145,37 +147,31 @@
 			selectedItem = this;
 			selectedIndex = this.id;
 			selectedItem.className = "selected";
-			//selectedIndex = library.selectedIndex-1;
 			selectedFunction = dataProvider[selectedIndex].type;
 
 			resetRuninng = true;
-			Tween.get(bar, {override:true}).to({x:695}, 500).call(resetComplete);
+			Tween.get(bar, {override:true}).to({x:0,y:0}, 500).call(resetComplete);
 			return false;
 		}
 
 		function run(easeType) {
-			Ticker.addListener(window);
-
 			currentClip = new Shape();
 			clips.push(currentClip);
 			stage.addChild(currentClip);
+			update = true;
 			oldX = 0;
 			prevPoint.x = prevPoint.y = 0;
 
-			Tween.get(bar, {override:true}).to({x:695}, 1500, easeType).call(tweenComplete);
+			Tween.get(bar, {override:true}).to({x:695}, 1500, easeType);
 
 		}
-
-		function tweenComplete() {
-			Ticker.removeListener(window)
-		}
-
-
+		
 		function resetComplete() {
 			count = 0;
 			bar.x = 0;
 			resetRuninng = false;
 			currentClip = null;
+			
 			run(selectedFunction);
 		}
 
@@ -202,6 +198,7 @@
 				count++;
 				stage.update();
 			} else if (resetRuninng) {
+				 
 				stage.update();
 			}
 			oldX = bar.x;
@@ -210,7 +207,7 @@
 		function fade() {	
 			for(var i=0;i<clips.length;i++) {
 				var clip = clips[i];
-				Tween.get(clip, {override:true}).to({alpha:clip.alpha - 0.4}, 500).call(fadeTweenComplete);
+				Tween.get(clip, {override:true}).to({alpha:clip.alpha - 0.4}, 1000).call(fadeTweenComplete);
 			}
 		}
 
