@@ -116,7 +116,7 @@ var p = Tween.prototype;
 	}
 	
 	/**
-	 * Advances all tweens. This typically uses the Ticker class (when available), but you can call it manually if you prefer to use
+	 * Advances all tweens. This typically uses the Ticker class (available in the EaselJS library), but you can call it manually if you prefer to use
 	 * your own "heartbeat" implementation.
 	 * @method tick
 	 * @static
@@ -124,10 +124,10 @@ var p = Tween.prototype;
 	 * @param paused Indicates whether a global pause is in effect. Tweens with ignoreGlobalPause will ignore this, but all others will pause if this is true.
 	 **/
 	Tween.tick = function(delta, paused) {
-		var tweens = Tween._tweens;
+		var tweens = Tween._tweens.slice(); // to avoid race conditions.
 		for (var i=tweens.length-1; i>=0; i--) {
 			var tween = tweens[i];
-			if (paused && !tween.ignoreGlobalPause) { continue; }
+			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
 			tween.tick(tween._useTicks?1:delta);
 		}
 	}
@@ -144,7 +144,10 @@ var p = Tween.prototype;
 		if (!target.tweenjs_count) { return; }
 		var tweens = Tween._tweens;
 		for (var i=tweens.length-1; i>=0; i--) {
-			if (tweens[i]._target == target) { tweens.splice(i,1); }
+			if (tweens[i]._target == target) {
+				tweens[i]._paused = true;
+				tweens.splice(i,1);
+			}
 		}
 		target.tweenjs_count = 0;
 	}
@@ -181,6 +184,7 @@ var p = Tween.prototype;
 	Tween._register = function(tween, value) {
 		var target = tween._target;
 		if (value) {
+			// TODO: this approach might fail if a dev is using sealed objects in ES5
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
 			Tween._tweens.push(tween);
 		} else {
