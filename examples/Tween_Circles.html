@@ -1,19 +1,23 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
     <title>EaselJS Example: Rollovers and Drag & Drop</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-	<script src="http://code.createjs.com/tweenjs-0.2.0.min.js"></script>
+	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+
+	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
+
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
 
     <script>
         var canvas;
         var stage;
         var tweens;
         var activeCount;
-        var circleCount=25;
+        var circleCount = 25;
         var text;
 
         function init() {
