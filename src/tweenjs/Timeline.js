@@ -79,7 +79,7 @@ var p = Timeline.prototype;
 	 * @type Boolean
 	 * @protected
 	 **/
-	p._paused = true;
+	p._paused = false;
 	
 	/**
 	 * @property _tweens
@@ -248,7 +248,6 @@ var p = Timeline.prototype;
 	 * @param value Indicates whether the tween should be paused (true) or played (false).
 	 **/
 	p.setPaused = function(value) {
-		if (this._paused == !!value) { return; }
 		this._paused = !!value;
 		Tween._register(this, !value);
 	}
@@ -276,7 +275,13 @@ var p = Timeline.prototype;
 	p.tick = function(delta) {
 		this.setPosition(this._prevPosition+delta);
 	}
-	
+	 
+	/** 
+	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
+	 * corresponding frame label will be returned, or null if a matching label is not defined.
+	 * @method resolve
+	 * @param positionOrLabel A numeric position value or label string.
+	 **/
 	p.resolve = function(positionOrLabel) {
 		var pos = parseFloat(positionOrLabel);
 		if (isNaN(pos)) { pos = this._labels[positionOrLabel]; }

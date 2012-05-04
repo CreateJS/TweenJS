@@ -131,7 +131,7 @@ var p = Tween.prototype;
 			tween.tick(tween._useTicks?1:delta);
 		}
 	}
-	if (Ticker) { Ticker.addListener(Tween,false); }
+	if (window.Ticker) { Ticker.addListener(Tween,false); }
 	
 	
 	/** 
@@ -480,10 +480,8 @@ var p = Tween.prototype;
 	 * @param value Indicates whether the tween should be paused (true) or played (false).
 	 **/
 	p.setPaused = function(value) {
-		if (this._paused != !!value) {
-			this._paused = !!value;
-			Tween._register(this, !value);
-		}
+		this._paused = !!value;
+		Tween._register(this, !value);
 		return this;
 	}
 
