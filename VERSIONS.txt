@@ -1,6 +1,10 @@
-Version NEXT [NOT TAGGED]
+Version NEXT [release TBD]
 ****************************************************************************************************
-- fix for race condition that can arise when one tween causes others to be removed
+- fix for a race condition that can arise when one tween causes others to be removed
+- added Tween.hasActiveTweens(target)
+- fixed issue with minified version of code being dependent on Ticker
+- fixed issue with unpausing tweens after adding & removing from a Timeline
+
 
 Version 0.2.0 [Apr 13, 2012] 
 ****************************************************************************************************
@@ -10,6 +14,7 @@ Version 0.2.0 [Apr 13, 2012]
 - fix for negative positions in tweens
 - added Timeline.resolve()
 - minor bug fixes and doc updates
+
 
 Version 0.1 [Nov 28, 2011]
 ****************************************************************************************************

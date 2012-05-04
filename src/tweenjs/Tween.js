@@ -161,7 +161,7 @@ var p = Tween.prototype;
 	 **/
 	Tween.hasActiveTweens = function(target) {
 		if (target) { return target.tweenjs_count; }
-		return Tween._tweens && (Tween._tweens.length > 0);
+		return Tween._tweens && Tween._tweens.length;
 	}
 	
 	/** 
