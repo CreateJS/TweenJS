@@ -2,42 +2,48 @@
 <html>
 <head>
 <title>TweenJS: Spark Table</title>
+
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-	<script src="assets/Ease.js"></script>
-<script>
+	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
 
-var eases = [Ease.none,Ease.quadIn,Ease.getPowIn(2.5),Ease.cubicIn,Ease.quartIn,Ease.quintIn];
+	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
 
-function init() {
-	if (window.top != window) {
-		document.getElementById("header").style.display = "none";
-	}
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
 
-	canvas = document.getElementById("canvas1");
-	stage = new Stage(canvas);
+	<script>
 
-	var graph = new Shape();
-	var g = graph.graphics;
-	stage.addChild(graph);
-	
-	var w = canvas.width-10;
-	var h = canvas.height-10;
-	
-	for (var j=0,l=eases.length;j<l;j++) {
-		g.beginFill(Graphics.getHSL(j/l*360,50,50));
-		var ease = eases[j];
-		for (var i=0; i<100; i++) {
-			var x = i/100*w+5;
-			var y = h-ease(i/100)*h+5;
-			g.drawCircle(x,y,3);
-			g.closePath();
+	var eases = [Ease.none,Ease.quadIn,Ease.getPowIn(2.5),Ease.cubicIn,Ease.quartIn,Ease.quintIn];
+
+	function init() {
+		if (window.top != window) {
+			document.getElementById("header").style.display = "none";
 		}
+
+		canvas = document.getElementById("canvas1");
+		stage = new Stage(canvas);
+
+		var graph = new Shape();
+		var g = graph.graphics;
+		stage.addChild(graph);
+
+		var w = canvas.width-10;
+		var h = canvas.height-10;
+
+		for (var j=0,l=eases.length;j<l;j++) {
+			g.beginFill(Graphics.getHSL(j/l*360,50,50));
+			var ease = eases[j];
+			for (var i=0; i<100; i++) {
+				var x = i/100*w+5;
+				var y = h-ease(i/100)*h+5;
+				g.drawCircle(x,y,3);
+				g.closePath();
+			}
+		}
+		stage.update();
+
 	}
-	stage.update();
-	
-}
-</script>
+	</script>
 </head>
 
 <body onload="init();">
