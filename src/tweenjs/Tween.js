@@ -153,7 +153,20 @@ var p = Tween.prototype;
 	}
 	
 	/** 
-	 * TODO: doc.
+	 * Indicates whether there are any active tweens on the target (if specified) or in general.
+	 * @method hasActiveTweens
+	 * @static
+	 * @param target Optional. If not specified, the return value will indicate if there are any active tweens on any target.
+	 * @return Boolean A boolean indicating whether there are any active tweens.
+	 **/
+	Tween.hasActiveTweens = function(target) {
+		if (target) { return target.tweenjs_count; }
+		return Tween._tweens && (Tween._tweens.length > 0);
+	}
+	
+	/** 
+	 * Installs a plugin, which can modify how certain properties are handled when tweened.
+	 * See the CSSPlugin for an example of how to write TweenJS plugins.
 	 * @method installPlugin
 	 * @static
 	 * @param plugin
