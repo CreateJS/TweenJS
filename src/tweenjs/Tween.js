@@ -225,8 +225,9 @@ var p = Tween.prototype;
 	p.loop = false;
 	
 	/**
-	 * Read-only property specifying the total duration of this tween in milliseconds (or ticks if useTicks is true).
-	 * This value is automatically updated as you modify the tween.
+	 * Read-only. Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
+	 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
+	 * behaviour.
 	 * @property duration
 	 * @type Number
 	 **/
@@ -253,6 +254,22 @@ var p = Tween.prototype;
 	 * @type Function
 	 **/
 	p.onChange = null;
+	
+	/**
+	 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing 
+	 * this property after the tween is created will not have any effect.
+	 * @property target
+	 * @type Object
+	 **/
+	p.target = null;
+	
+	/**
+	 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
+	 * Changing this property directly will have no effect.
+	 * @property target
+	 * @type Object
+	 **/
+	p.position = null;
 
 // private properties:
 	
@@ -335,7 +352,7 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p.initialize = function(target, props, pluginData) {
-		this._target = target;
+		this.target = this._target = target;
 		if (props) {
 			this._useTicks = props.useTicks;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
@@ -464,7 +481,7 @@ var p = Tween.prototype;
 		
 		// run actions:
 		var prevPos = this._prevPos;
-		this._prevPos = t; // set this in advance in case an action modifies position.
+		this.position = this._prevPos = t; // set this in advance in case an action modifies position.
 		this._prevPosition = value;
 		if (actionsMode != 0 && this._actions.length > 0) {
 			if (this._useTicks) {

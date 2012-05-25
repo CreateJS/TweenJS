@@ -78,6 +78,14 @@ var p = Timeline.prototype;
 	 * @type Function
 	 **/
 	p.onChange = null;
+	
+	/**
+	 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
+	 * Changing this property directly will have no effect.
+	 * @property target
+	 * @type Object
+	 **/
+	p.position = null;
 
 // private properties:
 	
@@ -240,7 +248,7 @@ var p = Timeline.prototype;
 		var end = !this.loop && value >= this.duration;
 		if (t == this._prevPos) { return end; }
 		this._prevPosition = value;
-		this._prevPos = t; // in case an action changes the current frame.
+		this.position = this._prevPos = t; // in case an action changes the current frame.
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			this._tweens[i].setPosition(t, actionsMode);
 			if (t != this._prevPos) { return false; } // an action changed this timeline's position.

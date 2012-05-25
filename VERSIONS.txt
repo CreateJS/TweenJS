@@ -4,7 +4,9 @@ Version NEXT [release TBD]
 - added Tween.hasActiveTweens(target)
 - fixed issue with minified version of code being dependent on Ticker
 - fixed issue with unpausing tweens after adding & removing from a Timeline
-- added Tween.onChange()
+- added .onChange() to Tween & Timeline
+- added .position to Tween & Timeline
+- added Tween.target
 
 
 Version 0.2.0 [Apr 13, 2012] 
