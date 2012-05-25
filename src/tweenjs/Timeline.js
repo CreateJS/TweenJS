@@ -71,6 +71,13 @@ var p = Timeline.prototype;
 	 * @type Boolean
 	 **/
 	p.loop = false;
+	
+	/**
+	 * Called, with a single parameter referencing this timeline instance, whenever the timeline's position changes.
+	 * @property onChange
+	 * @type Function
+	 **/
+	p.onChange = null;
 
 // private properties:
 	
@@ -239,6 +246,7 @@ var p = Timeline.prototype;
 			if (t != this._prevPos) { return false; } // an action changed this timeline's position.
 		}
 		if (end) { this.setPaused(true); }
+		this.onChange&&this.onChange(this);
 		return end;
 	}
 	

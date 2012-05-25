@@ -153,7 +153,7 @@ var p = Tween.prototype;
 	}
 	
 	/** 
-	 * Indicates whether there are any active tweens on the target (if specified) or in general.
+	 * Indicates whether there are any active tweens on the target object (if specified) or in general.
 	 * @method hasActiveTweens
 	 * @static
 	 * @param target Optional. If not specified, the return value will indicate if there are any active tweens on any target.
@@ -232,7 +232,6 @@ var p = Tween.prototype;
 	 **/
 	p.duration = 0;
 	
-	
 	/**
 	 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
 	 * you specify data by setting it to a property of pluginData with the same name as the plugin class.<br/>
@@ -247,6 +246,13 @@ var p = Tween.prototype;
 	 * @type Object
 	 **/
 	p.pluginData = null;
+	
+	/**
+	 * Called, with a single parameter referencing this tween instance, whenever the tween's position changes.
+	 * @property onChange
+	 * @type Function
+	 **/
+	p.onChange = null;
 
 // private properties:
 	
@@ -366,8 +372,8 @@ var p = Tween.prototype;
 	 * properties will be set at the end of the specified duration.
 	 * @method to
 	 * @param props An object specifying property target values for this tween (Ex. {x:300} would tween the x property of the target to 300).
-	 * @param duration The duration of the wait in milliseconds (or in ticks if useTicks is true).
-	 * @param ease The easing function to use for this tween.
+	 * @param duration Optional. The duration of the wait in milliseconds (or in ticks if useTicks is true). Defaults to 0.
+	 * @param ease Optional. The easing function to use for this tween. Defaults to a linear ease.
 	 * @return Tween This tween instance (for chaining calls).
 	 **/
 	p.to = function(props, duration, ease) {
@@ -379,8 +385,8 @@ var p = Tween.prototype;
 	 * Queues an action to call the specified function. For example: myTween.wait(1000).call(myFunction); would call myFunction() after 1s.
 	 * @method call
 	 * @param callback The function to call.
-	 * @param params The parameters to call the function with. If this is omitted, then the function will be called with a single param pointing to this tween.
-	 * @param scope The scope to call the function in. If omitted, it will be called in the target's scope.
+	 * @param params Optional. The parameters to call the function with. If this is omitted, then the function will be called with a single param pointing to this tween.
+	 * @param scope Optional. The scope to call the function in. If omitted, it will be called in the target's scope.
 	 * @return Tween This tween instance (for chaining calls).
 	 **/
 	p.call = function(callback, params, scope) {
@@ -391,7 +397,7 @@ var p = Tween.prototype;
 	 * Queues an action to set the specified props on the specified target. If target is null, it will use this tween's target. Ex. myTween.wait(1000).set({visible:false},foo);
 	 * @method set
 	 * @param props The properties to set (ex. {visible:false}).
-	 * @param target The target to set the properties on. If omitted, they will be set on the tween's target.
+	 * @param target Optional. The target to set the properties on. If omitted, they will be set on the tween's target.
 	 * @return Tween This tween instance (for chaining calls).
 	 **/
 	p.set = function(props, target) {
@@ -473,6 +479,8 @@ var p = Tween.prototype;
 		}
 
 		if (end) { this.setPaused(true); }
+		
+		this.onChange&&this.onChange(this);
 		return end;
 	}
 
