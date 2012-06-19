@@ -26,17 +26,15 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 /**
  * TODO.
- * @protected
  * @class CSSPlugin
  * @constructor
  **/
 var CSSPlugin = function() {
   throw("CSSPlugin cannot be instantiated.")
 }
-var p = CSSPlugin.prototype;
 	
 // static interface:
 	/** 
@@ -56,7 +54,8 @@ var p = CSSPlugin.prototype;
 	/**
 	 * 
 	 **/
-	CSSPlugin.install = function() {
+	CSSPlugin.install = function(Tween) {
+		Tween = Tween||ns.Tween;
 		var arr = [], map = CSSPlugin.cssSuffixMap;
 		for (var n in map) { arr.push(n); }
 		Tween.installPlugin(CSSPlugin, arr);
@@ -99,5 +98,6 @@ var p = CSSPlugin.prototype;
 
 // private methods:
 	
-window.CSSPlugin = CSSPlugin;
-}(window));
+ns.CSSPlugin = CSSPlugin;
+}(createjs||(createjs={})));
+var createjs;

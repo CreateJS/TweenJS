@@ -5,7 +5,7 @@
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
 
-	<script type="text/javascript" src="http://code.createjs.com/easeljs-0.4.2.min.js"></script> <!-- included for Ticker -->
+	<script type="text/javascript" src="../lib/easeljs-NEXT.min.js"></script> <!-- included for Ticker -->
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/CSSPlugin.js"></script>
 
@@ -21,9 +21,9 @@
 			document.getElementById("header").style.display = "none";
 	    }
 
-		CSSPlugin.install();
+		createjs.CSSPlugin.install(createjs.Tween);
 
-		Ticker.setFPS(20);
+		createjs.Ticker.setFPS(20);
 		var count = 600;
 		while (--count >= 0) {
 			var box = document.createElement("div");
@@ -41,10 +41,10 @@
 			d = (Math.min(window.innerWidth,window.innerHeight)-16)/2*(Math.random()*0.3+0.7);
 			var x = window.innerWidth/2+Math.cos(a)*d;
 			var y = window.innerHeight/2+Math.sin(a)*d;
-			Tween.get(box, {loop:true}, true).set({opacity:"0"},box.style).wait(Math.random()*1000+1|0).call(updateColor).to({top:y,left:x,width:16,height:4,opacity:1},Math.random()*1500+1000,easeIn);
+			createjs.Tween.get(box, {loop:true}, true).set({opacity:"0"},box.style).wait(Math.random()*1000+1|0).call(updateColor).to({top:y,left:x,width:16,height:4,opacity:1},Math.random()*1500+1000,easeIn);
 		}
 		// tween the base color that divs will be assigned when they start moving:
-		Tween.get(this,{loop:true}).to({colorSeed:360},5000);
+		createjs.Tween.get(this,{loop:true}).to({colorSeed:360},5000);
 	}
 
 	function updateColor(tween) {

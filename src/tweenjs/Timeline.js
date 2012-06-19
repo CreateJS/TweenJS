@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(window) {
+(function(ns) {
 
 
 /**
@@ -80,9 +80,9 @@ var p = Timeline.prototype;
 	p.onChange = null;
 	
 	/**
-	 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
+	 * Read-only. The current normalized position of the timeline. This will always be a value between 0 and duration.
 	 * Changing this property directly will have no effect.
-	 * @property target
+	 * @property position
 	 * @type Object
 	 **/
 	p.position = null;
@@ -147,8 +147,8 @@ var p = Timeline.prototype;
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		if (props&&props.paused) { this._paused=true; }
-		else { Tween._register(this,true); }
-		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
+		else { ns.Tween._register(this,true); }
+		if (props&&props.position!=null) { this.setPosition(props.position, ns.Tween.NONE); }
 	}
 	
 // public methods:
@@ -171,7 +171,7 @@ var p = Timeline.prototype;
 		tween._paused = false;
 		tween._useTicks = this._useTicks;
 		if (tween.duration > this.duration) { this.duration = tween.duration; }
-		if (this._prevPos >= 0) { tween.setPosition(this._prevPos, Tween.NONE); }
+		if (this._prevPos >= 0) { tween.setPosition(this._prevPos, ns.Tween.NONE); }
 		return tween;
 	}
 
@@ -265,7 +265,7 @@ var p = Timeline.prototype;
 	 **/
 	p.setPaused = function(value) {
 		this._paused = !!value;
-		Tween._register(this, !value);
+		ns.Tween._register(this, !value);
 	}
 	
 	/** 
@@ -331,5 +331,6 @@ var p = Timeline.prototype;
 		if (pos != null) { this.setPosition(pos); }
 	}
 	
-window.Timeline = Timeline;
-}(window));
+ns.Timeline = Timeline;
+}(createjs||(createjs={})));
+var createjs;

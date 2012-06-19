@@ -36,7 +36,7 @@
 
 // TODO: possibly add a END actionsMode (only runs actions that == position)?
 // TODO: evaluate a way to decouple paused from tick registration.
-(function(window) {
+(function(ns) {
 /**
 * Returns a new Tween instance. See Tween.get for param documentation.
 * @class Tween
@@ -131,7 +131,7 @@ var p = Tween.prototype;
 			tween.tick(tween._useTicks?1:delta);
 		}
 	}
-	if (window.Ticker) { Ticker.addListener(Tween,false); }
+	if (ns.Ticker) { ns.Ticker.addListener(Tween,false); }
 	
 	
 	/** 
@@ -266,7 +266,7 @@ var p = Tween.prototype;
 	/**
 	 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
 	 * Changing this property directly will have no effect.
-	 * @property target
+	 * @property position
 	 * @type Object
 	 **/
 	p.position = null;
@@ -681,5 +681,6 @@ var p = Tween.prototype;
 		}
 	}
 	
-window.Tween = Tween;
-}(window));
+ns.Tween = Tween;
+}(createjs||(createjs={})));
+var createjs;

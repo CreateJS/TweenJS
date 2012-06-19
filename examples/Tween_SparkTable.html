@@ -4,7 +4,7 @@
 	<title>TweenJS Example: Spark Demo</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css"/>
-	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+	<script type="text/javascript" src="../lib/easeljs-NEXT.min.js"></script>
 
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
@@ -36,11 +36,12 @@
 			}
 
 			canvas = document.getElementById("testCanvas");
-			stage = new Stage(canvas);
+			stage = new createjs.Stage(canvas);
 
 			resetRuninng = false;
-			graphics = new Graphics();
-
+			graphics = new createjs.Graphics();
+			
+			var Ease = createjs.Ease; // shortcut.
 			dataProvider = [
 				{type:"divider", label:"Ease Equations"},
 				{type:Ease.backIn, label:"backIn"},
@@ -112,21 +113,21 @@
 			}
 			
 			
-			Ticker.addListener(window);
+			createjs.Ticker.addListener(window);
 			
-			container = new Container();
-			container.x = 20
+			container = new createjs.Container();
+			container.x = 20;
 			container.y = 20;
 			stage.addChild(container);
 
-			prevPoint = new Point(212, 0);
+			prevPoint = new createjs.Point(212, 0);
 
-			bar = new Shape();
+			bar = new createjs.Shape();
 			bar.graphics.f("#FFFFFF").ss(1).dr(2, 0,4,15).dr(2, 330, 4, 15).ef().ss(1).f("#FFFFFF").dr(3, 10, 2, 320);
 			bar.alpha = 0.7;
 			container.addChild(bar);
 
-			var bounds = new Shape();
+			var bounds = new createjs.Shape();
 			bounds.graphics.ss(1).s("#FFFFFF").mt(0, 0).lt(0, 350).lt(700, 350).lt(700, 0);
 			bounds.alpha = 0.7;
 			container.addChild(bounds);
@@ -155,19 +156,19 @@
 			selectedFunction = dataProvider[selectedIndex].type;
 
 			resetRuninng = true;
-			Tween.get(bar, {override:true}).to({x:0,y:0}, 500).call(resetComplete);
+			createjs.Tween.get(bar, {override:true}).to({x:0,y:0}, 500).call(resetComplete);
 			return false;
 		}
 
 		function run(easeType) {
-			currentClip = new Shape();
+			currentClip = new createjs.Shape();
 			clips.push(currentClip);
 			stage.addChild(currentClip);
 			update = true;
 			oldX = 0;
 			prevPoint.x = prevPoint.y = 0;
 
-			Tween.get(bar, {override:true}).to({x:695}, 1500, easeType);
+			createjs.Tween.get(bar, {override:true}).to({x:700}, 1500, easeType);
 
 		}
 		
@@ -183,27 +184,26 @@
 		function tick() {
 			if (bar.x != oldX && !resetRuninng) {
 				var g = currentClip.graphics;
-				var pt = new Point(container.x+prevPoint.x, container.y+prevPoint.y);
+				var pt = new createjs.Point(container.x+prevPoint.x, container.y+prevPoint.y);
 
 				g.moveTo(pt.x, pt.y);
 
+				count++;
 				prevPoint.x = bar.x;
-				prevPoint.y = (30+count*10);
+				prevPoint.y = (count*11);
 
 				g.setStrokeStyle(1, "round", "round");
 				hue = (selectedIndex/dataProvider.length) * 360;
 
-				g.beginStroke(Graphics.getHSL(hue,50,50));
+				g.beginStroke(createjs.Graphics.getHSL(hue,50,50));
 				g.lineTo(container.x+prevPoint.x, container.y+prevPoint.y);
-				g.beginStroke(Graphics.getHSL(hue, 100, 50));
-				g.beginFill(Graphics.getHSL(hue, 100, 50));
+				g.beginStroke(createjs.Graphics.getHSL(hue, 100, 50));
+				g.beginFill(createjs.Graphics.getHSL(hue, 100, 50));
 				g.drawCircle(pt.x, pt.y, 2);
 				g.endFill();
 
-				count++;
 				stage.update();
 			} else if (resetRuninng) {
-				 
 				stage.update();
 			}
 			oldX = bar.x;
@@ -212,7 +212,7 @@
 		function fade() {	
 			for(var i=0;i<clips.length;i++) {
 				var clip = clips[i];
-				Tween.get(clip, {override:true}).to({alpha:clip.alpha - 0.4}, 1000).call(fadeTweenComplete);
+				createjs.Tween.get(clip, {override:true}).to({alpha:clip.alpha - 0.4}, 1000).call(fadeTweenComplete);
 			}
 		}
 

@@ -4,7 +4,7 @@
 <title>TweenJS: Spark Table</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script src="http://code.createjs.com/easeljs-0.4.1.min.js"></script>
+	<script type="text/javascript" src="../lib/easeljs-NEXT.min.js"></script>
 
 	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
 
@@ -13,7 +13,7 @@
 
 	<script>
 
-	var eases = [Ease.none,Ease.quadIn,Ease.getPowIn(2.5),Ease.cubicIn,Ease.quartIn,Ease.quintIn];
+	var eases = [createjs.Ease.none,createjs.Ease.quadIn,createjs.Ease.getPowIn(2.5),createjs.Ease.cubicIn,createjs.Ease.quartIn,createjs.Ease.quintIn];
 
 	function init() {
 		if (window.top != window) {
@@ -21,9 +21,9 @@
 		}
 
 		canvas = document.getElementById("canvas1");
-		stage = new Stage(canvas);
+		stage = new createjs.Stage(canvas);
 
-		var graph = new Shape();
+		var graph = new createjs.Shape();
 		var g = graph.graphics;
 		stage.addChild(graph);
 
@@ -31,7 +31,7 @@
 		var h = canvas.height-10;
 
 		for (var j=0,l=eases.length;j<l;j++) {
-			g.beginFill(Graphics.getHSL(j/l*360,50,50));
+			g.beginFill(createjs.Graphics.getHSL(j/l*360,50,50));
 			var ease = eases[j];
 			for (var i=0; i<100; i++) {
 				var x = i/100*w+5;
@@ -49,7 +49,7 @@
 <body onload="init();">
 
 	<header id="header" class="TweenJS">
-	    <h1><span class="text-product">Tween<strong>JS</strong></span> CSS Plugin Example</h1>
+	    <h1><span class="text-product">Tween<strong>JS</strong></span> Spark Table</h1>
 	    <p>You can edit this example to test different ease functions.</p>
 	</header>
 
