@@ -1,5 +1,6 @@
 Version NEXT [release TBD]
 ****************************************************************************************************
+- moved all class definitions into a configurable "createjs" namespace
 - fix for a race condition that can arise when one tween causes others to be removed
 - added Tween.hasActiveTweens(target)
 - fixed issue with minified version of code being dependent on Ticker
