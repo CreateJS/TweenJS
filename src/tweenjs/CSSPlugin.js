@@ -26,7 +26,11 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(ns) {
+if(!this.createjs)
+	createjs = {};
+
+(function() {
+
 /**
  * TODO.
  * @class CSSPlugin
@@ -55,7 +59,7 @@ var CSSPlugin = function() {
 	 * 
 	 **/
 	CSSPlugin.install = function(Tween) {
-		Tween = Tween||ns.Tween;
+		Tween = Tween||createjs.Tween;
 		var arr = [], map = CSSPlugin.cssSuffixMap;
 		for (var n in map) { arr.push(n); }
 		Tween.installPlugin(CSSPlugin, arr);
@@ -98,6 +102,5 @@ var CSSPlugin = function() {
 
 // private methods:
 	
-ns.CSSPlugin = CSSPlugin;
-}(createjs||(createjs={})));
-var createjs;
+createjs.CSSPlugin = CSSPlugin;
+}());

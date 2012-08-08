@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(ns) {
+if(!this.createjs)
+	createjs = {};
+
+(function() {
 
 // constructor:
 /**
@@ -387,6 +390,5 @@ var Ease = function() {
 	 **/
 	Ease.elasticInOut = Ease.getElasticInOut(1,0.3*1.5);
 	
-ns.Ease = Ease;
-}(createjs||(createjs={})));
-var createjs;
+createjs.Ease = Ease;
+}());
