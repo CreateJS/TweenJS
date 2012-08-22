@@ -108,7 +108,8 @@ var p = Tween.prototype;
 	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
 	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
 	 *    <LI> paused: indicates whether to start the tween paused.</LI>
-	 *    <LI> position: indicates the initial position for this timeline</LI>
+	 *    <LI> position: indicates the initial position for this tween.</LI>
+	 *    <LI> onChanged: specifies an onChange handler for this tween.</LI>
 	 * </UL>
 	 **/
 	Tween.get = function(target, props, pluginData) {
@@ -249,7 +250,7 @@ var p = Tween.prototype;
 	p.pluginData = null;
 	
 	/**
-	 * Called, with a single parameter referencing this tween instance, whenever the tween's position changes.
+	 * Called whenever the tween's position changes with a single parameter referencing this tween instance.
 	 * @property onChange
 	 * @type Function
 	 **/
@@ -357,6 +358,7 @@ var p = Tween.prototype;
 			this._useTicks = props.useTicks;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
 			this.loop = props.loop;
+			this.onChange = props.onChange;
 			if (props.override) { Tween.removeTweens(target); }
 		}
 		

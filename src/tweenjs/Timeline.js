@@ -39,7 +39,8 @@
  *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
  *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
  *    <LI> paused: indicates whether to start the tween paused.</LI>
- *    <LI> position: indicates the initial position for this timeline</LI>
+ *    <LI> position: indicates the initial position for this timeline.</LI>
+ *    <LI> onChanged: specifies an onChange handler for this timeline.</LI>
  * </UL>
  * @constructor
  **/
@@ -143,6 +144,7 @@ var p = Timeline.prototype;
 			this._useTicks = props.useTicks;
 			this.loop = props.loop;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
+			this.onChange = props.onChange;
 		}
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
