@@ -357,6 +357,7 @@ var p = Tween.prototype;
 			this._useTicks = props.useTicks;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
 			this.loop = props.loop;
+			this.onChange = props.onChange;
 			if (props.override) { Tween.removeTweens(target); }
 		}
 		
