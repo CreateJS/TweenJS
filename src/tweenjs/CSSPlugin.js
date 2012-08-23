@@ -26,9 +26,14 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(ns) {
+// namespace:
+this.createjs = createjs||{};
+
+(function() {
 /**
- * TODO.
+ * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply call
+ * CSSPlugin.install() after TweenJS has loaded. You can adjust the CSS properties it will work with by
+ * modifying the cssSuffixMap property.
  * @class CSSPlugin
  * @constructor
  **/
@@ -49,20 +54,31 @@ var CSSPlugin = function() {
 	 **/
 	CSSPlugin.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
 	
+	/**
+	 * Used by TweenJS to determine when to call this plugin.
+	 * @property priority
+	 * @protected
+	 * @static
+	 **/
 	CSSPlugin.priority = -100; // very low priority, should run last
 
 	/**
-	 * 
+	 * Installs this plugin for use with TweenJS. Call this once, after TweenJS is loaded to enable this plugin.
+	 * @method install
+	 * @static
 	 **/
-	CSSPlugin.install = function(Tween) {
-		Tween = Tween||ns.Tween;
+	CSSPlugin.install = function() {
 		var arr = [], map = CSSPlugin.cssSuffixMap;
 		for (var n in map) { arr.push(n); }
-		Tween.installPlugin(CSSPlugin, arr);
+		createjs.Tween.installPlugin(CSSPlugin, arr);
 	}
 	
+	
 	/**
-	 * 
+	 * Called by TweenJS when a new tween property initializes that this plugin is registered for.
+	 * @method init
+	 * @protected
+	 * @static
 	 **/
 	CSSPlugin.init = function(tween, prop, value) {
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
@@ -77,8 +93,11 @@ var CSSPlugin = function() {
 		}
 	}
 	
-	/** 
-	 * 
+	/**
+	 * Called by TweenJS when a tween property advances that this plugin is registered for.
+	 * @method tween
+	 * @protected
+	 * @static
 	 **/
 	CSSPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, position, end) {
 		var style,map = CSSPlugin.cssSuffixMap;
@@ -98,6 +117,5 @@ var CSSPlugin = function() {
 
 // private methods:
 	
-ns.CSSPlugin = CSSPlugin;
-}(createjs||(createjs={})));
-var createjs;
+createjs.CSSPlugin = CSSPlugin;
+}());

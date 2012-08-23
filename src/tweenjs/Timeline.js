@@ -26,7 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function(ns) {
+// namespace:
+this.createjs = createjs||{};
+
+(function() {
 
 
 /**
@@ -149,8 +152,8 @@ var p = Timeline.prototype;
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		if (props&&props.paused) { this._paused=true; }
-		else { ns.Tween._register(this,true); }
-		if (props&&props.position!=null) { this.setPosition(props.position, ns.Tween.NONE); }
+		else { createjs.Tween._register(this,true); }
+		if (props&&props.position!=null) { this.setPosition(props.position, createjs.Tween.NONE); }
 	}
 	
 // public methods:
@@ -173,7 +176,7 @@ var p = Timeline.prototype;
 		tween._paused = false;
 		tween._useTicks = this._useTicks;
 		if (tween.duration > this.duration) { this.duration = tween.duration; }
-		if (this._prevPos >= 0) { tween.setPosition(this._prevPos, ns.Tween.NONE); }
+		if (this._prevPos >= 0) { tween.setPosition(this._prevPos, createjs.Tween.NONE); }
 		return tween;
 	}
 
@@ -267,7 +270,7 @@ var p = Timeline.prototype;
 	 **/
 	p.setPaused = function(value) {
 		this._paused = !!value;
-		ns.Tween._register(this, !value);
+		createjs.Tween._register(this, !value);
 	}
 	
 	/** 
@@ -333,6 +336,5 @@ var p = Timeline.prototype;
 		if (pos != null) { this.setPosition(pos); }
 	}
 	
-ns.Timeline = Timeline;
-}(createjs||(createjs={})));
-var createjs;
+createjs.Timeline = Timeline;
+}());
