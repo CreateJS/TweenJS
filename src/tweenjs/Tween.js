@@ -38,7 +38,7 @@
 // TODO: evaluate a way to decouple paused from tick registration.
 
 // namespace:
-this.createjs = createjs||{};
+this.createjs = this.createjs||{};
 
 (function() {
 /**

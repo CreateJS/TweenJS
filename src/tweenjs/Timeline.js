@@ -27,7 +27,7 @@
 */
 
 // namespace:
-this.createjs = createjs||{};
+this.createjs = this.createjs||{};
 
 (function() {
 
