@@ -20,6 +20,6 @@ Version 0.2.0 [Apr 13, 2012]
 - minor bug fixes and doc updates
 
 
-Version 0.1 [Nov 28, 2011]
+Version 0.1.0 [Nov 28, 2011]
 ****************************************************************************************************
 Initial release.
