@@ -105,8 +105,8 @@ var p = Tween.prototype;
 	 * with the chained syntax of TweenJS.
 	 * @method get
 	 * @static
-	 * @param target The target object that will have its properties tweened.
-	 * @param props The configuration properties to apply to this tween instance (ex. {loop:true, paused:true}). All properties default to false. Supported props are:<UL>
+	 * @param {Object} target The target object that will have its properties tweened.
+	 * @param {Object} props The configuration properties to apply to this tween instance (ex. {loop:true, paused:true}). All properties default to false. Supported props are:<UL>
 	 *    <LI> loop: sets the loop property on this tween.</LI>
 	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
 	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
@@ -115,6 +115,8 @@ var p = Tween.prototype;
 	 *    <LI> position: indicates the initial position for this tween.</LI>
 	 *    <LI> onChanged: specifies an onChange handler for this tween.</LI>
 	 * </UL>
+	 * @return {Tween} A reference to the created tween. Additional chained tweens, method calls, or callbacks can be
+	 *      applied to the returned tween instance.
 	 **/
 	Tween.get = function(target, props, pluginData) {
 		return new Tween(target, props, pluginData);
@@ -125,8 +127,8 @@ var p = Tween.prototype;
 	 * your own "heartbeat" implementation.
 	 * @method tick
 	 * @static
-	 * @param delta The change in time in milliseconds since the last tick. Required unless all tweens have useTicks set to true.
-	 * @param paused Indicates whether a global pause is in effect. Tweens with ignoreGlobalPause will ignore this, but all others will pause if this is true.
+	 * @param {Number} delta The change in time in milliseconds since the last tick. Required unless all tweens have useTicks set to true.
+	 * @param {Boolean} paused Indicates whether a global pause is in effect. Tweens with ignoreGlobalPause will ignore this, but all others will pause if this is true.
 	 **/
 	Tween.tick = function(delta, paused) {
 		var tweens = Tween._tweens.slice(); // to avoid race conditions.
@@ -143,7 +145,7 @@ var p = Tween.prototype;
 	 * Removes all existing tweens for a target. This is called automatically by new tweens if the "override" prop is true.
 	 * @method removeTweens
 	 * @static
-	 * @param target The target object to remove existing tweens from.
+	 * @param {Object} target The target object to remove existing tweens from.
 	 **/
 	Tween.removeTweens = function(target) {
 		if (!target.tweenjs_count) { return; }
@@ -161,8 +163,8 @@ var p = Tween.prototype;
 	 * Indicates whether there are any active tweens on the target object (if specified) or in general.
 	 * @method hasActiveTweens
 	 * @static
-	 * @param target Optional. If not specified, the return value will indicate if there are any active tweens on any target.
-	 * @return Boolean A boolean indicating whether there are any active tweens.
+	 * @param {Object} target Optional. If not specified, the return value will indicate if there are any active tweens on any target.
+	 * @return {Boolean} A boolean indicating whether there are any active tweens.
 	 **/
 	Tween.hasActiveTweens = function(target) {
 		if (target) { return target.tweenjs_count; }
@@ -174,8 +176,8 @@ var p = Tween.prototype;
 	 * See the CSSPlugin for an example of how to write TweenJS plugins.
 	 * @method installPlugin
 	 * @static
-	 * @param plugin
-	 * @param properties
+	 * @param {Object} plugin
+	 * @param {Array} properties
 	 **/
 	Tween.installPlugin = function(plugin, properties) {
 		var priority = plugin.priority;
@@ -219,6 +221,7 @@ var p = Tween.prototype;
 	 * See Tween.tick() for more info. Can be set via the props param.
 	 * @property ignoreGlobalPause
 	 * @type Boolean
+	 * @default false
 	 **/
 	p.ignoreGlobalPause = false;
 	
@@ -226,6 +229,7 @@ var p = Tween.prototype;
 	 * If true, the tween will loop when it reaches the end. Can be set via the props param.
 	 * @property loop
 	 * @type Boolean
+	 * @default false
 	 **/
 	p.loop = false;
 	
@@ -235,6 +239,7 @@ var p = Tween.prototype;
 	 * behaviour.
 	 * @property duration
 	 * @type Number
+	 * @default 0
 	 **/
 	p.duration = 0;
 	
@@ -380,8 +385,8 @@ var p = Tween.prototype;
 	/** 
 	 * Queues a wait (essentially an empty tween).
 	 * @method wait
-	 * @param duration The duration of the wait in milliseconds (or in ticks if useTicks is true).
-	 * @return Tween This tween instance (for chaining calls).
+	 * @param {Number} duration The duration of the wait in milliseconds (or in ticks if useTicks is true).
+	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.wait = function(duration) {
 		if (duration == null || duration <= 0) { return this; }
@@ -394,10 +399,10 @@ var p = Tween.prototype;
 	 * Numeric properties will be tweened from their current value in the tween to the target value. Non-numeric
 	 * properties will be set at the end of the specified duration.
 	 * @method to
-	 * @param props An object specifying property target values for this tween (Ex. {x:300} would tween the x property of the target to 300).
-	 * @param duration Optional. The duration of the wait in milliseconds (or in ticks if useTicks is true). Defaults to 0.
-	 * @param ease Optional. The easing function to use for this tween. Defaults to a linear ease.
-	 * @return Tween This tween instance (for chaining calls).
+	 * @param {Object} props An object specifying property target values for this tween (Ex. {x:300} would tween the x property of the target to 300).
+	 * @param {Number} duration Optional. The duration of the wait in milliseconds (or in ticks if useTicks is true). Defaults to 0.
+	 * @param {Function} ease Optional. The easing function to use for this tween. Defaults to a linear ease.
+	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.to = function(props, duration, ease) {
 		if (isNaN(duration) || duration < 0) { duration = 0; }
@@ -407,9 +412,10 @@ var p = Tween.prototype;
 	/** 
 	 * Queues an action to call the specified function. For example: myTween.wait(1000).call(myFunction); would call myFunction() after 1s.
 	 * @method call
-	 * @param callback The function to call.
-	 * @param params Optional. The parameters to call the function with. If this is omitted, then the function will be called with a single param pointing to this tween.
-	 * @param scope Optional. The scope to call the function in. If omitted, it will be called in the target's scope.
+	 * @param {Function} callback The function to call.
+	 * @param {Array} params Optional. The parameters to call the function with. If this is omitted, then the function will be
+	 *      called with a single param pointing to this tween.
+	 * @param {Object} scope Optional. The scope to call the function in. If omitted, it will be called in the target's scope.
 	 * @return Tween This tween instance (for chaining calls).
 	 **/
 	p.call = function(callback, params, scope) {
@@ -419,9 +425,9 @@ var p = Tween.prototype;
 	/** 
 	 * Queues an action to set the specified props on the specified target. If target is null, it will use this tween's target. Ex. myTween.wait(1000).set({visible:false},foo);
 	 * @method set
-	 * @param props The properties to set (ex. {visible:false}).
-	 * @param target Optional. The target to set the properties on. If omitted, they will be set on the tween's target.
-	 * @return Tween This tween instance (for chaining calls).
+	 * @param {Object} props The properties to set (ex. {visible:false}).
+	 * @param {Object} target Optional. The target to set the properties on. If omitted, they will be set on the tween's target.
+	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.set = function(props, target) {
 		return this._addAction({f:this._set, o:this, p:[props, target ? target : this._target]});
@@ -430,8 +436,8 @@ var p = Tween.prototype;
 	/** 
 	 * Queues an action to to play (unpause) the specified tween. This enables you to sequence multiple tweens. Ex. myTween.to({x:100},500).play(otherTween);
 	 * @method play
-	 * @param tween The tween to play.
-	 * @return Tween This tween instance (for chaining calls).
+	 * @param {Tween} tween The tween to play.
+	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.play = function(tween) {
 		return this.call(tween.setPaused, [false], tween);
@@ -440,7 +446,8 @@ var p = Tween.prototype;
 	/** 
 	 * Queues an action to to pause the specified tween.
 	 * @method pause
-	 * @param tween The tween to play. If null, it pauses this tween.
+	 * @param {Tween} tween The tween to play. If null, it pauses this tween.
+	 * @return {Tween} This tween instance (for chaining calls)
 	 **/
 	p.pause = function(tween) {
 		if (!tween) { tween = this; }
@@ -450,9 +457,9 @@ var p = Tween.prototype;
 	/** 
 	 * Advances the tween to a specified position.
 	 * @method setPosition
-	 * @param value The position to seek to in milliseconds (or ticks if useTicks is true).
-	 * @param actionsMode Optional parameter specifying how actions are handled (ie. call, set, play, pause): Tween.NONE (0) - run no actions. Tween.LOOP (1) - if new position is less than old, then run all actions between old and duration, then all actions between 0 and new. Defaults to LOOP. Tween.REVERSE (2) - if new position is less than old, run all actions between them in reverse. 
-	 * @return Boolean Returns true if the tween is complete (ie. the full tween has run & loop is false).
+	 * @param {Number} value The position to seek to in milliseconds (or ticks if useTicks is true).
+	 * @param {Number} actionsMode Optional parameter specifying how actions are handled (ie. call, set, play, pause): Tween.NONE (0) - run no actions. Tween.LOOP (1) - if new position is less than old, then run all actions between old and duration, then all actions between 0 and new. Defaults to LOOP. Tween.REVERSE (2) - if new position is less than old, run all actions between them in reverse.
+	 * @return {Boolean} Returns true if the tween is complete (ie. the full tween has run & loop is false).
 	 **/
 	p.setPosition = function(value, actionsMode) {
 		if (value < 0) { value = 0; }
@@ -511,7 +518,7 @@ var p = Tween.prototype;
 	 * Advances this tween by the specified amount of time in milliseconds (or ticks if useTicks is true).
 	 * This is normally called automatically by the Tween engine (via Tween.tick), but is exposed for advanced uses.
 	 * @method tick
-	 * @param delta The time to advance in milliseconds (or ticks if useTicks is true).
+	 * @param {Number} delta The time to advance in milliseconds (or ticks if useTicks is true).
 	 **/
 	p.tick = function(delta) {
 		if (this._paused) { return; }
@@ -521,7 +528,8 @@ var p = Tween.prototype;
 	/** 
 	 * Pauses or plays this tween.
 	 * @method setPaused
-	 * @param value Indicates whether the tween should be paused (true) or played (false).
+	 * @param {Boolean} value Indicates whether the tween should be paused (true) or played (false).
+	 * @return {Tween} This tween instance (for chaining calls)
 	 **/
 	p.setPaused = function(value) {
 		this._paused = !!value;
