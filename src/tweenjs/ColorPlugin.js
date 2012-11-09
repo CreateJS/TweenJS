@@ -69,7 +69,7 @@ this.createjs = this.createjs||{};
 		if (propIndexMap[format][prop] == null) throwErr(WRONG_PROPERTY, format.toUpperCase(), prop.toUpperCase());
 	}
 	function isValidTarget(t) {
-		return t.graphics && t.graphics._fillInstructions && typeof getColor(t) === 'string';
+		return t.graphics && t.graphics._fillInstructions && typeof getGraphicsColorCmdParams(t)[COLOR_PARAM_INDEX] === 'string' || typeof t.color === 'string';
 	}
 	
 	// get/set color
@@ -77,7 +77,7 @@ this.createjs = this.createjs||{};
 		return t.graphics._fillInstructions[0].params;
 	}
 	function getColor(t) {
-		return getGraphicsColorCmdParams(t)[COLOR_PARAM_INDEX] || t.color;
+		return t.color || getGraphicsColorCmdParams(t)[COLOR_PARAM_INDEX] ;
 	}
 	function setColor(t, v) {
 		if (t.color) {
@@ -92,6 +92,10 @@ this.createjs = this.createjs||{};
 		return c.substring(c.indexOf('(') + 1, c.length - 1).replace(/(%| )/g,'').split(',');
 	}
 	function parseHexColor(c) {
+		if (c.length === 4) {
+			c += c.substring(1,4);
+		}
+		
 		return [ hexToDec(c.substring(1,3)), hexToDec(c.substring(3,5)), hexToDec(c.substring(5,7)) ];
 	}
 	
@@ -108,7 +112,7 @@ this.createjs = this.createjs||{};
 	
 	// hex conversions
 	function isHex(c) {
-		return c.charAt(0) === '#' && c.length === 7;
+		return c.charAt(0) === '#';
 	}
 	function hexToDec(h) {
 		return _int(h, 16);
