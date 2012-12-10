@@ -55,7 +55,6 @@ var CSSPlugin = function() {
 	CSSPlugin.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
 	
 	/**
-	 * Used by TweenJS to determine when to call this plugin.
 	 * @property priority
 	 * @protected
 	 * @static
@@ -63,7 +62,7 @@ var CSSPlugin = function() {
 	CSSPlugin.priority = -100; // very low priority, should run last
 
 	/**
-	 * Installs this plugin for use with TweenJS. Call this once, after TweenJS is loaded to enable this plugin.
+	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
 	 **/
@@ -75,14 +74,13 @@ var CSSPlugin = function() {
 	
 	
 	/**
-	 * Called by TweenJS when a new tween property initializes that this plugin is registered for.
 	 * @method init
 	 * @protected
 	 * @static
 	 **/
 	CSSPlugin.init = function(tween, prop, value) {
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
-		if ((sfx0 = map[prop]) == null || !(style = tween._target.style)) { return value; }
+		if ((sfx0 = map[prop]) == null || !(style = tween.target.style)) { return value; }
 		var str = style[prop];
 		if (!str) { return 0; } // no style set.
 		var i = str.length-sfx0.length;
@@ -94,16 +92,25 @@ var CSSPlugin = function() {
 	}
 	
 	/**
-	 * Called by TweenJS when a tween property advances that this plugin is registered for.
+	 * @method step
+	 * @protected
+	 * @static
+	 **/
+	CSSPlugin.step = function(tween, prop, startValue, endValue) {
+		// unused
+	}
+	
+	
+	/**
 	 * @method tween
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, position, end) {
+	CSSPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, wait, end) {
 		var style,map = CSSPlugin.cssSuffixMap;
-		if (map[prop] == null || !(style = tween._target.style)) { return value; }
+		if (map[prop] == null || !(style = tween.target.style)) { return value; }
 		style[prop] = value+map[prop];
-		return value;
+		return createjs.Tween.IGNORE;
 	}
 
 // public properties:

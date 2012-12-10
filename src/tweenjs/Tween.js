@@ -46,8 +46,8 @@ this.createjs = this.createjs||{};
 * @class Tween
 * @constructor
 **/
-var Tween = function(target, props) {
-  this.initialize(target, props);
+var Tween = function(target, props, pluginData) {
+  this.initialize(target, props, pluginData);
 }
 var p = Tween.prototype;
 
@@ -115,8 +115,11 @@ var p = Tween.prototype;
 	 *    <LI> position: indicates the initial position for this tween.</LI>
 	 *    <LI> onChanged: specifies an onChange handler for this tween.</LI>
 	 * </UL>
+	 * @param pluginData Optional. An object containing data for use by installed plugins. See individual plugins' documentation for details.
+	 * @param override If true, any previous tweens on the same target will be removed. This is the same as calling Tween.removeTweens(target).
 	 **/
-	Tween.get = function(target, props, pluginData) {
+	Tween.get = function(target, props, pluginData, override) {
+		if (override) { Tween.removeTweens(target); }
 		return new Tween(target, props, pluginData);
 	}
 	
@@ -470,6 +473,11 @@ var p = Tween.prototype;
 		}
 		if (t == this._prevPos) { return end; }
 		
+		
+		var prevPos = this._prevPos;
+		this.position = this._prevPos = t; // set this in advance in case an action modifies position.
+		this._prevPosition = value;
+		
 		// handle tweens:
 		if (this._target) {
 			if (end) {
@@ -481,14 +489,11 @@ var p = Tween.prototype;
 					if (this._steps[i].t > t) { break; }
 				}
 				var step = this._steps[i-1];
-				this._updateTargetProps(step,(this._stepPosition = t-step.t)/step.d,t);
+				this._updateTargetProps(step,(this._stepPosition = t-step.t)/step.d);
 			}
 		}
 		
 		// run actions:
-		var prevPos = this._prevPos;
-		this.position = this._prevPos = t; // set this in advance in case an action modifies position.
-		this._prevPosition = value;
 		if (actionsMode != 0 && this._actions.length > 0) {
 			if (this._useTicks) {
 				// only run the actions we landed on.
@@ -557,7 +562,7 @@ var p = Tween.prototype;
 	 * @method _updateTargetProps
 	 * @protected
 	 **/
-	p._updateTargetProps = function(step, ratio, position) {
+	p._updateTargetProps = function(step, ratio) {
 		var p0,p1,v,v0,v1,arr;
 		if (!step && ratio == 1) {
 			p0 = p1 = this._curQueueProps;
@@ -581,7 +586,7 @@ var p = Tween.prototype;
 			var ignore = false;
 			if (arr = Tween._plugins[n]) {
 				for (var i=0,l=arr.length;i<l;i++) {
-					var v2 = arr[i].tween(this, n, v, p0, p1, ratio, position, !step);
+					var v2 = arr[i].tween(this, n, v, p0, p1, ratio, !!step&&p0==p1, !step);
 					if (v2 == Tween.IGNORE) { ignore = true; }
 					else { v = v2; }
 				}
@@ -623,19 +628,26 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p._appendQueueProps = function(o) {
-		var arr,value,v2;
+		var arr,value,i, l;
 		for (var n in o) {
-			if (this._initQueueProps[n] == null) {
+			if (this._initQueueProps[n] === undefined) {
 				value = this._target[n];
 				
 				// init plugins:
 				if (arr = Tween._plugins[n]) {
-					for (var i=0,l=arr.length;i<l;i++) {
-						v2 = arr[i].init(this, n, value);
-						if (v2 != Tween.IGNORE) { value = v2; }
+					for (i=0,l=arr.length;i<l;i++) {
+						value = arr[i].init(this, n, value);
 					}
 				}
-				this._initQueueProps[n] = value;
+				this._initQueueProps[n] = value==null?null:value;
+			} else {
+				value = this._curQueueProps[n];
+			}
+			if (arr = Tween._plugins[n]) {
+				for (i=0, l=arr.length;i<l;i++) {
+					// TODO: remove the check for .step in the next version. It's here for backwards compatibility.
+					if (arr[i].step) { arr[i].step(this, n, value, o[n]); }
+				}
 			}
 			this._curQueueProps[n] = o[n];
 		}
