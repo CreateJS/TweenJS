@@ -7,7 +7,8 @@ CONFIGURATION
 var SOURCE_FILES = [
 	__dirname + "/../src/tweenjs/Tween.js",
 	__dirname + "/../src/tweenjs/Timeline.js",
-	__dirname + "/../src/tweenjs/Ease.js"
+	__dirname + "/../src/tweenjs/Ease.js",
+	__dirname + "/../src/tweenjs/MotionGuidePlugin.js"
 ];
 
 // default name for lib output:
