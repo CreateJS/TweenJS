@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TweenJS: Complex Motion Guide Demo</title>
+
+	<link rel="stylesheet" href="assets/demoStyles.css" />
+	<script type="text/javascript" src="../lib/easeljs-0.5.0.min.js"></script>
+
+	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/MotionGuidePlugin.js"></script>
+
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+
+	<script>
+		var canvas;
+		var stage;
+		var star;
+		var path;
+
+		function init() {
+			if (window.top != window) {
+				document.getElementById("header").style.display = "none";
+			}
+
+			createjs.MotionGuidePlugin.install(createjs.Tween);
+
+			canvas = document.getElementById("testCanvas");
+			stage = new createjs.Stage(canvas);
+			stage.autoClear = true;
+
+			// draw a single star to re-use it's graphics
+			star = new createjs.Shape();
+			star.graphics.beginFill("#DFD200");
+			star.graphics.drawPolyStar(0, 0, 25, 3, 0.75);
+
+			// create the path to be shared
+			path = [100,300, 400,0, 960,200, 600,200, 400,400, 350,350, 300,400, 275,375, 250,400];
+
+			// create 50 stars to travel along the shared path
+			for(var count=50; count>=0; count--){
+				setTimeout(addStar, 7000*Math.random())
+			}
+
+			createjs.Ticker.addListener(window);
+		}
+
+		function addStar(tween) {
+			// reuse the star to create the obj
+			var obj = new createjs.Shape(star.graphics);
+
+			// determine some animation properties
+			var animationLength = 4000+1000*Math.random();		// make some tweens faster
+			var end = 0.6 + 0.5*Math.random();					// stop some tweens part way along
+
+			// use 2 different tweens, but share the same path
+			if(Math.random() < 0.1){
+				// orient some tweens to the path
+				tweenProperties = {
+					guide:{path:path, end:end, orient:true},
+					alpha:0
+				};
+
+				// make the oriented stars big and flattened (like space ships)
+				obj.scaleX = 1.2 + 0.8*Math.random();
+				obj.scaleY = obj.scaleX*0.5;
+
+			} else {
+				// rotate the other objects
+				tweenProperties = {
+					guide:{path:path, end:end},
+					alpha:0,
+					rotation:1080
+				};
+
+				// make spinning stars small
+				obj.scaleX = obj.scaleY = 0.2 + 0.3*Math.random();
+				obj.alpha = 0.5;
+			}
+
+			// apply our tween
+			createjs.Tween.get(obj, {loop:true}, true)
+				.to(tweenProperties, animationLength, createjs.Ease.quadOut)
+			;
+
+			// display the tweening object
+			stage.addChild(obj);
+		}
+		function tick() {
+			stage.update();
+		}
+
+
+	</script>
+	<link rel="stylesheet" href="assets/demoStyles.css"/>
+</head>
+<body onload="init();" >
+
+<div class="canvasHolder">
+
+	<header id="header" class="EaselJS">
+	    <h1><span class="text-product">Tween<strong>JS</strong></span> Complex Motion Guide Demo</h1>
+	    <p>This example shows a complex use of the MotionGuidePlugin that re-uses path objects and shows more API.</p>
+	</header>
+
+	<canvas id="testCanvas" width="960" height="400"></canvas>
+
+</div>
+
+</body>
+</html>

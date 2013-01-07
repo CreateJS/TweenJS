@@ -1,3 +1,10 @@
+Version NEXT [not released]
+****************************************************************************************************
+- added MotionGuidePlugin
+- expanded plugin model and added SamplePlugin
+- documentation improvements
+
+
 Version 0.3.0 [Aug 27, 2012]
 ****************************************************************************************************
 - moved all class definitions into a configurable "createjs" namespace
