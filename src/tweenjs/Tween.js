@@ -446,6 +446,7 @@ var p = Tween.prototype;
 		return this._addAction({f:callback, p:params ? params : [this], o:scope ? scope : this._target});
 	}
 	
+	// TODO: add clarification between this and a 0 duration .to:
 	/** 
 	 * Queues an action to set the specified props on the specified target. If target is null, it will use this tween's
 	 * target. Ex. myTween.wait(1000).set({visible:false},foo);
@@ -667,29 +668,32 @@ var p = Tween.prototype;
 	 * @protected
 	 **/
 	p._appendQueueProps = function(o) {
-		var arr,value,i, l;
+		var arr,oldValue,i, l, injectProps;
 		for (var n in o) {
 			if (this._initQueueProps[n] === undefined) {
-				value = this._target[n];
+				oldValue = this._target[n];
 				
 				// init plugins:
 				if (arr = Tween._plugins[n]) {
 					for (i=0,l=arr.length;i<l;i++) {
-						value = arr[i].init(this, n, value);
+						oldValue = arr[i].init(this, n, oldValue);
 					}
 				}
-				this._initQueueProps[n] = value==null?null:value;
+				this._initQueueProps[n] = oldValue===undefined?null:oldValue;
 			} else {
-				value = this._curQueueProps[n];
+				oldValue = this._curQueueProps[n];
 			}
+			
 			if (arr = Tween._plugins[n]) {
+				injectProps = injectProps||{};
 				for (i=0, l=arr.length;i<l;i++) {
 					// TODO: remove the check for .step in the next version. It's here for backwards compatibility.
-					if (arr[i].step) { arr[i].step(this, n, value, o[n]); }
+					if (arr[i].step) { arr[i].step(this, n, oldValue, o[n], injectProps); }
 				}
 			}
 			this._curQueueProps[n] = o[n];
 		}
+		if (injectProps) { this._appendQueueProps(injectProps); }
 		return this._curQueueProps;
 	}
 

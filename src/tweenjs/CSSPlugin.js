@@ -96,7 +96,7 @@ var CSSPlugin = function() {
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.step = function(tween, prop, startValue, endValue) {
+	CSSPlugin.step = function(tween, prop, startValue, endValue, injectProps) {
 		// unused
 	}
 	

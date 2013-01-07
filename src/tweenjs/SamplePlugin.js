@@ -94,10 +94,11 @@ var SamplePlugin = function() {
 	 * @param {any} startValue The value of the property at the beginning of the step. This will
 	 * be the same as the init value if this is the first step, or the same as the
 	 * endValue of the previous step if not.
+	 * @param {Object} injectProps A generic object to which the plugin can append other properties which should be updated on this step.
 	 * @param {any} endValue The value of the property at the end of the step.
 	 * @static
 	 **/
-	SamplePlugin.step = function(tween, prop, startValue, endValue) {
+	SamplePlugin.step = function(tween, prop, startValue, endValue, injectProps) {
 		console.log("to: ", prop, startValue, endValue);
 	};
 	
