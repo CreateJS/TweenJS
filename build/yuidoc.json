@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "name": "TweenJS",
+    "description": "Tween JS API.",
+
+    "url": "http://www.createjs.com/#!/TweenJS",
+    "logo":"http://alpha.createjs.com/resources/SuiteIcons/TweenJS/TweenJS_64x64.png",
+    "options": {
+        "outdir": "./output",
+        "linkNatives": "true",
+        "attributesEmit": "true",
+        "selleck": "true",
+        "paths":["../src"],
+		"helpers" : ["./path.js"]
+    }
+}

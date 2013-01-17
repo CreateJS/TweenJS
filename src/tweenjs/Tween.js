@@ -347,7 +347,7 @@ var p = Tween.prototype;
 	 * @default 0
 	 * @protected
 	 */
-	p._stepPosition = 0;
+	p._stepPosition = 0; // this is needed by MovieClip.
 	
 	/**
 	 * Normalized position.

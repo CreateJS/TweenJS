@@ -1,0 +1,18 @@
+{
+	"config_tweenjs": {
+        "SOURCE_FILES": [
+            "/../src/tweenjs/Tween.js",
+            "/../src/tweenjs/Timeline.js",
+            "/../src/tweenjs/Ease.js"
+        ],
+        "JS_FILE_NAME": "tweenjs-%VERSION%.min.js",
+        "PROJECT_NAME": "TweenJS",
+        "PROJECT_URL": "http://createjs.com/",
+        "DOCS_DIR_NAME": "_docs-%VERSION%",
+        "DOCS_FILE_NAME": ".zip",
+        "OUTPUT_DIR_NAME": "/output_min",
+        "TEMPLATE_DIR_PATH": "/template",
+        "TMP_DIR_NAME": "/tmp",
+        "GOOGLE_CLOSURE_PATH" : "/../tools/google-closure/compiler.jar"     
+	}
+}
