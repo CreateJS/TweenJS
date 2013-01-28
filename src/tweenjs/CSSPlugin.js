@@ -31,9 +31,13 @@ this.createjs = this.createjs||{};
 
 (function() {
 /**
- * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply call
- * CSSPlugin.install() after TweenJS has loaded. You can adjust the CSS properties it will work with by
- * modifying the cssSuffixMap property.
+ * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
+ * TweenJS has loaded:
+ *
+ *      createjs.CSSPlugin.install();
+ *
+ * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
+ * the top, left, bottom, right, width, height have a "px" suffix appended.
  * @class CSSPlugin
  * @constructor
  **/

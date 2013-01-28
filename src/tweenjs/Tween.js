@@ -27,13 +27,32 @@
 */
 
 /**
- * The TweenJS Javascript library provides a simple but powerful tweening interface. It allows you to chain tweens and
- * actions together to create complex sequences. For example:<br/>
- * For example:<br/>Tween.get(target).wait(500).to({alpha:0,visible:false},1000).call(onComplete);<br/>
- * This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the onComplete function.
+ * The TweenJS Javascript library provides a simple but powerful tweening interface. It supports tweening of both
+ * numeric object properties & CSS style properties, and allows you to chain tweens and actions together to create
+ * complex sequences.
+ *
+ * <h4>Simple Tween</h4>
+ * This tween will tween the target's alpha property from 0 to 1 for 1s then call the <code>onComplete</code> function.
+ *
+ *	    target.alpha = 0;
+ *	    Tween.get(target).to({alpha:1}, 1000).call(onComplete);
+ *	    function onComplete() {
+ *	    	//Tween complete
+ *	    }
+ *
+ * <h4>Chainable Tween</h4> 
+ * This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the
+ * <code>onComplete</code> function.
+ *
+ *	    target.alpha = 1;
+ *	    Tween.get(target).wait(500).to({alpha:0, visible:false}, 1000).call(onComplete);
+ *	    function onComplete() {
+ *	    	//Tween complete
+ *	    }
+ *
  * @module TweenJS
  */
-
+ 
 // TODO: possibly add a END actionsMode (only runs actions that == position)?
 // TODO: evaluate a way to decouple paused from tick registration.
 
@@ -42,7 +61,33 @@ this.createjs = this.createjs||{};
 
 (function() {
 /**
- * Returns a new Tween instance. See Tween.get for param documentation.
+ * A Tween instance tweens properties for a single target. Instance methods can be chained for easy construction and sequencing:
+ *
+ * <h4>Example</h4>
+ *
+ *      target.alpha = 1;
+ *	    Tween.get(target)
+ *	         .wait(500)
+ *	         .to({alpha:0, visible:false}, 1000)
+ *	         .call(onComplete);
+ *	    function onComplete() {
+ *	    	//Tween complete
+ *	    }
+ *
+ * Multiple tweens can point to the same instance, however if they affect the same properties there could be unexpected
+ * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass <code>override:true</code>
+ * in the props argument.
+ *
+ *      Tween.get(target, {override:true}).to({x:100});
+ *
+ * Subscribe to the "change" event to get notified when a property of the target is changed.
+ *
+ *      Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
+ *      function handleChange(event) {
+ *          // The tween changed.
+ *      }
+ *
+ * See the Tween {{#crossLink "Tween/get"}}{{/crossLink}} method for additional param documentation.
  * @class Tween
  * @constructor
  */
@@ -106,10 +151,12 @@ var p = Tween.prototype;
 	/**
 	 * Returns a new tween instance. This is functionally identical to using "new Tween(...)", but looks cleaner
 	 * with the chained syntax of TweenJS.
+	 * @example
+	 *	var tween = createjs.Tween.get(target);
 	 * @method get
 	 * @static
 	 * @param {Object} target The target object that will have its properties tweened.
-	 * @param {Object} props The configuration properties to apply to this tween instance (ex. {loop:true, paused:true}).
+	 * @param {Object} props The configuration properties to apply to this tween instance (ex. <code>{loop:true, paused:true}</code>).
 	 * All properties default to false. Supported props are:<UL>
 	 *    <LI> loop: sets the loop property on this tween.</LI>
 	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
@@ -117,14 +164,15 @@ var p = Tween.prototype;
 	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
 	 *    <LI> paused: indicates whether to start the tween paused.</LI>
 	 *    <LI> position: indicates the initial position for this tween.</LI>
-	 *    <LI> onChanged: specifies an onChange handler for this tween.</LI>
+	 *    <LI> onChange: specifies an onChange handler for this tween. Note that this is deprecated in favour of the
+	 *    "change" event.</LI>
 	 * </UL>
-	 * @param {Object} pluginData Optional. An object containing data for use by installed plugins. See individual
-	 *      plugins' documentation for details.
-	 * @param {Boolean} override If true, any previous tweens on the same target will be removed. This is the same as
-	 *      calling Tween.removeTweens(target).
+	 * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
+	 * plugins' documentation for details.
+	 * @param {Boolean} [override=false] If true, any previous tweens on the same target will be removed. This is the same as
+	 * calling <code>Tween.removeTweens(target)</code>.
 	 * @return {Tween} A reference to the created tween. Additional chained tweens, method calls, or callbacks can be
-	 *      applied to the returned tween instance.
+	 * applied to the returned tween instance.
 	 **/
 	Tween.get = function(target, props, pluginData, override) {
 		if (override) { Tween.removeTweens(target); }
@@ -137,9 +185,9 @@ var p = Tween.prototype;
 	 * @method tick
 	 * @static
 	 * @param {Number} delta The change in time in milliseconds since the last tick. Required unless all tweens have
-	 *      useTicks set to true.
-	 * @param {Boolean} paused Indicates whether a global pause is in effect. Tweens with ignoreGlobalPause will ignore
-	 *      this, but all others will pause if this is true.
+	 * <code>useTicks</code> set to true.
+	 * @param {Boolean} paused Indicates whether a global pause is in effect. Tweens with <code>ignoreGlobalPause</code> will ignore
+	 * this, but all others will pause if this is true.
 	 **/
 	Tween.tick = function(delta, paused) {
 		var tweens = Tween._tweens.slice(); // to avoid race conditions.
@@ -153,7 +201,7 @@ var p = Tween.prototype;
 	
 	
 	/** 
-	 * Removes all existing tweens for a target. This is called automatically by new tweens if the "override" prop is true.
+	 * Removes all existing tweens for a target. This is called automatically by new tweens if the <code>override</code> prop is true.
 	 * @method removeTweens
 	 * @static
 	 * @param {Object} target The target object to remove existing tweens from.
@@ -175,7 +223,7 @@ var p = Tween.prototype;
 	 * @method hasActiveTweens
 	 * @static
 	 * @param {Object} target Optional. If not specified, the return value will indicate if there are any active tweens
-	 *      on any target.
+	 * on any target.
 	 * @return {Boolean} A boolean indicating whether there are any active tweens.
 	 **/
 	Tween.hasActiveTweens = function(target) {
@@ -188,8 +236,8 @@ var p = Tween.prototype;
 	 * example of how to write TweenJS plugins.
 	 * @method installPlugin
 	 * @static
-	 * @param {Object} plugin
-	 * @param {Array} properties
+	 * @param {Object} plugin The plugin class to install
+	 * @param {Array} properties An array of properties that the plugin will handle.
 	 **/
 	Tween.installPlugin = function(plugin, properties) {
 		var priority = plugin.priority;
@@ -225,11 +273,22 @@ var p = Tween.prototype;
 			if (i != -1) { Tween._tweens.splice(i,1); }
 		}
 	}
+    
+    // mix-ins:
+    // EventDispatcher methods:
+    p.addEventListener = null;
+    p.removeEventListener = null;
+    p.removeAllEventListeners = null;
+    p.dispatchEvent = null;
+    p.hasEventListener = null;
+    p._listeners = null;
+
+    createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.  
 
 // public properties:
 	/**
 	 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using Ticker,
-	 * then setting this to true (the default) will cause this tween to be paused when Ticker.setPaused(true) is called.
+	 * then setting this to true (the default) will cause this tween to be paused when <code>Ticker.setPaused(true)</code> is called.
 	 * See Tween.tick() for more info. Can be set via the props param.
 	 * @property ignoreGlobalPause
 	 * @type Boolean
@@ -240,7 +299,7 @@ var p = Tween.prototype;
 	/**
 	 * If true, the tween will loop when it reaches the end. Can be set via the props param.
 	 * @property loop
-	 * @type Boolean
+	 * @type {Boolean}
 	 * @default false
 	 **/
 	p.loop = false;
@@ -250,38 +309,47 @@ var p = Tween.prototype;
 	 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
 	 * behaviour.
 	 * @property duration
-	 * @type Number
+	 * @type {Number}
 	 * @default 0
 	 **/
 	p.duration = 0;
 	
 	/**
 	 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
-	 * you specify data by setting it to a property of pluginData with the same name as the plugin class.<br/>
-	 * Ex. myTween.pluginData.PluginClassName = data;<br/>
+	 * you specify data by setting it to a property of pluginData with the same name as the plugin class.
+	 * @example
+	 *	myTween.pluginData.PluginClassName = data;
 	 * <br/>
 	 * Also, most plugins support a property to enable or disable them. This is typically the plugin class name followed by "_enabled".<br/>
-	 * Ex. myTween.pluginData.PluginClassName_enabled = false;<br/>
+	 * @example 
+	 *	myTween.pluginData.PluginClassName_enabled = false;<br/>
 	 * <br/>
 	 * Some plugins also store instance data in this object, usually in a property named _PluginClassName.
 	 * See the documentation for individual plugins for more details.
 	 * @property pluginData
-	 * @type Object
+	 * @type {Object}
 	 **/
 	p.pluginData = null;
 	
 	/**
 	 * Called whenever the tween's position changes with a single parameter referencing this tween instance.
 	 * @property onChange
-	 * @type Function
+	 * @type {Function}
 	 **/
 	p.onChange = null;
+    
+    /**
+	 * Called whenever the tween's position changes with a single parameter referencing this tween instance.
+     * @event change
+     * @since 0.4.0
+	 **/
+    p.change = null;
 	
 	/**
 	 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing 
 	 * this property after the tween is created will not have any effect.
 	 * @property target
-	 * @type Object
+	 * @type {Object}
 	 **/
 	p.target = null;
 	
@@ -289,7 +357,7 @@ var p = Tween.prototype;
 	 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
 	 * Changing this property directly will have no effect.
 	 * @property position
-	 * @type Object
+	 * @type {Object}
 	 **/
 	p.position = null;
 
@@ -297,7 +365,7 @@ var p = Tween.prototype;
 	
 	/**
 	 * @property _paused
-	 * @type Boolean
+	 * @type {Boolean}
 	 * @default false
 	 * @protected
 	 **/
@@ -305,28 +373,28 @@ var p = Tween.prototype;
 	
 	/**
 	 * @property _curQueueProps
-	 * @type Object
+	 * @type {Object}
 	 * @protected
 	 **/
 	p._curQueueProps = null;
 	
 	/**
 	 * @property _initQueueProps
-	 * @type Object
+	 * @type {Object}
 	 * @protected
 	 **/
 	p._initQueueProps = null;
 	
 	/**
 	 * @property _steps
-	 * @type Array
+	 * @type {Array}
 	 * @protected
 	 **/
 	p._steps = null;
 	
 	/**
 	 * @property _actions
-	 * @type Array
+	 * @type {Array}
 	 * @protected
 	 **/
 	p._actions = null;
@@ -334,7 +402,7 @@ var p = Tween.prototype;
 	/**
 	 * Raw position.
 	 * @property _prevPosition
-	 * @type Number
+	 * @type {Number}
 	 * @default 0
 	 * @protected
 	 **/
@@ -343,7 +411,7 @@ var p = Tween.prototype;
 	/**
 	 * The position within the current step.
 	 * @property _stepPosition
-	 * @type Number
+	 * @type {Number}
 	 * @default 0
 	 * @protected
 	 */
@@ -352,7 +420,7 @@ var p = Tween.prototype;
 	/**
 	 * Normalized position.
 	 * @property _prevPos
-	 * @type Number
+	 * @type {Number}
 	 * @default -1
 	 * @protected
 	 **/
@@ -360,14 +428,14 @@ var p = Tween.prototype;
 	
 	/**
 	 * @property _target
-	 * @type Object
+	 * @type {Object}
 	 * @protected
 	 **/
 	p._target = null;
 	
 	/**
 	 * @property _useTicks
-	 * @type Boolean
+	 * @type {Boolean}
 	 * @default false
 	 * @protected
 	 **/
@@ -404,8 +472,11 @@ var p = Tween.prototype;
 // public methods:
 	/** 
 	 * Queues a wait (essentially an empty tween).
+	 * @example                                                   
+	 *	//This tween will wait 1s before alpha is faded to 0.
+	 *	createjs.Tween.get(target).wait(1000).to({alpha:0}, 1000);
 	 * @method wait
-	 * @param {Number} duration The duration of the wait in milliseconds (or in ticks if useTicks is true).
+	 * @param {Number} duration The duration of the wait in milliseconds (or in ticks if <code>useTicks</code> is true).
 	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.wait = function(duration) {
@@ -418,10 +489,12 @@ var p = Tween.prototype;
 	 * Queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
 	 * Numeric properties will be tweened from their current value in the tween to the target value. Non-numeric
 	 * properties will be set at the end of the specified duration.
+	 * @example
+	 *	createjs.Tween.get(target).to({alpha:0}, 1000);
 	 * @method to
-	 * @param {Object} props An object specifying property target values for this tween (Ex. {x:300} would tween the x
+	 * @param {Object} props An object specifying property target values for this tween (Ex. <code>{x:300}</code> would tween the x
 	 *      property of the target to 300).
-	 * @param {Number} duration Optional. The duration of the wait in milliseconds (or in ticks if useTicks is true).
+	 * @param {Number} duration Optional. The duration of the wait in milliseconds (or in ticks if <code>useTicks</code> is true).
 	 *      Defaults to 0.
 	 * @param {Function} ease Optional. The easing function to use for this tween. Defaults to a linear ease.
 	 * @return {Tween} This tween instance (for chaining calls).
@@ -432,8 +505,10 @@ var p = Tween.prototype;
 	}
 	
 	/** 
-	 * Queues an action to call the specified function. For example: myTween.wait(1000).call(myFunction); would call
-	 * myFunction() after 1s.
+	 * Queues an action to call the specified function. 
+	 *	@example
+	 *   	//would call myFunction() after 1s.      
+	 *   	myTween.wait(1000).call(myFunction);
 	 * @method call
 	 * @param {Function} callback The function to call.
 	 * @param {Array} params Optional. The parameters to call the function with. If this is omitted, then the function
@@ -449,9 +524,11 @@ var p = Tween.prototype;
 	// TODO: add clarification between this and a 0 duration .to:
 	/** 
 	 * Queues an action to set the specified props on the specified target. If target is null, it will use this tween's
-	 * target. Ex. myTween.wait(1000).set({visible:false},foo);
+	 * target.
+	 * @example
+	 *	myTween.wait(1000).set({visible:false},foo);
 	 * @method set
-	 * @param {Object} props The properties to set (ex. {visible:false}).
+	 * @param {Object} props The properties to set (ex. <code>{visible:false}</code>).
 	 * @param {Object} target Optional. The target to set the properties on. If omitted, they will be set on the tween's target.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
@@ -461,7 +538,8 @@ var p = Tween.prototype;
 	
 	/** 
 	 * Queues an action to to play (unpause) the specified tween. This enables you to sequence multiple tweens.
-	 * Ex. myTween.to({x:100},500).play(otherTween);
+	 * @example 
+	 *	myTween.to({x:100},500).play(otherTween);
 	 * @method play
 	 * @param {Tween} tween The tween to play.
 	 * @return {Tween} This tween instance (for chaining calls).
@@ -486,8 +564,8 @@ var p = Tween.prototype;
 	 * @method setPosition
 	 * @param {Number} value The position to seek to in milliseconds (or ticks if useTicks is true).
 	 * @param {Number} actionsMode Optional parameter specifying how actions are handled (ie. call, set, play, pause):
-	 *      Tween.NONE (0) - run no actions. Tween.LOOP (1) - if new position is less than old, then run all actions
-	 *      between old and duration, then all actions between 0 and new. Defaults to LOOP. Tween.REVERSE (2) - if new
+	 *      <code>Tween.NONE</code> (0) - run no actions. <code>Tween.LOOP</code> (1) - if new position is less than old, then run all actions
+	 *      between old and duration, then all actions between 0 and new. Defaults to <code>LOOP</code>. <code>Tween.REVERSE</code> (2) - if new
 	 *      position is less than old, run all actions between them in reverse.
 	 * @return {Boolean} Returns true if the tween is complete (ie. the full tween has run & loop is false).
 	 **/
@@ -543,14 +621,15 @@ var p = Tween.prototype;
 		if (end) { this.setPaused(true); }
 		
 		this.onChange&&this.onChange(this);
+        this.dispatchEvent("change");
 		return end;
 	}
 
 	/** 
-	 * Advances this tween by the specified amount of time in milliseconds (or ticks if useTicks is true).
-	 * This is normally called automatically by the Tween engine (via Tween.tick), but is exposed for advanced uses.
+	 * Advances this tween by the specified amount of time in milliseconds (or ticks if <code>useTicks</code> is true).
+	 * This is normally called automatically by the Tween engine (via <code>Tween.tick</code>), but is exposed for advanced uses.
 	 * @method tick
-	 * @param {Number} delta The time to advance in milliseconds (or ticks if useTicks is true).
+	 * @param {Number} delta The time to advance in milliseconds (or ticks if <code>useTicks</code> is true).
 	 **/
 	p.tick = function(delta) {
 		if (this._paused) { return; }

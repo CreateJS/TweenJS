@@ -31,18 +31,25 @@ this.createjs = this.createjs||{};
 
 (function() {
 	/**
-	 * A TweenJS plugin for working with motion guides. To use run MotionGuidePlugin.install() after TweenJS has
-	 * loaded. Next tween the 'guide' property with an object as detailed below. @example
-	 * 		// Using a Motion Guide
-	 *		Tween.get(target).to({guide:{ path:[0,0, 0,200,200,200, 200,0,0,0] }},7000);<br/>
-	 *		// Visualizing the line
-	 *		graphics.moveTo(0,0).curveTo(0,200,200,200).curveTo(200,0,0,0);
+	 * A TweenJS plugin for working with motion guides.
+	 *
+	 * To use, install the plugin after TweenJS has loaded. Next tween the 'guide' property with an object as detailed below.
+	 *
+	 *       createjs.MotionGuidePlugin.install();
+	 *
+	 * <h4>Example</h4>
+	 *
+	 *      // Using a Motion Guide
+	 *	    Tween.get(target).to({guide:{ path:[0,0, 0,200,200,200, 200,0,0,0] }},7000);
+	 *	    // Visualizing the line
+	 *	    graphics.moveTo(0,0).curveTo(0,200,200,200).curveTo(200,0,0,0);
+	 *
 	 * Each path needs pre-computation to ensure there's fast performance. Because of the pre-computation there's no
 	 * built in support for path changes mid tween. These are the Guide Object's properties:<UL>
-	 * <LI> path: Required, Array : The x/y points used to draw the path with a moveTo and 1 to n curveTo calls.</LI>
-	 * <LI> start: Optional, 0-1 : Initial position, default 0 except for when continuing along the same path.</LI>
-	 * <LI> end: Optional, 0-1 : Final position, default 1 if not specified.</LI>
-	 * <LI> orient: Optional, bool : Set the target's rotation parallel to the curve at its position.</LI>
+	 *      <LI> path: Required, Array : The x/y points used to draw the path with a moveTo and 1 to n curveTo calls.</LI>
+	 *      <LI> start: Optional, 0-1 : Initial position, default 0 except for when continuing along the same path.</LI>
+	 *      <LI> end: Optional, 0-1 : Final position, default 1 if not specified.</LI>
+	 *      <LI> orient: Optional, bool : Set the target's rotation parallel to the curve at its position.</LI>
 	 * </UL>
 	 * Guide objects should not be shared between tweens even if all properties are identical, the library stores
 	 * information on these objects in the background and sharing them can cause unexpected behaviour. Values

@@ -31,13 +31,15 @@ this.createjs = this.createjs||{};
 
 (function() {
 
-
 /**
- * The Timeline class synchronizes multiple tweens and allows them to be controlled as a group.
+ * The Timeline class synchronizes multiple tweens and allows them to be controlled as a group. Please note that if a
+ * timeline is looping, the tweens on it may appear to loop even if the "loop" property of the tween is false.
  * @class Timeline
  * @param tweens An array of Tweens to add to this timeline. See addTween for more info.
- * @param labels An object defining labels for using gotoAndPlay/Stop. See setLabels for details.
- * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). All properties default to false. Supported props are:<UL>
+ * @param labels An object defining labels for using gotoAndPlay/Stop. See {{#crossLink "Timeline/setLabels"}}{{/crossLink}}
+ * for details.
+ * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). All properties default to
+ * false. Supported props are:<UL>
  *    <LI> loop: sets the loop property on this tween.</LI>
  *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
  *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>

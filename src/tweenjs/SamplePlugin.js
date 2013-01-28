@@ -31,12 +31,11 @@ this.createjs = this.createjs||{};
 
 (function() {
 /**
- * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's
- * merely intended to document how to build TweenJS plugins. Please look at the code for
- * inline comments.<br/><br/>
- * A TweenJS plugin is simply an object that exposes one property (priority), and three
- * methods (init, step, and tween). Generally a plugin will also expose an install method
- * as well, though this is not strictly necessary.
+ * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
+ * how to build TweenJS plugins. Please look at the code for inline comments.
+ *
+ * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
+ * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
  * @class SamplePlugin
  * @constructor
  **/
@@ -46,18 +45,16 @@ var SamplePlugin = function() {
 	
 // static interface:
 	/**
-	 * Used by TweenJS to determine when to call this plugin. Plugins with higher priority
-	 * have their methods called before plugins with lower priority. The priority value
-	 * can be any positive or negative number.
+	 * Used by TweenJS to determine when to call this plugin. Plugins with higher priority have their methods called
+	 * before plugins with lower priority. The priority value can be any positive or negative number.
 	 * @property priority
 	 * @static
 	 **/
 	SamplePlugin.priority = 0;
 
 	/**
-	 * Installs this plugin for use with TweenJS, and registers for a list of properties
-	 * that this plugin will operate with. Call this once after TweenJS is loaded
-	 * to enable this plugin.
+	 * Installs this plugin for use with TweenJS, and registers for a list of properties that this plugin will operate
+	 * with. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
 	 **/
@@ -67,9 +64,8 @@ var SamplePlugin = function() {
 	};
 	
 	/**
-	 * Called by TweenJS when a new tween property initializes that this plugin is
-	 * registered for. Generally, the call to Plugin.init will be immediately followed by a
-	 * call to Plugin.to.
+	 * Called by TweenJS when a new tween property initializes that this plugin is registered for. Generally, the call
+	 * to <code>Plugin.init</code> will be immediately followed by a call to <code>Plugin.to</code>.
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.
@@ -86,8 +82,8 @@ var SamplePlugin = function() {
 	};
 	
 	/**
-	 * Called by TweenJS when a new step is added to a tween that includes a property the
-	 * plugin is registered for (ie. a new "to" action is added to a tween).
+	 * Called by TweenJS when a new step is added to a tween that includes a property the plugin is registered for (ie.
+	 * a new "to" action is added to a tween).
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property being tweened.

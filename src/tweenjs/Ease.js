@@ -33,17 +33,21 @@ this.createjs = this.createjs||{};
 
 // constructor:
 /**
- * The Ease class provides a collection of easing functions for use with TweenJS.
- * It does not use the standard 4 param easing signature. Instead it uses a single param
- * which indicates the current linear ratio (0 to 1) of the tween.<br/>
- * <br/>
- * Most methods on Ease can be passed directly as easing functions:<br/>
- * Tween.get(target).to({x:100}, 500, Ease.linear);<br/>
- * <br/>
- * However, methods beginning with "get" will return an easing function based on parameter values:<br/>
- * Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));<br/>
- * <br/>
- * Equations derived from work by Robert Penner.
+ * The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param
+ * easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
+ *
+ * Most methods on Ease can be passed directly as easing functions:
+ *
+ *      Tween.get(target).to({x:100}, 500, Ease.linear);
+ *
+ * However, methods beginning with "get" will return an easing function based on parameter values:
+ *
+ *      Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));
+ *
+ * Please see the <a href="http://www.createjs.com/#!/TweenJS/demos/sparkTable">spark table demo</a> for an overview
+ * of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
+ *
+ * <i>Equations derived from work by Robert Penner.</i>
  * @class Ease
  * @static
  **/

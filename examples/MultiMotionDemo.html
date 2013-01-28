@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>TweenJS: Complex Motion Guide Demo</title>
+	<title>TweenJS: Simple Motion Guide Demo</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
 	<script type="text/javascript" src="../lib/easeljs-0.5.0.min.js"></script>
 
+    <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/MotionGuidePlugin.js"></script>
@@ -16,8 +17,6 @@
 	<script>
 		var canvas;
 		var stage;
-		var star;
-		var path;
 
 		function init() {
 			if (window.top != window) {
@@ -30,62 +29,51 @@
 			stage = new createjs.Stage(canvas);
 			stage.autoClear = true;
 
-			// draw a single star to re-use it's graphics
-			star = new createjs.Shape();
-			star.graphics.beginFill("#DFD200");
-			star.graphics.drawPolyStar(0, 0, 25, 3, 0.75);
+			var ball = new createjs.Shape();
+			ball.graphics.setStrokeStyle(5, 'round', 'round');
+			ball.graphics.beginStroke(('#000000'));
+			ball.graphics.beginFill("#FF0000").drawCircle(0,0,50);
+			ball.graphics.endStroke();
+			ball.graphics.endFill();
+			ball.graphics.setStrokeStyle(1, 'round', 'round');
+			ball.graphics.beginStroke(('#000000'));
+			ball.graphics.moveTo(0,0);
+			ball.graphics.lineTo(50,0);
+			ball.graphics.endStroke();
 
-			// create the path to be shared
-			path = [100,300, 400,0, 960,200, 600,200, 400,400, 350,350, 300,400, 275,375, 250,400];
+			ball.x = 0;
+			ball.y = 400;
+			/*var tween = createjs.Tween.get(ball, {loop:true}, true)
+					.wait(1000)
+					.to({x:300,y:300}, 5000)
+					.wait(1000)
+					.to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
+					.wait(1000)
+					.to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
+					.to({x:300,y:300}, 5000)
+					.to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
+			;*/
+			var tween = createjs.Tween.get(ball, {loop:true}, true)
+					.to({x:150,y:150}, 3000)
+					.to({rotation: -45}, 1000)
+					.to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
+					.to({x:900,y:300}, 2000)
+					.wait(2000)
+					.to({rotation: 360}, 2000)
+					.to({guide:{path:[100,100, 800,100, 800,300], start:1, end:0}}, 5000)
+					.wait(2000)
+					.to({x:200,y:200}, 1000)
+					.to({rotation: -360, guide:{path:[100,100, 800,100, 800,300]}}, 3000)
+				;
 
-			// create 50 stars to travel along the shared path
-			for(var count=50; count>=0; count--){
-				setTimeout(addStar, 7000*Math.random())
-			}
+			stage.addChild(ball);
 
 			createjs.Ticker.addListener(window);
 		}
 
-		function addStar(tween) {
-			// reuse the star to create the obj
-			var obj = new createjs.Shape(star.graphics);
+		function handleComplete(tween) {
+			var ball = tween._target;
 
-			// determine some animation properties
-			var animationLength = 4000+1000*Math.random();		// make some tweens faster
-			var end = 0.6 + 0.5*Math.random();					// stop some tweens part way along
-
-			// use 2 different tweens, but share the same path
-			if(Math.random() < 0.1){
-				// orient some tweens to the path
-				tweenProperties = {
-					guide:{path:path, end:end, orient:true},
-					alpha:0
-				};
-
-				// make the oriented stars big and flattened (like space ships)
-				obj.scaleX = 1.2 + 0.8*Math.random();
-				obj.scaleY = obj.scaleX*0.5;
-
-			} else {
-				// rotate the other objects
-				tweenProperties = {
-					guide:{path:path, end:end},
-					alpha:0,
-					rotation:1080
-				};
-
-				// make spinning stars small
-				obj.scaleX = obj.scaleY = 0.2 + 0.3*Math.random();
-				obj.alpha = 0.5;
-			}
-
-			// apply our tween
-			createjs.Tween.get(obj, {loop:true}, true)
-				.to(tweenProperties, animationLength, createjs.Ease.quadOut)
-			;
-
-			// display the tweening object
-			stage.addChild(obj);
 		}
 		function tick() {
 			stage.update();
@@ -100,8 +88,8 @@
 <div class="canvasHolder">
 
 	<header id="header" class="EaselJS">
-	    <h1><span class="text-product">Tween<strong>JS</strong></span> Complex Motion Guide Demo</h1>
-	    <p>This example shows a complex use of the MotionGuidePlugin that re-uses path objects and shows more API.</p>
+	    <h1><span class="text-product">Tween<strong>JS</strong></span> Simple Tween Demo</h1>
+	    <p>This example shows a simple use of the MotionGuidePlugin.</p>
 	</header>
 
 	<canvas id="testCanvas" width="960" height="400"></canvas>
