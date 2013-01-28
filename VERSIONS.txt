@@ -1,9 +1,10 @@
-Version NEXT [not released]
+Version NEXT [Not released]
 ****************************************************************************************************
-- added MotionGuidePlugin
-- expanded plugin model and added SamplePlugin
-- documentation improvements
-
+- added EaselJS EventDispatcher capabilities to TweenJS
+- updated build process to use NodeJS
+- added tween_version.js, which generates a TweenJS object at run time that contains build information
+- updated documentation descriptions, examples, and style
+- added MotionGuidePlugin to support Toolkit for CreateJS
 
 Version 0.3.0 [Aug 27, 2012]
 ****************************************************************************************************
