@@ -55,36 +55,29 @@ var GOOGLE_CLOSURE_PATH = PATH.resolve("../"+PATH.normalize(config.GOOGLE_CLOSUR
 /*
 END CONFIGURATION
 ************************************************************/
-
-OPTIMIST.describe("v", "Enable verbose output")
-	.alias("v", "verbose")
-	.boolean("v")
+OPTIMIST
 	.describe("l", "List all available tasks")
 	.alias("l", "list")
 	.boolean("l")
 	.describe("h", "Display usage")
 	.alias("h", "help")
 	.boolean("h")
-	.describe("version", "Document build version number")
+	.describe("version", "Build version number (x.x.x) defaults 'NEXT'")
 	.string("version")
-	.describe("os", "Operating System")
-	.string("os")
-	.describe("tasks", "Task to run")
-	.default("tasks", "all")
-	.describe("s","Include specified file in compilation. Option can be specified multiple times for multiple files.")
-	.alias("s", "source")
-	.describe("o", "Name of minified JavaScript file.")
-	.alias("o", "output")
-	.default("o", JS_FILE_NAME)
-	.usage("Build Task Manager for "+PROJECT_NAME+"\nUsage\n$0 [-v] [-h] [-l] --tasks=TASK [--version=DOC_VERSION] [--source=FILE] [--output=FILENAME.js]");
-
-
+    .default("version", "NEXT")
+    .describe("tasks", "Task to run options: [ALL, BUILDDOCS, BUILDSOURCE, CLEAN]")
+	.default("tasks", "ALL")
+    .describe("format",  "Formatting minified JS :[STANDARD, PRETTY_PRINT]")
+    .string("format")
+    .default("format", "STANDARD")
+    .usage("Build Task Manager for "+PROJECT_NAME+"\nUsage\n$0 [-h] [-l] --tasks=TASK [--version=DOC_VERSION] [--format=STANDARD]");
 
 //name of minified js file.
 var js_file_name = JS_FILE_NAME;
 
 var version;
 var verbose;
+var format;
 
 var TASK = {
 	ALL:"ALL",
@@ -100,13 +93,13 @@ var extraSourceFiles;
 //This function is called at the bottom of the script
 function main(argv)
 {
-	if(argv.h)
+	if(argv.h || argv.help)
 	{
 		displayUsage();
 		process.exit(0);
 	}
 
-	if(argv.l)
+	if(argv.l || argv.list)
 	{
 		displayTasks();
 		process.exit(0);
@@ -115,19 +108,22 @@ function main(argv)
 	//default doesn't seem to be working for OPTIMIST right now
 	//if task is not specified, we default to ALL
 	var task = (!argv.tasks)?"ALL":argv.tasks.toUpperCase();
-
+    format = (!argv.format)? "STANDARD" : argv.format.toUpperCase();
+    
 	if(!taskIsRecognized(task))
 	{
-		print("Unrecognized task : " + task);
+		print("\033[31m"+"Unrecognized task : " + task+"\033[0m");
 		displayUsage();
 		process.exit(1);
 	}
 
-	verbose = argv.v != undefined;
-	version = argv.version;
-	os = argv.os;
-	
-	extraSourceFiles = argv.s;
+	version = argv.version || "NEXT";
+    var type = OS.type().toLowerCase();
+	if (type.indexOf("windows") != -1) {
+        os = type;
+    } else if (type.indexOf("darwin") != -1) {
+        os = type;
+    }
 	
 	if(argv.o)
 	{
@@ -136,13 +132,13 @@ function main(argv)
 
 	var shouldBuildSource = (task == TASK.BUILDSOURCE);
 	var shouldBuildDocs = (task == TASK.BUILDDOCS);
-
+    
 	if(task==TASK.CLEAN)
 	{
 		cleanTask(
 			function(success)
 			{
-				print("Clean Task Completed");
+				print(setColorText("Clean Task Completed", "green"));
 			}
 		);
 	}
@@ -163,13 +159,13 @@ function main(argv)
 	{
 		buildSourceTask(function(success)
 		{		
-			print("\nBuild Source Task Complete");
+			print(setColorText("\nBuild Source Task Complete", "green"));
 			if(shouldBuildDocs)
 			{
 				buildDocsTask(version,
 					function(success)
 					{
-						print("Build Docs Task Complete");
+						print(setColorText("Build Docs Task Complete", "green"));
 					}
 				);
 			}
@@ -182,7 +178,7 @@ function main(argv)
 		buildDocsTask(version,
 			function(success)
 			{
-				print("Build Docs Task Complete");
+				print(setColorText("Build Docs Task Complete","green"));
 			}
 		);
 	}	
@@ -219,54 +215,57 @@ function buildSourceTask(completeHandler)
 	for(var i = 0; i < len; i++)
 	{
 		file_args.push("--js");
+        
         var dirName = '"'+PATH.resolve(__dirname + SOURCE_FILES[i])+'"';
-		file_args.push(dirName);
+		var pattern = /[\w.\/% ]+version.js/g;
+        var result = pattern.test(dirName);
+        
+        if (result) {
+            var versionData = FILE.readFileSync(PATH.resolve(__dirname + SOURCE_FILES[i]), "UTF-8"); 
+            pattern = /\/\*version\*\/"([\w.]+)"/g;
+            var hasVersionFile = pattern.test(versionData);
+            if (hasVersionFile) {
+                var updateValues = {date:new Date().toUTCString(), version:version};
+                updatedVersionData = replaceMetaData(versionData, updateValues);
+                
+                if (updatedVersionData.length != 0 || updatedVersionData != null || updatedVersionData != "") { 
+                    FILE.writeFileSync(PATH.resolve(__dirname + SOURCE_FILES[i]), updatedVersionData, "UTF-8");
+                } else {
+                    console.log(setColorText("Error -- updating version.js","red"));
+                }
+                
+            }
+        }
+        
+        file_args.push(dirName);
 	}
-	
-	if(extraSourceFiles)
-	{
-		len = extraSourceFiles.length;
-		for(var i = 0; i < len; i++)
-		{
-			file_args.push("--js");
-			file_args.push(extraSourceFiles[i]);
-		}
-	}
-	
 	
 	var tmp_file = '"'+PATH.join(OUTPUT_DIR_NAME,"tmp.js")+'"';
 	var final_file = PATH.join(OUTPUT_DIR_NAME, js_file_name);
 	
 	GOOGLE_CLOSURE_PATH = '"'+GOOGLE_CLOSURE_PATH+'"';
-	
-	var cmd = [
-		"java", "-jar", GOOGLE_CLOSURE_PATH
-	].concat(
+
+	var cmd;
+	if (format == "STANDARD") {
+        cmd = [
+            "java", "-jar", GOOGLE_CLOSURE_PATH
+        ].concat(
 			file_args
-		).concat(
-			["--js_output_file", tmp_file]
-		);
+                ).concat(
+                    ["--js_output_file", tmp_file]
+                );
+    } else if (format == "PRETTY_PRINT") {
+        cmd = [ "java", "-jar", GOOGLE_CLOSURE_PATH ].concat(file_args).concat(["--js_output_file", tmp_file]).concat(["--formatting", "PRETTY_PRINT"]).concat(["--compilation_level", "WHITESPACE_ONLY"]);	
+    } 
 		
 	CHILD_PROCESS.exec(
 		cmd.join(" "),
 		function(error, stdout, stderr)
 		{
-			if(verbose)
-			{
-				if(stdout)
-				{
-					print(stdout);
-				}
-			
-				if(stderr)
-				{
-					print(stderr);
-				}
-			}
 
 		    if (error !== null)
 			{
-				print("Error Running Google Closure : " + error);
+				print(setColorText("Error Running Google Closure : " + error, "red"));
 				exitWithFailure();
 		    }
 		
@@ -294,35 +293,23 @@ function buildDocsTask(version, completeHandler)
 	var generator_out=PATH.join(OUTPUT_DIR_NAME, doc_dir);
 
 	var zipCommand = "";
-    var yuidocCommand = ["yuidoc -q --themedir ./createjsTheme --project-version", version];
-	if(os == "PC"){  
-		zipCommand = "../tools/7z a ../docs/"+doc_file+" output > %temp%/7z-log.txt";
-		// default path:
-		//zipCommand = '"C:/Program Files/7-Zip/7z" a "../docs/'+doc_file+'" -aoa "output/*" > %temp%/7z-log.txt';
+    var yuidocCommand = ["yuidoc -q --themedir ./createjsTheme --outdir "+"./output/"+doc_dir+" --project-version", version];
+    var type = OS.type().toLowerCase();
+    if(type.indexOf("windows") != -1){  
+		//If 7zip.exe is currently with the /build directory.
+		zipCommand = "..\\tools\\7-Zip\\7z a "+"output\\"+doc_file+" "+"output\\"+ doc_dir +" > %temp%\\7z-log.txt";
 	} else {
-		zipCommand = "zip -rq " + "../docs/" + doc_file + " " + "output   " + "*.DS_Store";
+		zipCommand = "cd ./output;zip -rq " + doc_file + " " + ""+doc_dir+"   " + "*.DS_Store";
 	}
     
     CHILD_PROCESS.exec(
 		yuidocCommand.join(" "),
 		function(error, stdout, stderr)
 		{
-			if(verbose)
-			{
-				if(stdout)
-				{
-					print(stdout);
-				}
-			
-				if(stderr)
-				{
-					print(stderr);
-				}
-			}
 
 		    if (error !== null)
 			{
-				print("Error Running YUI DOC : " + error);
+				print(setColorText("Error Running YUI DOC : " + error, "red"));
 				exitWithFailure();
 		    }
 		
@@ -330,32 +317,66 @@ function buildDocsTask(version, completeHandler)
 				zipCommand,
 				function(error, stdout, stderr)
 				{
-					if(verbose)
-					{
-						if(stdout)
-						{
-							print(stdout);
-						}
-
-						if(stderr)
-						{
-							print(stderr);
-						}
-					}
 
 				    if (error !== null)
 					{
-						print("Error ZIPPING Docs : " + error);
+						print(setColorText("Error ZIPPING Docs :" + error, "red"));
 						exitWithFailure();
 				    }
 					completeHandler(true);				
 				});		
-		
-		
-		});	
+		});
 }
 
 /*************** some util methods ******************/
+
+function setColorText(str, color) {
+    var type = color.toLowerCase();
+    var colorStr = ""
+    switch(type) {
+        case "red":
+            colorStr = "\033[31m"+str+"\033[0m";
+            break;
+        case "green":
+            colorStr = "\033[32m"+str+"\033[0m";
+            break;
+        case "blue":
+            colorStr = "\033[34m"+str+"\033[0m"
+            break;
+        case "magenta":
+            colorStr = "\033[35m"+str+"\033[0m"
+            break;
+        case "white":
+            colorStr = "\033[37m"+str+"\033[0m"
+            break;
+        case "cyan":
+            colorStr = "\033[36m"+str+"\033[0m";
+            break;
+        case "yellow":
+            colorStr = "\033[33m"+str+"\033[0m";
+            break;
+        default:
+            colorStr = str;
+    }
+    
+    return colorStr;
+}
+
+function replaceMetaData(data, values) {
+    var finalResult = "";
+    var newData = data;
+    for(var n in values) {
+        var pattern = new RegExp("(\/\\*"+n+"\\*\/\")(.*)(\";)", "i");
+        var result = pattern.test(data);
+        if (result) {
+            finalResult = newData.replace(pattern, "$1"+values[n]+"$3");
+            newData = finalResult;
+        } else {
+            console.log(setColorText("Error -- Unable to resolve value:"+ pattern, "red"));
+        }
+    }
+    return finalResult;
+}
 
 function exitWithFailure()
 {
@@ -364,7 +385,7 @@ function exitWithFailure()
 
 function displayUsage()
 {
-	print(OPTIMIST.help());
+	print(setColorText(OPTIMIST.help(), "yellow"));
 }
 
 function displayTasks()
@@ -376,7 +397,7 @@ function displayTasks()
 		out += TASK[_t] +", "
 	}
 	
-	print(out.slice(0, -2));
+	print(setColorText(out.slice(0, -2), "Cyan"));
 }
 
 function taskIsRecognized(task)

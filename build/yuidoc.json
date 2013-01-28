@@ -4,7 +4,7 @@
     "description": "Tween JS API.",
 
     "url": "http://www.createjs.com/#!/TweenJS",
-    "logo":"http://alpha.createjs.com/resources/SuiteIcons/TweenJS/TweenJS_64x64.png",
+    "logo":"http://createjs.com/resources/SuiteIcons/TweenJS/docs-icon-TweenJS.png",
     "options": {
         "outdir": "./output",
         "linkNatives": "true",
