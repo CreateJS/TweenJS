@@ -1,4 +1,4 @@
-Version NEXT [Not released]
+Version NEXT [Feb 12, 2013]
 ****************************************************************************************************
 - added EaselJS EventDispatcher capabilities to TweenJS
 - updated build process to use NodeJS
