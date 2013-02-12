@@ -4,7 +4,7 @@
 	<title>TweenJS: Simple Motion Guide Demo</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script type="text/javascript" src="../lib/easeljs-0.5.0.min.js"></script>
+	<script type="text/javascript" src="./assets/easeljs-0.6.0.min.js"></script>
 
     <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
@@ -68,17 +68,13 @@
 
 			stage.addChild(ball);
 
-			createjs.Ticker.addListener(window);
+			createjs.Ticker.addEventListener("tick", stage);
 		}
 
 		function handleComplete(tween) {
 			var ball = tween._target;
 
 		}
-		function tick() {
-			stage.update();
-		}
-
 
 	</script>
 	<link rel="stylesheet" href="assets/demoStyles.css"/>

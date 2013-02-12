@@ -4,7 +4,7 @@
     <title>EaselJS Example: Rollovers and Drag & Drop</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script type="text/javascript" src="../lib/easeljs-0.5.0.min.js"></script>
+	<script type="text/javascript" src="./assets/easeljs-0.6.0.min.js"></script>
 
     <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
@@ -28,10 +28,11 @@
 
             canvas = document.getElementById("testCanvas");
             stage = new createjs.Stage(canvas);
+			stage.enableDOMEvents(true);
             tweens = [];
             stage.enableMouseOver(10);
 			createjs.Touch.enable(stage);
-
+			
             for (var i=0; i<circleCount; i++) {
                 // draw the circle, and put it on stage:
                 var circle = new createjs.Shape();
@@ -48,14 +49,15 @@
                 stage.addChild(circle);
             }
             activeCount = circleCount;
-            stage.onMouseUp = handleMouseUp;
+            stage.addEventListener("stagemouseup", handleMouseUp);
 
 	        text = new createjs.Text("Click Anywhere to Tween", "36px Arial", "#777");
 	        text.x = 350;
 	        text.y = 200;
 	        stage.addChild(text);
+			
 
-			createjs.Ticker.addListener(window);
+			createjs.Ticker.addEventListener("tick", tick);
         }
 
 

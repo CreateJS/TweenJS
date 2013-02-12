@@ -4,7 +4,7 @@
 <title>TweenJS: Canvas Tweening Example</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script type="text/javascript" src="../lib/easeljs-0.5.0.min.js"></script>
+	<script type="text/javascript" src="./assets/easeljs-0.6.0.min.js"></script>
 
     <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
@@ -70,8 +70,7 @@
 		createjs.Ticker.setFPS(20);
 		// in order for the stage to continue to redraw when the Ticker is paused we need to add it with
 		// the second ("pauseable") param set to false.
-		createjs.Ticker.addListener(stage,false);
-
+		createjs.Ticker.addEventListener("tick", stage);
 	}
 	</script>
 </head>
@@ -84,6 +83,6 @@
 	</header>
 
 	<canvas id="canvas1" width="960" height="350"></canvas><br/>
-	<input type="button" value="toggle paused" onclick="Ticker.setPaused(!Ticker.getPaused());"
+	<input type="button" value="toggle paused" onclick="createjs.Ticker.setPaused(!createjs.Ticker.getPaused());"
 </body>
 </html>
