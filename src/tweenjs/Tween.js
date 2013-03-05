@@ -156,7 +156,7 @@ var p = Tween.prototype;
 	 * @method get
 	 * @static
 	 * @param {Object} target The target object that will have its properties tweened.
-	 * @param {Object} props The configuration properties to apply to this tween instance (ex. <code>{loop:true, paused:true}</code>).
+	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. <code>{loop:true, paused:true}</code>).
 	 * All properties default to false. Supported props are:<UL>
 	 *    <LI> loop: sets the loop property on this tween.</LI>
 	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
