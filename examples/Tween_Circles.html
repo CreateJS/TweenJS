@@ -78,8 +78,8 @@
             activeCount--;
         }
 
-        function tick() {
-            if (activeCount) { stage.update(); }
+        function tick(event) {
+            if (activeCount) { stage.update(event); }
         }
 
 

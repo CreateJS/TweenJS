@@ -182,7 +182,7 @@
 			run(selectedFunction);
 		}
 
-		function tick() {
+		function tick(event) {
 			if (bar.x != oldX && !resetRuninng) {
 				var g = currentClip.graphics;
 				var pt = new createjs.Point(container.x+prevPoint.x, container.y+prevPoint.y);
@@ -203,9 +203,9 @@
 				g.drawCircle(pt.x, pt.y, 2);
 				g.endFill();
 
-				stage.update();
+				stage.update(event);
 			} else if (resetRuninng) {
-				stage.update();
+				stage.update(event);
 			}
 			oldX = bar.x;
 		}
