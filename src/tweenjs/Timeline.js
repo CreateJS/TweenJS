@@ -284,7 +284,7 @@ var p = Timeline.prototype;
 	p.updateDuration = function() {
 		this.duration = 0;
 		for (var i=0,l=this._tweens.length; i<l; i++) {
-			tween = this._tweens[i];
+			var tween = this._tweens[i];
 			if (tween.duration > this.duration) { this.duration = tween.duration; }
 		}
 	}
