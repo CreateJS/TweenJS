@@ -1,6 +1,11 @@
 Version NEXT [Not Released]
 ****************************************************************************************************
 - Fixed tween reference in a game loop of Timeline.
+- Added additional examples and documentation to Tween
+- Updated examples to propagate the tick event to the stage
+- Documented optional parameters in Tween.get()
+- Updated to latest EventDispatcher
+- Added Tween.removeAllTweens method
 
 
 Version 0.4.0 [Feb 12, 2013]
