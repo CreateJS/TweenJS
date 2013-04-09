@@ -40,6 +40,14 @@
  *	    	//Tween complete
  *	    }
  *
+ * <strong>Arguments and Scope</strong>
+ * Tween also supports a `call()` with arguments and/or a scope. If no scope is passed, then the function is called
+ * anonymously (normal JavaScript behaviour). The scope is useful for maintaining scope when doing object-oriented
+ * style development.
+ *
+ *      Tween.get(target).to({alpha:0})
+ *          .call(onComplete, [argument1, argument2], this);
+ *
  * <h4>Chainable Tween</h4> 
  * This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the
  * <code>onComplete</code> function.
