@@ -40,7 +40,7 @@ this.createjs = this.createjs||{};
 	 * <h4>Example</h4>
 	 *
 	 *      // Using a Motion Guide
-	 *	    Tween.get(target).to({guide:{ path:[0,0, 0,200,200,200, 200,0,0,0] }},7000);
+	 *	    createjs.Tween.get(target).to({guide:{ path:[0,0, 0,200,200,200, 200,0,0,0] }},7000);
 	 *	    // Visualizing the line
 	 *	    graphics.moveTo(0,0).curveTo(0,200,200,200).curveTo(200,0,0,0);
 	 *
