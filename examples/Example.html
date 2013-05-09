@@ -4,7 +4,7 @@
 <title>TweenJS: Canvas Tweening Example</title>
 
 	<link rel="stylesheet" href="assets/demoStyles.css" />
-	<script type="text/javascript" src="./assets/easeljs-0.6.0.min.js"></script>
+	<script type="text/javascript" src="./assets/easeljs-NEXT.min.js"></script>
 
     <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
@@ -36,13 +36,15 @@
 		createjs.Tween.get(circle,{loop:true})
 			.wait(1000) // wait for 1 second
 			.to({scaleX:0.2,scaleY:0.2}) // jump to the new scale properties (default duration of 0)
+            .set({x:100}, circle)
 			.wait(1000)
+                .set({y:200}, circle)
 			.to({scaleX:1,scaleY:1},1000,createjs.Ease.bounceOut) // tween to scaleX/Y of 1 with ease bounce out
 
 		// for demonstration purposes, try setting the override (third) parameter to true
 		// this will override any previous tweens on the circle and replace them with this tween
 		// resulting in the scaling tween above being cleared.
-		createjs.Tween.get(circle, {loop:true}, true) // get a new tween targeting circle
+		createjs.Tween.get({}, {loop:true}, true) // get a new tween targeting circle
 			.to({x:500,y:200,alpha:0.1},1000,createjs.Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
 			.to({x:0},1000,createjs.Ease.get(-1)) // tween x over 0.5s with ease in
 			.to({y:400}) // jump to new y property (defaults to a duration of 0)
