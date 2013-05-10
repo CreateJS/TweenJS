@@ -1,4 +1,4 @@
-Version NEXT [Not Released]
+Version 0.4.1 [May 10, 2013]
 ****************************************************************************************************
 - Fixed tween reference in a game loop of Timeline.
 - Added additional examples and documentation to Tween
