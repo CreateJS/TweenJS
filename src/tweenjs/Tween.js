@@ -58,6 +58,9 @@
  *	    	//Tween complete
  *	    }
  *
+ * <h4>Browser Support</h4>
+ * TweenJS will work in all browsers.
+ *
  * @module TweenJS
  */
  
