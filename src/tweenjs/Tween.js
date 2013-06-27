@@ -250,6 +250,24 @@ var p = Tween.prototype;
 		}
 		tweens.length = 0;
 	}
+
+	/**
+	 * Remove a single tween. This will stop and clean up the tween.
+	 * @method removeTween
+	 * @param tween The tween to remove.
+	 * @static
+	 * @since 0.4.2
+	 */
+	Tween.removeTween = function(tween) {
+		tween.paused = true;
+		tween.target.tweenjs_count--;
+
+		var tweens = Tween._tweens;
+		var index = tweens.indexOf(tween);
+		if (index > -1) {
+			tweens.splice(index, 1);
+		}
+	}
 	
 	/** 
 	 * Indicates whether there are any active tweens on the target object (if specified) or in general.

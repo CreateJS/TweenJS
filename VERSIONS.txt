@@ -1,3 +1,9 @@
+Version NEXT [Not Released]
+****************************************************************************************************
+- Added Tween.removeTween method for cleaning up a single tween.
+- Added note in the documentation on the dependency on EaselJS Ticker.
+
+
 Version 0.4.1 [May 10, 2013]
 ****************************************************************************************************
 - Fixed tween reference in a game loop of Timeline.
@@ -15,6 +21,7 @@ Version 0.4.0 [Feb 12, 2013]
 - added tween_version.js, which generates a TweenJS object at run time that contains build information
 - updated documentation descriptions, examples, and style
 - added MotionGuidePlugin to support Toolkit for CreateJS
+
 
 Version 0.3.0 [Aug 27, 2012]
 ****************************************************************************************************
