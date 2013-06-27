@@ -58,6 +58,11 @@
  *	    	//Tween complete
  *	    }
  *
+ * <h4>Required Support<h4>
+ * Tweenjs requires a ticker function, which is included in <a href="http://www.easeljs.com">EaselJS</a>.
+ * If you are not using EaselJS, you must build your own ticker function that calls {{#crossLink "Tween/tick"}}{{/crossLink}}
+ * on the tweens.
+ *
  * <h4>Browser Support</h4>
  * TweenJS will work in all browsers.
  *
