@@ -596,6 +596,7 @@ var p = Tween.prototype;
 	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.play = function(tween) {
+		if (!tween) { tween = this; }
 		return this.call(tween.setPaused, [false], tween);
 	}
 
