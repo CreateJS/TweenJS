@@ -44,7 +44,7 @@
 		// for demonstration purposes, try setting the override (third) parameter to true
 		// this will override any previous tweens on the circle and replace them with this tween
 		// resulting in the scaling tween above being cleared.
-		createjs.Tween.get({}, {loop:true}, true) // get a new tween targeting circle
+		createjs.Tween.get(circle, {loop:true}, true) // get a new tween targeting circle
 			.to({x:500,y:200,alpha:0.1},1000,createjs.Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
 			.to({x:0},1000,createjs.Ease.get(-1)) // tween x over 0.5s with ease in
 			.to({y:400}) // jump to new y property (defaults to a duration of 0)
