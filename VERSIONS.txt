@@ -2,6 +2,7 @@ Version NEXT [Not Released]
 ****************************************************************************************************
 - Added Tween.removeTween method for cleaning up a single tween.
 - Added note in the documentation on the dependency on EaselJS Ticker.
+- Swapped indexOf usages for inline for loops (for IE8 support)
 - Updated Ticker usage to use EventDispatcher instead. Added handleEvent to propagate tick event
 
 

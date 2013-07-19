@@ -195,12 +195,17 @@ var p = Timeline.prototype;
 			for (var i=0; i<l; i++) { good = good && this.removeTween(arguments[i]); }
 			return good;
 		} else if (l == 0) { return false; }
-		var index = this._tweens.indexOf(tween);
-		if (index != -1) {
-			this._tweens.splice(index,1);
-			if (tween.duration >= this.duration) { this.updateDuration(); }
-			return true;
-		} else { return false; }
+
+		var tweens = this._tweens;
+		var i = tweens.length;
+		while (i--) {
+			if (tweens[i] == tween) {
+				tweens.splice(i, 1);
+				if (tween.duration >= this.duration) { this.updateDuration(); }
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/** 

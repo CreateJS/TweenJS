@@ -279,9 +279,12 @@ var p = Tween.prototype;
 		tween.target.tweenjs_count--;
 
 		var tweens = Tween._tweens;
-		var index = tweens.indexOf(tween);
-		if (index > -1) {
-			tweens.splice(index, 1);
+		var i = tweens.length;
+		while(i--) {
+			if (tweens[i] == tween) {
+				tweens.splice(i, 1);
+				break;
+			}
 		}
 	}
 	
@@ -336,8 +339,14 @@ var p = Tween.prototype;
 			Tween._tweens.push(tween);
 		} else {
 			if (target) { target.tweenjs_count--; }
-			var i = Tween._tweens.indexOf(tween);
-			if (i != -1) { Tween._tweens.splice(i,1); }
+			var tweens = Tween._tweens;
+			var i = tweens.length;
+			while (i--) {
+				if (tweens[i] == tween) {
+					tweens.splice(i, 1);
+					return;
+				}
+			}
 		}
 	}
     
