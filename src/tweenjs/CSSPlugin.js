@@ -38,6 +38,8 @@ this.createjs = this.createjs||{};
  *
  * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
  * the top, left, bottom, right, width, height have a "px" suffix appended.
+ *
+ * Please note that the CSS Plugin is not included in the TweenJS minified file.
  * @class CSSPlugin
  * @constructor
  **/
