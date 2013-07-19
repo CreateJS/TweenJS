@@ -213,8 +213,24 @@ var p = Tween.prototype;
 			tween.tick(tween._useTicks?1:delta);
 		}
 	}
-	if (createjs.Ticker) { createjs.Ticker.addListener(Tween,false); }
-	
+
+	// Static initialization of Ticker.
+	if (createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); }
+
+	/**
+	 * Handle events that result from Tween being used as an event handler. This is included to allow Tween to handle
+	 * tick events from <code>createjs.Ticker</code>. No other events are handled in Tween.
+	 * @method handleEvent
+	 * @param {Object} event An event object passed in by the EventDispatcher. Will usually be of type "tick".
+	 * @private
+	 * @static
+	 * @since 0.4.2
+	 */
+	Tween.handleEvent = function(event) {
+		if (event.type == "tick") {
+			this.tick(event.delta, event.paused);
+		}
+	}
 	
 	/** 
 	 * Removes all existing tweens for a target. This is called automatically by new tweens if the <code>override</code>
