@@ -8,6 +8,7 @@ Version NEXT [Not Released]
 	* Added note in code on static initialization of Ticker
 - Swapped indexOf usages for inline for loops (for IE8 support)
 - Updated Ticker usage to use EventDispatcher instead. Added handleEvent to propagate tick event
+- Added TweenOnlyDemo to show TweenJS usage without EaselJS
 
 
 Version 0.4.1 [May 10, 2013]

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TweenJS: Simple Tween Demo</title>
+
+    <link rel="stylesheet" href="assets/demoStyles.css"/>
+
+    <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
+    <script type="text/javascript" src="assets/Ticker.js"></script>
+    <script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
+    <script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
+    <script type="text/javascript" src="../src/tweenjs/CSSPlugin.js"></script>
+
+    <!-- We also provide hosted minified versions of all CreateJS libraries.
+      http://code.createjs.com -->
+
+    <style>
+        .content {
+            position: relative;
+        }
+        .ball {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            border-radius: 25px;
+            border: 1px solid #000;
+        }
+    </style>
+
+    <script>
+        function init() {
+            if (window.top != window) {
+                document.getElementById("header").style.display = "none";
+            }
+
+            createjs.CSSPlugin.install(createjs.Tween);
+
+            var ball = document.createElement("div");
+            ball.className = "ball";
+            document.body.appendChild(ball);
+
+            ball.style.left = "200px";
+            ball.style.top = "100px";
+
+            var w = 960;
+            var h = 400;
+
+            var tween = createjs.Tween.get(ball, {loop:true})
+                 .to({width: 100, height:100, top:h - 55}, 1500, createjs.Ease.bounceOut)
+                 .wait(1000)
+                 .to({left:w-55}, 2500, createjs.Ease.bounceOut)
+                 .wait(1000)
+                 .to({width:200, height:200, left:w - 110, top:h-110}, 2500, createjs.Ease.bounceOut)
+                 .wait(1000)
+                 .to({width:50, height:50, left:30, top:h-30}, 2500, createjs.Ease.bounceOut)
+                    .wait(1000);
+        }
+    </script>
+
+</head>
+<body onload="init()">
+
+<div class="canvasHolder">
+
+	<header id="header" class="EaselJS">
+	    <h1><span class="text-product">Tween<strong>JS</strong></span> Tween only Demo</h1>
+	    <p>This example shows TweenJS without using Canvas/EaselJS, to showcase legacy support for IE8. Only the
+        EventDispatcher and Ticker classes are required from EaselJS. Note that Ticker is not included in Tween,
+        so you will have to include EaselJS or Ticker manually.</p>
+	</header>
+
+    <div id="testCanvas"></div>
+</div>
+
+</body>
+</html>
