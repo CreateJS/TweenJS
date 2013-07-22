@@ -35,19 +35,19 @@ this.createjs = this.createjs||{};
  * The Timeline class synchronizes multiple tweens and allows them to be controlled as a group. Please note that if a
  * timeline is looping, the tweens on it may appear to loop even if the "loop" property of the tween is false.
  * @class Timeline
- * @param tweens An array of Tweens to add to this timeline. See addTween for more info.
- * @param labels An object defining labels for using gotoAndPlay/Stop. See {{#crossLink "Timeline/setLabels"}}{{/crossLink}}
+ * @param {Array} tweens An array of Tweens to add to this timeline. See addTween for more info.
+ * @param {Object} labels An object defining labels for using {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
+ * See {{#crossLink "Timeline/setLabels"}}{{/crossLink}}
  * for details.
- * @param props The configuration properties to apply to this tween instance (ex. {loop:true}). All properties default to
- * false. Supported props are:<UL>
+ * @param {Object} props The configuration properties to apply to this tween instance (ex. `{loop:true}`). All properties
+ * default to false. Supported props are:<UL>
  *    <LI> loop: sets the loop property on this tween.</LI>
  *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
  *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
  *    <LI> paused: indicates whether to start the tween paused.</LI>
  *    <LI> position: indicates the initial position for this timeline.</LI>
- *    <LI> onChange: specifies a listener to add for the change event.</LI>
+ *    <LI> onChange: specifies a listener to add for the {{#crossLink "Timeline/change:event"}}{{/crossLink}} event.</LI>
  * </UL>
- * @class Tween
  * @uses EventDispatcher
  * @constructor
  **/
@@ -82,7 +82,8 @@ var p = Timeline.prototype;
 	
 	// TODO: deprecated.
 	/**
-	 * REMOVED. Use addEventListener and the "change" event.
+	 * REMOVED. Use {{#crossLink "EventDispatcher/addEventListener"}}{{/crossLink}} and the {{#crossLink "Timeline/change:event"}}{{/crossLink}}
+	 * event.
 	 * @property onChange
 	 * @type Function
 	 * @deprecated Use addEventListener and the "change" event.
@@ -140,6 +141,7 @@ var p = Timeline.prototype;
 	/**
 	 * @property _prevPosition
 	 * @type Number
+	 * @default 0
 	 * @protected
 	 **/
 	p._prevPosition = 0;
@@ -147,6 +149,7 @@ var p = Timeline.prototype;
 	/**
 	 * @property _prevPos
 	 * @type Number
+	 * @default -1
 	 * @protected
 	 **/
 	p._prevPos = -1;
@@ -154,6 +157,7 @@ var p = Timeline.prototype;
 	/**
 	 * @property _useTicks
 	 * @type Boolean
+	 * @default false
 	 * @protected
 	 **/
 	p._useTicks = false;
@@ -230,10 +234,10 @@ var p = Timeline.prototype;
 	}
 	
 	/** 
-	 * Adds a label that can be used with gotoAndPlay/Stop.
+	 * Adds a label that can be used with {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
 	 * @method addLabel
-	 * @param label The label name.
-	 * @param position The position this label represents.
+	 * @param {String} label The label name.
+	 * @param {Number} position The position this label represents.
 	 **/
 	p.addLabel = function(label, position) {
 		this._labels[label] = position;
@@ -241,8 +245,9 @@ var p = Timeline.prototype;
 
 	/** 
 	 * Defines labels for use with gotoAndPlay/Stop. Overwrites any previously set labels.
-	 * @method addLabel
-	 * @param o An object defining labels for using gotoAndPlay/Stop in the form {labelName:time} where time is in ms (or ticks if useTicks is true).
+	 * @method setLabels
+	 * @param {Object} o An object defining labels for using gotoAndPlay/Stop in the form `{labelName:time}` where time is in
+	 * milliseconds (or ticks if `useTicks` is true).
 	 **/
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
@@ -251,7 +256,7 @@ var p = Timeline.prototype;
 	/** 
 	 * Unpauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndPlay
-	 * @param positionOrLabel The position in milliseconds (or ticks if useTicks is true) or label to jump to.
+	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is true) or label to jump to.
 	 **/
 	p.gotoAndPlay = function(positionOrLabel) {
 		this.setPaused(false);
@@ -261,7 +266,7 @@ var p = Timeline.prototype;
 	/** 
 	 * Pauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndStop
-	 * @param positionOrLabel The position in milliseconds (or ticks if useTicks is true) or label to jump to.
+	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is true) or label to jump to.
 	 **/
 	p.gotoAndStop = function(positionOrLabel) {
 		this.setPaused(true);
@@ -271,9 +276,10 @@ var p = Timeline.prototype;
 	/** 
 	 * Advances the timeline to the specified position.
 	 * @method setPosition
-	 * @param value The position to seek to in milliseconds (or ticks if useTicks is true).
-	 * @param actionsMode Optional parameter specifying how actions are handled. See Tween.setPosition for more details.
-	 * @return Boolean Returns true if the timeline is complete (ie. the full timeline has run & loop is false).
+	 * @param {Number} value The position to seek to in milliseconds (or ticks if `useTicks` is true).
+	 * @param {Number} [actionsMode] parameter specifying how actions are handled. See the Tween {{#crossLink "Tween/setPosition"}}{{/crossLink}}
+	 * method for more details.
+	 * @return {Boolean} Returns true if the timeline is complete (ie. the full timeline has run & loop is false).
 	 **/
 	p.setPosition = function(value, actionsMode) {
 		if (value < 0) { value = 0; }
@@ -294,7 +300,7 @@ var p = Timeline.prototype;
 	/** 
 	 * Pauses or plays this timeline.
 	 * @method setPaused
-	 * @param value Indicates whether the tween should be paused (true) or played (false).
+	 * @param {Boolean} value Indicates whether the tween should be paused (true) or played (false).
 	 **/
 	p.setPaused = function(value) {
 		this._paused = !!value;
@@ -319,7 +325,7 @@ var p = Timeline.prototype;
 	 * Advances this timeline by the specified amount of time in milliseconds (or ticks if useTicks is true).
 	 * This is normally called automatically by the Tween engine (via Tween.tick), but is exposed for advanced uses.
 	 * @method tick
-	 * @param delta The time to advance in milliseconds (or ticks if useTicks is true).
+	 * @param {Number} delta The time to advance in milliseconds (or ticks if useTicks is true).
 	 **/
 	p.tick = function(delta) {
 		this.setPosition(this._prevPosition+delta);
@@ -329,7 +335,7 @@ var p = Timeline.prototype;
 	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
 	 * corresponding frame label will be returned, or null if a matching label is not defined.
 	 * @method resolve
-	 * @param positionOrLabel A numeric position value or label string.
+	 * @param {String|Number} positionOrLabel A numeric position value or label string.
 	 **/
 	p.resolve = function(positionOrLabel) {
 		var pos = parseFloat(positionOrLabel);

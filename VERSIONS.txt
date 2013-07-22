@@ -6,7 +6,6 @@ CRITICAL (may break existing content):
 *****
 - added "passive" param to Tween.wait()
 - updates to MotionGuidePlugin
-- Added Tween.removeTween method for cleaning up a single tween.
 - Documentation
 	* Added note in the documentation on the dependency on EaselJS Ticker.
 	* Added note on CSSPlugin not being included in minified versions
@@ -15,6 +14,7 @@ CRITICAL (may break existing content):
 - Swapped indexOf usages for inline for loops (for IE8 support)
 - Updated Ticker usage to use EventDispatcher instead. Added handleEvent to propagate tick event
 - Added TweenOnlyDemo to show TweenJS usage without EaselJS
+- Fixed incorrectly doc'd Timeline documented put all Timeline APIs into Tween instead.
 
 
 Version 0.4.1 [May 10, 2013]

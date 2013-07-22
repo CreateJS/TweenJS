@@ -105,6 +105,19 @@ this.createjs = this.createjs||{};
  *
  * See the Tween {{#crossLink "Tween/get"}}{{/crossLink}} method for additional param documentation.
  * @class Tween
+ * @param {Object} target The target object that will have its properties tweened.
+ * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:true, paused:true}`.
+ * All properties default to false. Supported props are:<UL>
+ *    <LI> loop: sets the loop property on this tween.</LI>
+ *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
+ *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
+ *    <LI> override: if true, `Tween.removeTweens(target)` will be called to remove any other tweens with the same target.
+ *    <LI> paused: indicates whether to start the tween paused.</LI>
+ *    <LI> position: indicates the initial position for this tween.</LI>
+ *    <LI> onChange: specifies a listener for the "change" event.</LI>
+ * </UL>
+ * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
+ * plugins' documentation for details.
  * @uses EventDispatcher
  * @constructor
  */
@@ -390,7 +403,8 @@ var p = Tween.prototype;
 	
 	// TODO: deprecated.
 	/**
-	 * REMOVED. Use addEventListener and the "change" event.
+	 * REMOVED. Use {{#crossLink "EventDispatcher/addEventListener"}}{{/crossLink}} and the {{#crossLink "Tween/change:event"}}{{/crossLink}}
+	 * event.
 	 * @property onChange
 	 * @type {Function}
 	 * @deprecated Use addEventListener and the "change" event.
