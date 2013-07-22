@@ -1,7 +1,7 @@
 {
 	"config_tweenjs": {
         "SOURCE_FILES": [
-			"/../src/easeljs/events/Tween.js",
+			"/../src/easeljs/events/Event.js",
 			"/../src/easeljs/events/EventDispatcher.js",
             "/../src/tweenjs/Tween.js",
             "/../src/tweenjs/Timeline.js",
