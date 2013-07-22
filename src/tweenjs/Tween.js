@@ -32,11 +32,11 @@
  * complex sequences.
  *
  * <h4>Simple Tween</h4>
- * This tween will tween the target's alpha property from 0 to 1 for 1s then call the <code>onComplete</code> function.
+ * This tween will tween the target's alpha property from 0 to 1 for 1s then call the <code>handleComplete</code> function.
  *
  *	    target.alpha = 0;
- *	    Tween.get(target).to({alpha:1}, 1000).call(onComplete);
- *	    function onComplete() {
+ *	    Tween.get(target).to({alpha:1}, 1000).call(handleComplete);
+ *	    function handleComplete() {
  *	    	//Tween complete
  *	    }
  *
@@ -46,15 +46,15 @@
  * style development.
  *
  *      Tween.get(target).to({alpha:0})
- *          .call(onComplete, [argument1, argument2], this);
+ *          .call(handleComplete, [argument1, argument2], this);
  *
  * <h4>Chainable Tween</h4> 
  * This tween will wait 0.5s, tween the target's alpha property to 0 over 1s, set it's visible to false, then call the
- * <code>onComplete</code> function.
+ * <code>handleComplete</code> function.
  *
  *	    target.alpha = 1;
- *	    Tween.get(target).wait(500).to({alpha:0, visible:false}, 1000).call(onComplete);
- *	    function onComplete() {
+ *	    Tween.get(target).wait(500).to({alpha:0, visible:false}, 1000).call(handleComplete);
+ *	    function handleComplete() {
  *	    	//Tween complete
  *	    }
  *
@@ -85,8 +85,8 @@ this.createjs = this.createjs||{};
  *	    Tween.get(target)
  *	         .wait(500)
  *	         .to({alpha:0, visible:false}, 1000)
- *	         .call(onComplete);
- *	    function onComplete() {
+ *	         .call(handleComplete);
+ *	    function handleComplete() {
  *	    	//Tween complete
  *	    }
  *
@@ -105,11 +105,12 @@ this.createjs = this.createjs||{};
  *
  * See the Tween {{#crossLink "Tween/get"}}{{/crossLink}} method for additional param documentation.
  * @class Tween
+ * @uses EventDispatcher
  * @constructor
  */
 var Tween = function(target, props, pluginData) {
   this.initialize(target, props, pluginData);
-}
+};
 var p = Tween.prototype;
 
 // static interface:
@@ -179,8 +180,7 @@ var p = Tween.prototype;
 	 *    <LI> override: if true, Tween.removeTweens(target) will be called to remove any other tweens with the same target.
 	 *    <LI> paused: indicates whether to start the tween paused.</LI>
 	 *    <LI> position: indicates the initial position for this tween.</LI>
-	 *    <LI> onChange: specifies an onChange handler for this tween. Note that this is deprecated in favour of the
-	 *    "change" event.</LI>
+	 *    <LI> onChange: specifies a listener for the "change" event.</LI>
 	 * </UL>
 	 * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
 	 * plugins' documentation for details.
@@ -193,7 +193,7 @@ var p = Tween.prototype;
 	Tween.get = function(target, props, pluginData, override) {
 		if (override) { Tween.removeTweens(target); }
 		return new Tween(target, props, pluginData);
-	}
+	};
 	
 	/**
 	 * Advances all tweens. This typically uses the Ticker class (available in the EaselJS library), but you can call it
@@ -214,7 +214,7 @@ var p = Tween.prototype;
 			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
 			tween.tick(tween._useTicks?1:delta);
 		}
-	}
+	};
 
 	// Static initialization of Ticker.
 	if (createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); }
@@ -232,7 +232,7 @@ var p = Tween.prototype;
 		if (event.type == "tick") {
 			this.tick(event.delta, event.paused);
 		}
-	}
+	};
 	
 	/** 
 	 * Removes all existing tweens for a target. This is called automatically by new tweens if the <code>override</code>
@@ -251,10 +251,10 @@ var p = Tween.prototype;
 			}
 		}
 		target.tweenjs_count = 0;
-	}
+	};
 
 	/**
-	 * Remove all tweens. This will stop and clean up all existing tweens.
+	 * Stop and remove all existing tweens.
 	 * @method removeAllTweens
 	 * @static
 	 * @since 0.4.1
@@ -267,28 +267,7 @@ var p = Tween.prototype;
 			tween.target.tweenjs_count = 0;
 		}
 		tweens.length = 0;
-	}
-
-	/**
-	 * Remove a single tween. This will stop and clean up the tween.
-	 * @method removeTween
-	 * @param tween The tween to remove.
-	 * @static
-	 * @since 0.4.2
-	 */
-	Tween.removeTween = function(tween) {
-		tween.paused = true;
-		tween.target.tweenjs_count--;
-
-		var tweens = Tween._tweens;
-		var i = tweens.length;
-		while(i--) {
-			if (tweens[i] == tween) {
-				tweens.splice(i, 1);
-				break;
-			}
-		}
-	}
+	};
 	
 	/** 
 	 * Indicates whether there are any active tweens on the target object (if specified) or in general.
@@ -301,7 +280,7 @@ var p = Tween.prototype;
 	Tween.hasActiveTweens = function(target) {
 		if (target) { return target.tweenjs_count; }
 		return Tween._tweens && Tween._tweens.length;
-	}
+	};
 	
 	/** 
 	 * Installs a plugin, which can modify how certain properties are handled when tweened. See the CSSPlugin for an
@@ -325,7 +304,7 @@ var p = Tween.prototype;
 				p[n].splice(j,0,plugin);
 			}
 		}
-	}
+	};
 	
 	/** 
 	 * Registers or unregisters a tween with the ticking system.
@@ -335,13 +314,13 @@ var p = Tween.prototype;
 	 */
 	Tween._register = function(tween, value) {
 		var target = tween._target;
+		var tweens = Tween._tweens;
 		if (value) {
 			// TODO: this approach might fail if a dev is using sealed objects in ES5
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
-			Tween._tweens.push(tween);
+			tweens.push(tween);
 		} else {
 			if (target) { target.tweenjs_count--; }
-			var tweens = Tween._tweens;
 			var i = tweens.length;
 			while (i--) {
 				if (tweens[i] == tween) {
@@ -350,18 +329,18 @@ var p = Tween.prototype;
 				}
 			}
 		}
-	}
+	};
     
-    // mix-ins:
-    // EventDispatcher methods:
-    p.addEventListener = null;
-    p.removeEventListener = null;
-    p.removeAllEventListeners = null;
-    p.dispatchEvent = null;
-    p.hasEventListener = null;
-    p._listeners = null;
-
-    createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.  
+// mix-ins:
+	// EventDispatcher methods:
+	p.addEventListener = null;
+	p.removeEventListener = null;
+	p.removeAllEventListeners = null;
+	p.dispatchEvent = null;
+	p.hasEventListener = null;
+	p._listeners = null;
+	
+	createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.
 
 // public properties:
 	/**
@@ -409,19 +388,13 @@ var p = Tween.prototype;
 	 */
 	p.pluginData = null;
 	
+	// TODO: deprecated.
 	/**
-	 * Called whenever the tween's position changes with a single parameter referencing this tween instance.
+	 * REMOVED. Use addEventListener and the "change" event.
 	 * @property onChange
 	 * @type {Function}
+	 * @deprecated Use addEventListener and the "change" event.
 	 */
-	p.onChange = null;
-    
-    /**
-	 * Called whenever the tween's position changes with a single parameter referencing this tween instance.
-     * @event change
-     * @since 0.4.0
-	 */
-    p.change = null;
 	
 	/**
 	 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing 
@@ -438,6 +411,20 @@ var p = Tween.prototype;
 	 * @type {Object}
 	 */
 	p.position = null;
+	
+	/**
+	 * Read-only. Indicates the tween's current position is within a passive wait.
+	 * @property passive
+	 * @type {Boolean}
+	 **/
+	p.passive = false;
+
+// events:
+	/**
+	 * Called whenever the tween's position changes.
+	 * @event change
+	 * @since 0.4.0
+	 **/
 
 // private properties:
 	
@@ -533,7 +520,7 @@ var p = Tween.prototype;
 			this._useTicks = props.useTicks;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
 			this.loop = props.loop;
-			this.onChange = props.onChange;
+			props.onChange&&this.addEventListener("change", props.onChange);
 			if (props.override) { Tween.removeTweens(target); }
 		}
 		
@@ -545,7 +532,7 @@ var p = Tween.prototype;
 		if (props&&props.paused) { this._paused=true; }
 		else { Tween._register(this,true); }
 		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
-	}
+	};
 	
 // public methods:
 	/** 
@@ -555,13 +542,16 @@ var p = Tween.prototype;
 	 *	createjs.Tween.get(target).wait(1000).to({alpha:0}, 1000);
 	 * @method wait
 	 * @param {Number} duration The duration of the wait in milliseconds (or in ticks if <code>useTicks</code> is true).
+	 * @param {Boolean} passive Tween properties will not be updated during a passive wait. This
+	 * is mostly useful for use with Timeline's that contain multiple tweens affecting the same target
+	 * at different times.
 	 * @return {Tween} This tween instance (for chaining calls).
-	 */
-	p.wait = function(duration) {
+	 **/
+	p.wait = function(duration, passive) {
 		if (duration == null || duration <= 0) { return this; }
 		var o = this._cloneProps(this._curQueueProps);
-		return this._addStep({d:duration, p0:o, e:this._linearEase, p1:o});
-	}
+		return this._addStep({d:duration, p0:o, e:this._linearEase, p1:o, v:passive});
+	};
 
 	/** 
 	 * Queues a tween from the current values to the target properties. Set duration to 0 to jump to these value.
@@ -580,7 +570,7 @@ var p = Tween.prototype;
 	p.to = function(props, duration, ease) {
 		if (isNaN(duration) || duration < 0) { duration = 0; }
 		return this._addStep({d:duration||0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
-	}
+	};
 	
 	/** 
 	 * Queues an action to call the specified function. 
@@ -597,7 +587,7 @@ var p = Tween.prototype;
 	 */
 	p.call = function(callback, params, scope) {
 		return this._addAction({f:callback, p:params ? params : [this], o:scope ? scope : this._target});
-	}
+	};
 	
 	// TODO: add clarification between this and a 0 duration .to:
 	/** 
@@ -612,7 +602,7 @@ var p = Tween.prototype;
 	 */
 	p.set = function(props, target) {
 		return this._addAction({f:this._set, o:this, p:[props, target ? target : this._target]});
-	}
+	};
 	
 	/** 
 	 * Queues an action to to play (unpause) the specified tween. This enables you to sequence multiple tweens.
@@ -625,7 +615,7 @@ var p = Tween.prototype;
 	p.play = function(tween) {
 		if (!tween) { tween = this; }
 		return this.call(tween.setPaused, [false], tween);
-	}
+	};
 
 	/** 
 	 * Queues an action to to pause the specified tween.
@@ -636,7 +626,7 @@ var p = Tween.prototype;
 	p.pause = function(tween) {
 		if (!tween) { tween = this; }
 		return this.call(tween.setPaused, [true], tween);
-	}
+	};
 	
 	/** 
 	 * Advances the tween to a specified position.
@@ -699,10 +689,9 @@ var p = Tween.prototype;
 
 		if (end) { this.setPaused(true); }
 		
-		this.onChange&&this.onChange(this);
         this.dispatchEvent("change");
 		return end;
-	}
+	};
 
 	/** 
 	 * Advances this tween by the specified amount of time in milliseconds (or ticks if <code>useTicks</code> is true).
@@ -713,7 +702,7 @@ var p = Tween.prototype;
 	p.tick = function(delta) {
 		if (this._paused) { return; }
 		this.setPosition(this._prevPosition+delta);
-	}
+	};
 
 	/** 
 	 * Pauses or plays this tween.
@@ -725,7 +714,7 @@ var p = Tween.prototype;
 		this._paused = !!value;
 		Tween._register(this, !value);
 		return this;
-	}
+	};
 
 	// tiny api (primarily for tool output):
 	p.w = p.wait;
@@ -740,7 +729,7 @@ var p = Tween.prototype;
 	 */
 	p.toString = function() {
 		return "[Tween]";
-	}
+	};
 	
 	/**
 	 * @method clone
@@ -748,7 +737,7 @@ var p = Tween.prototype;
 	 */
 	p.clone = function() {
 		throw("Tween can not be cloned.")
-	}
+	};
 
 // private methods:
 	/**
@@ -760,8 +749,12 @@ var p = Tween.prototype;
 	p._updateTargetProps = function(step, ratio) {
 		var p0,p1,v,v0,v1,arr;
 		if (!step && ratio == 1) {
+			// GDS: when does this run? Just at the very end? Shouldn't.
+			this.passive = false;
 			p0 = p1 = this._curQueueProps;
 		} else {
+			this.passive = !!step.v;
+			if (this.passive) { return; } // don't update props.
 			// apply ease to ratio.
 			if (step.e) { ratio = step.e(ratio,0,1,1); }
 			p0 = step.p0;
@@ -789,7 +782,7 @@ var p = Tween.prototype;
 			if (!ignore) { this._target[n] = v; }
 		}
 		
-	}
+	};
 	
 	/**
 	 * @method _runActions
@@ -818,7 +811,7 @@ var p = Tween.prototype;
 				action.f.apply(action.o, action.p);
 			}
 		}
-	}
+	};
 
 	/**
 	 * @method _appendQueueProps
@@ -853,7 +846,7 @@ var p = Tween.prototype;
 		}
 		if (injectProps) { this._appendQueueProps(injectProps); }
 		return this._curQueueProps;
-	}
+	};
 
 	/**
 	 * @method _cloneProps
@@ -866,7 +859,7 @@ var p = Tween.prototype;
 			o[n] = props[n];
 		}
 		return o;
-	}
+	};
 
 	/**
 	 * @method _addStep
@@ -880,7 +873,7 @@ var p = Tween.prototype;
 			this.duration += o.d;
 		}
 		return this;
-	}
+	};
 	
 	/**
 	 * @method _addAction
@@ -891,7 +884,7 @@ var p = Tween.prototype;
 		o.t = this.duration;
 		this._actions.push(o);
 		return this;
-	}
+	};
 
 	/**
 	 * @method _set
@@ -903,7 +896,7 @@ var p = Tween.prototype;
 		for (var n in props) {
 			o[n] = props[n];
 		}
-	}
+	};
 	
 createjs.Tween = Tween;
 }());
