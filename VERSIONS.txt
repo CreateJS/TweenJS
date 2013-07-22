@@ -1,5 +1,11 @@
 Version NEXT [Not Released]
 ****************************************************************************************************
+CRITICAL (may break existing content):
+- removed all onEvent handlers (ex. onClick, onTick, onAnimationEnd, etc)
+ 
+*****
+- added "passive" param to Tween.wait()
+- updates to MotionGuidePlugin
 - Added Tween.removeTween method for cleaning up a single tween.
 - Documentation
 	* Added note in the documentation on the dependency on EaselJS Ticker.
