@@ -45,13 +45,15 @@ this.createjs = this.createjs||{};
  *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
  *    <LI> paused: indicates whether to start the tween paused.</LI>
  *    <LI> position: indicates the initial position for this timeline.</LI>
- *    <LI> onChanged: specifies an onChange handler for this timeline.</LI>
+ *    <LI> onChange: specifies a listener to add for the change event.</LI>
  * </UL>
+ * @class Tween
+ * @uses EventDispatcher
  * @constructor
  **/
 var Timeline = function(tweens, labels, props) {
   this.initialize(tweens, labels, props);
-}
+};
 var p = Timeline.prototype;
 
 // public properties:
@@ -78,12 +80,13 @@ var p = Timeline.prototype;
 	 **/
 	p.loop = false;
 	
+	// TODO: deprecated.
 	/**
-	 * Called, with a single parameter referencing this timeline instance, whenever the timeline's position changes.
+	 * REMOVED. Use addEventListener and the "change" event.
 	 * @property onChange
 	 * @type Function
+	 * @deprecated Use addEventListener and the "change" event.
 	 **/
-	p.onChange = null;
 	
 	/**
 	 * Read-only. The current normalized position of the timeline. This will always be a value between 0 and duration.
@@ -92,6 +95,24 @@ var p = Timeline.prototype;
 	 * @type Object
 	 **/
 	p.position = null;
+	
+// events:
+	/**
+	 * Called whenever the timeline's position changes.
+	 * @event change
+	 * @since 0.5.0
+	 **/
+	
+// mix-ins:
+	// EventDispatcher methods:
+	p.addEventListener = null;
+	p.removeEventListener = null;
+	p.removeAllEventListeners = null;
+	p.dispatchEvent = null;
+	p.hasEventListener = null;
+	p._listeners = null;
+	
+	createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.
 
 // private properties:
 	
@@ -149,14 +170,14 @@ var p = Timeline.prototype;
 			this._useTicks = props.useTicks;
 			this.loop = props.loop;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
-			this.onChange = props.onChange;
+			props.onChange&&this.addEventListener("change", props.onChange);
 		}
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		if (props&&props.paused) { this._paused=true; }
 		else { createjs.Tween._register(this,true); }
 		if (props&&props.position!=null) { this.setPosition(props.position, createjs.Tween.NONE); }
-	}
+	};
 	
 // public methods:
 	/** 
@@ -180,7 +201,7 @@ var p = Timeline.prototype;
 		if (tween.duration > this.duration) { this.duration = tween.duration; }
 		if (this._prevPos >= 0) { tween.setPosition(this._prevPos, createjs.Tween.NONE); }
 		return tween;
-	}
+	};
 
 	/** 
 	 * Removes one or more tweens from this timeline.
@@ -216,7 +237,7 @@ var p = Timeline.prototype;
 	 **/
 	p.addLabel = function(label, position) {
 		this._labels[label] = position;
-	}
+	};
 
 	/** 
 	 * Defines labels for use with gotoAndPlay/Stop. Overwrites any previously set labels.
@@ -225,7 +246,7 @@ var p = Timeline.prototype;
 	 **/
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
-	}
+	};
 	
 	/** 
 	 * Unpauses this timeline and jumps to the specified position or label.
@@ -235,7 +256,7 @@ var p = Timeline.prototype;
 	p.gotoAndPlay = function(positionOrLabel) {
 		this.setPaused(false);
 		this._goto(positionOrLabel);
-	}
+	};
 	
 	/** 
 	 * Pauses this timeline and jumps to the specified position or label.
@@ -245,7 +266,7 @@ var p = Timeline.prototype;
 	p.gotoAndStop = function(positionOrLabel) {
 		this.setPaused(true);
 		this._goto(positionOrLabel);
-	}
+	};
 	
 	/** 
 	 * Advances the timeline to the specified position.
@@ -266,9 +287,9 @@ var p = Timeline.prototype;
 			if (t != this._prevPos) { return false; } // an action changed this timeline's position.
 		}
 		if (end) { this.setPaused(true); }
-		this.onChange&&this.onChange(this);
+		this.dispatchEvent("change");
 		return end;
-	}
+	};
 	
 	/** 
 	 * Pauses or plays this timeline.
@@ -278,7 +299,7 @@ var p = Timeline.prototype;
 	p.setPaused = function(value) {
 		this._paused = !!value;
 		createjs.Tween._register(this, !value);
-	}
+	};
 	
 	/** 
 	 * Recalculates the duration of the timeline.
@@ -292,7 +313,7 @@ var p = Timeline.prototype;
 			var tween = this._tweens[i];
 			if (tween.duration > this.duration) { this.duration = tween.duration; }
 		}
-	}
+	};
 	
 	/** 
 	 * Advances this timeline by the specified amount of time in milliseconds (or ticks if useTicks is true).
@@ -302,7 +323,7 @@ var p = Timeline.prototype;
 	 **/
 	p.tick = function(delta) {
 		this.setPosition(this._prevPosition+delta);
-	}
+	};
 	 
 	/** 
 	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
@@ -314,7 +335,7 @@ var p = Timeline.prototype;
 		var pos = parseFloat(positionOrLabel);
 		if (isNaN(pos)) { pos = this._labels[positionOrLabel]; }
 		return pos;
-	}
+	};
 
 	/**
 	* Returns a string representation of this object.
@@ -323,7 +344,7 @@ var p = Timeline.prototype;
 	**/
 	p.toString = function() {
 		return "[Timeline]";
-	}
+	};
 	
 	/**
 	 * @method clone
@@ -331,7 +352,7 @@ var p = Timeline.prototype;
 	 **/
 	p.clone = function() {
 		throw("Timeline can not be cloned.")
-	}
+	};
 	
 // private methods:
 	/**
@@ -341,7 +362,7 @@ var p = Timeline.prototype;
 	p._goto = function(positionOrLabel) {
 		var pos = this.resolve(positionOrLabel);
 		if (pos != null) { this.setPosition(pos); }
-	}
+	};
 	
 createjs.Timeline = Timeline;
 }());
