@@ -15,7 +15,7 @@ fi
 
 while [ "$COPY" != "Y" ] || [ "$COPY" != "y" ] || [ "$COPY" != "n" ] || [ "$COPY" != "N" ] || [ "$COPY" == "" ]
 do
-echo -e "Would you like move [y/n] ?\n'${LCNAME}-${VERSION}.min.js' to lib folder & \n'${LCNAME}_docs-${VERSION}.zip' to docs folder [default: 'y']"
+echo -e "Would you like to move [y/n] ?\n'${LCNAME}-${VERSION}.min.js' to lib folder & \n'${LCNAME}_docs-${VERSION}.zip' to docs folder [default: 'y']"
 read COPY
 
 if [ "$COPY" == "" ] || [ "$COPY" == "Y" ] || [ "$COPY" == "y" ]
