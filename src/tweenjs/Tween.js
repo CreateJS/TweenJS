@@ -844,11 +844,14 @@ var p = Tween.prototype;
 						oldValue = arr[i].init(this, n, oldValue);
 					}
 				}
-				this._initQueueProps[n] = oldValue===undefined?null:oldValue;
+				this._initQueueProps[n] = this._curQueueProps[n] = (oldValue===undefined) ? null : oldValue;
 			} else {
 				oldValue = this._curQueueProps[n];
 			}
-			
+		}
+
+		for (var n in o) {
+			oldValue = this._curQueueProps[n];
 			if (arr = Tween._plugins[n]) {
 				injectProps = injectProps||{};
 				for (i=0, l=arr.length;i<l;i++) {

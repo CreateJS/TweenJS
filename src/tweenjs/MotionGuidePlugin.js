@@ -49,7 +49,11 @@ this.createjs = this.createjs||{};
 	 *      <LI> path: Required, Array : The x/y points used to draw the path with a moveTo and 1 to n curveTo calls.</LI>
 	 *      <LI> start: Optional, 0-1 : Initial position, default 0 except for when continuing along the same path.</LI>
 	 *      <LI> end: Optional, 0-1 : Final position, default 1 if not specified.</LI>
-	 *      <LI> orient: Optional, bool : Set the target's rotation parallel to the curve at its position.</LI>
+	 *      <LI> orient: Optional, string : "fixed"/"auto"/"cw"/"ccw"<UL>
+	 *				<LI>"fixed" forces the object to face down the path all movement (relative to start rotation),</LI>
+	 *      		<LI>"auto" rotates the object along the path relative to the line.</LI>
+	 *      		<LI>"cw"/"ccw" force clockwise or counter clockwise rotations including flash like behaviour</LI>
+	 * 		</UL></LI>
 	 * </UL>
 	 * Guide objects should not be shared between tweens even if all properties are identical, the library stores
 	 * information on these objects in the background and sharing them can cause unexpected behaviour. Values
@@ -71,6 +75,31 @@ this.createjs = this.createjs||{};
 	MotionGuidePlugin.priority = 0; // high priority, should run sooner
 
 	/**
+	 * @property temporary variable storage
+	 * @private
+	 * @static
+	 */
+	MotionGuidePlugin._rotOffS;
+	/**
+	 * @property temporary variable storage
+	 * @private
+	 * @static
+	 */
+	MotionGuidePlugin._rotOffE;
+	/**
+	 * @property temporary variable storage
+	 * @private
+	 * @static
+	 */
+	MotionGuidePlugin._rotNormS;
+	/**
+	 * @property temporary variable storage
+	 * @private
+	 * @static
+	 */
+	MotionGuidePlugin._rotNormE;
+
+	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
@@ -90,6 +119,8 @@ this.createjs = this.createjs||{};
 		if(!target.hasOwnProperty("x")){ target.x = 0; }
 		if(!target.hasOwnProperty("y")){ target.y = 0; }
 		if(!target.hasOwnProperty("rotation")){ target.rotation = 0; }
+
+		if(prop=="rotation"){ tween.__needsRot = true; }
 		return prop=="guide"?null:value;
 	};
 
@@ -99,7 +130,15 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	MotionGuidePlugin.step = function(tween, prop, startValue, endValue, injectProps) {
+		// other props
+		if(prop == "rotation"){
+			tween.__rotGlobalS = startValue;
+			tween.__rotGlobalE = endValue;
+			MotionGuidePlugin.testRotData(tween, injectProps);
+		}
 		if(prop != "guide"){ return endValue; }
+
+		// guide only information - Start -
 		var temp, data = endValue;
 		if(!data.hasOwnProperty("path")){ data.path = []; }
 		var path = data.path;
@@ -107,6 +146,8 @@ this.createjs = this.createjs||{};
 		if(!data.hasOwnProperty("start")){
 			data.start = (startValue&&startValue.hasOwnProperty("end")&&startValue.path===path)?startValue.end:0;
 		}
+
+		// Figure out subline information
 		if(data.hasOwnProperty("_segments") && data._length){ return endValue; }
 		var l = path.length;
 		var accuracy = 10;		// Adjust to improve line following precision but sacrifice performance (# of seg)
@@ -137,11 +178,68 @@ this.createjs = this.createjs||{};
 			throw("invalid 'path' data, please see documentation for valid paths");
 		}
 
+		// Setup x/y tweens
 		temp = data.orient;
-		data.orient = false;
+		data.orient = true;
+		var o = {};
+		MotionGuidePlugin.calc(data, data.start, o);
+		tween.__rotPathS = Number(o.rotation.toFixed(5));
+		MotionGuidePlugin.calc(data, data.end, o);
+		tween.__rotPathE = Number(o.rotation.toFixed(5));
+		data.orient = false;	//here and now we don't know if we need to
 		MotionGuidePlugin.calc(data, data.end, injectProps);
 		data.orient = temp;
+
+		// Setup rotation properties
+		if(!data.orient){ return endValue; }
+		tween.__guideData = data;
+		MotionGuidePlugin.testRotData(tween, injectProps);
 		return endValue;
+	};
+
+	/**
+	 * @method testRotData
+	 * @protected
+	 * @static
+	 **/
+	MotionGuidePlugin.testRotData = function(tween, injectProps){
+
+		// no rotation informat? if we need it come back, if we don't use 0 & ensure we have guide data
+		if(tween.__rotGlobalS === undefined || tween.__rotGlobalE === undefined){
+			if(tween.__needsRot){ return; }
+			if(tween._curQueueProps.rotation !== undefined){
+				tween.__rotGlobalS = tween.__rotGlobalE = tween._curQueueProps.rotation;
+			} else {
+				tween.__rotGlobalS = tween.__rotGlobalE = injectProps.rotation = tween.target.rotation || 0;
+			}
+		}
+		if(tween.__guideData === undefined){ return; }
+
+		// Process rotation properties
+		var data = tween.__guideData;
+		var rotGlobalD = tween.__rotGlobalE - tween.__rotGlobalS;
+		var rotPathD = tween.__rotPathE - tween.__rotPathS;
+		var rot = rotGlobalD - rotPathD;
+
+		if(data.orient == "auto"){
+			if(rot > 180){			rot -= 360; }
+			else if(rot < -180){	rot += 360; }
+
+		} else if(data.orient == "cw"){
+			while(rot < 0){ rot += 360; }
+			if(rot == 0 && rotGlobalD > 0 && rotGlobalD != 180){ rot += 360; }
+
+		} else if(data.orient == "ccw"){
+			rot = rotGlobalD - ((rotPathD > 180)?(360-rotPathD):(rotPathD));	// sign flipping on path
+			while(rot > 0){ rot -= 360; }
+			if(rot == 0 && rotGlobalD < 0 && rotGlobalD != -180){ rot -= 360; }
+		}
+
+		data.rotDelta = rot;
+		data.rotOffS = tween.__rotGlobalS - tween.__rotPathS;
+
+		// reset
+		tween.__rotGlobalS = tween.__rotGlobalE = tween.__guideData = tween.__needsRot = undefined;
 	};
 
 	/**
@@ -156,10 +254,16 @@ this.createjs = this.createjs||{};
 			// first time through so calculate what I need to
 			var t = ((data.end-data.start)*(wait?data.end:ratio)+data.start);
 			MotionGuidePlugin.calc(data, t, tween.target);
-			if(data.orient){ tween.target.rotation += startValues.rotation||0; }
+			switch(data.orient){
+				case "cw":		// mix in the original rotation
+				case "ccw":
+				case "auto": tween.target.rotation += data.rotOffS + data.rotDelta*ratio; break;
+				case "fixed":	// follow fixed behaviour to solve potential issues
+				default: tween.target.rotation += data.rotOffS; break;
+			}
 			data.lastRatio = ratio;
 		}
-		if(!data.orient && prop == "rotation"){ return value; }
+		if(prop == "rotation" && ((!data.orient) || data.orient == "false")){ return value; }
 		return tween.target[prop];
 	};
 
