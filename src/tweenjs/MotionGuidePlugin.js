@@ -30,6 +30,7 @@
 this.createjs = this.createjs||{};
 
 (function() {
+	"use strict";
 	/**
 	 * A TweenJS plugin for working with motion guides.
 	 *

@@ -3,7 +3,7 @@
 * Visit http://createjs.com/ for documentation, updates and examples.
 *
 * Copyright (c) 2010 gskinner.com, inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
 * files (the "Software"), to deal in the Software without
@@ -12,10 +12,10 @@
 * copies of the Software, and to permit persons to whom the
 * Software is furnished to do so, subject to the following
 * conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be
 * included in all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -30,6 +30,7 @@
 this.createjs = this.createjs||{};
 
 (function() {
+	"use strict";
 /**
  * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
  * how to build TweenJS plugins. Please look at the code for inline comments.
@@ -42,7 +43,7 @@ this.createjs = this.createjs||{};
 var SamplePlugin = function() {
   throw("SamplePlugin cannot be instantiated.")
 };
-	
+
 // static interface:
 	/**
 	 * Used by TweenJS to determine when to call this plugin. Plugins with higher priority have their methods called
@@ -62,7 +63,7 @@ var SamplePlugin = function() {
 		// this registers this plugin to work with the "test" property.
 		createjs.Tween.installPlugin(SamplePlugin, ["test"]);
 	};
-	
+
 	/**
 	 * Called by TweenJS when a new tween property initializes that this plugin is registered for. Generally, the call
 	 * to <code>Plugin.init</code> will be immediately followed by a call to <code>Plugin.to</code>.
@@ -76,11 +77,11 @@ var SamplePlugin = function() {
 	 **/
 	SamplePlugin.init = function(tween, prop, value) {
 		console.log("init", prop, value);
-		
+
 		// return the unmodified property value:
 		return value;
 	};
-	
+
 	/**
 	 * Called by TweenJS when a new step is added to a tween that includes a property the plugin is registered for (ie.
 	 * a new "to" action is added to a tween).
@@ -97,7 +98,7 @@ var SamplePlugin = function() {
 	SamplePlugin.step = function(tween, prop, startValue, endValue, injectProps) {
 		console.log("to: ", prop, startValue, endValue);
 	};
-	
+
 	/**
 	 * Called when a tween property advances that this plugin is registered for.
 	 * @method tween
@@ -123,10 +124,10 @@ var SamplePlugin = function() {
 	SamplePlugin.tween = function(tween, prop, value, startValues, endValues, ratio, wait, end) {
 		// ratio is the eased ratio
 		console.log("tween", prop, value, ratio, wait, end);
-		
+
 		// return the unmodified calculated tween value (use the default tweening behaviour):
 		return value;
 	};
-	
+
 createjs.SamplePlugin = SamplePlugin;
 }());

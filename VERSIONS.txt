@@ -2,7 +2,7 @@ Version NEXT [Not Released]
 ****************************************************************************************************
 CRITICAL (may break existing content):
 - removed all onEvent handlers (ex. onClick, onTick, onAnimationEnd, etc)
- 
+
 *****
 - added "passive" param to Tween.wait()
 - updates to MotionGuidePlugin
@@ -15,6 +15,8 @@ CRITICAL (may break existing content):
 - Updated Ticker usage to use EventDispatcher instead. Added handleEvent to propagate tick event
 - Added TweenOnlyDemo to show TweenJS usage without EaselJS
 - Fixed incorrectly doc'd Timeline documented put all Timeline APIs into Tween instead.
+- Added "use strict"; to everything.
+- fixed an issue with EventDispatcher when adding the same listener to an event twice
 
 
 Version 0.4.1 [May 10, 2013]
@@ -48,7 +50,7 @@ Version 0.3.0 [Aug 27, 2012]
 - added Tween.target
 
 
-Version 0.2.0 [Apr 13, 2012] 
+Version 0.2.0 [Apr 13, 2012]
 ****************************************************************************************************
 - implemented a plugin model, and moved CSS support to CSSPlugin
 - Timeline now forces its useTicks setting on child tweens

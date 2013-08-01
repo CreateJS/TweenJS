@@ -3,7 +3,7 @@
 * Visit http://createjs.com/ for documentation, updates and examples.
 *
 * Copyright (c) 2010 gskinner.com, inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
 * files (the "Software"), to deal in the Software without
@@ -12,10 +12,10 @@
 * copies of the Software, and to permit persons to whom the
 * Software is furnished to do so, subject to the following
 * conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be
 * included in all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -30,6 +30,7 @@
 this.createjs = this.createjs||{};
 
 (function() {
+	"use strict";
 /**
  * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
  * TweenJS has loaded:
@@ -46,9 +47,9 @@ this.createjs = this.createjs||{};
 var CSSPlugin = function() {
   throw("CSSPlugin cannot be instantiated.")
 }
-	
+
 // static interface:
-	/** 
+	/**
 	 * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
 	 * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
 	 * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
@@ -59,7 +60,7 @@ var CSSPlugin = function() {
 	 * @static
 	 **/
 	CSSPlugin.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
-	
+
 	/**
 	 * @property priority
 	 * @protected
@@ -77,8 +78,8 @@ var CSSPlugin = function() {
 		for (var n in map) { arr.push(n); }
 		createjs.Tween.installPlugin(CSSPlugin, arr);
 	}
-	
-	
+
+
 	/**
 	 * @method init
 	 * @protected
@@ -96,7 +97,7 @@ var CSSPlugin = function() {
 			return parseInt(str.substr(0,i));
 		}
 	}
-	
+
 	/**
 	 * @method step
 	 * @protected
@@ -105,8 +106,8 @@ var CSSPlugin = function() {
 	CSSPlugin.step = function(tween, prop, startValue, endValue, injectProps) {
 		// unused
 	}
-	
-	
+
+
 	/**
 	 * @method tween
 	 * @protected
@@ -122,13 +123,13 @@ var CSSPlugin = function() {
 // public properties:
 
 // private properties:
-	
+
 // constructor:
-	
+
 // public methods:
 
 
 // private methods:
-	
+
 createjs.CSSPlugin = CSSPlugin;
 }());
