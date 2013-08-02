@@ -1,22 +1,22 @@
 {
-	"config_tweenjs": {
-        "SOURCE_FILES": [
-			"/../src/easeljs/events/Event.js",
-			"/../src/easeljs/events/EventDispatcher.js",
-            "/../src/tweenjs/Tween.js",
-            "/../src/tweenjs/Timeline.js",
-            "/../src/tweenjs/Ease.js",
-            "/../src/tweenjs/MotionGuidePlugin.js",
-            "/../src/tweenjs/version.js"
-        ],
-        "JS_FILE_NAME": "tweenjs-%VERSION%.min.js",
-        "PROJECT_NAME": "TweenJS",
-        "PROJECT_URL": "http://createjs.com/",
-        "DOCS_DIR_NAME": "_docs-%VERSION%",
-        "DOCS_FILE_NAME": ".zip",
-        "OUTPUT_DIR_NAME": "/output",
-        "TEMPLATE_DIR_PATH": "/template",
-        "TMP_DIR_NAME": "/tmp",
-        "GOOGLE_CLOSURE_PATH" : "/../tools/google-closure/compiler.jar"     
+	"config_tweenjs":{
+		"SOURCE_FILES":[
+			"/../src/createjs/events/Event.js",
+			"/../src/createjs/events/EventDispatcher.js",
+			"/../src/tweenjs/Tween.js",
+			"/../src/tweenjs/Timeline.js",
+			"/../src/tweenjs/Ease.js",
+			"/../src/tweenjs/MotionGuidePlugin.js",
+			"/../src/tweenjs/version.js"
+		],
+		"JS_FILE_NAME":"tweenjs-%VERSION%.min.js",
+		"PROJECT_NAME":"TweenJS",
+		"PROJECT_URL":"http://createjs.com/",
+		"DOCS_DIR_NAME":"_docs-%VERSION%",
+		"DOCS_FILE_NAME":".zip",
+		"OUTPUT_DIR_NAME":"/output",
+		"TEMPLATE_DIR_PATH":"/template",
+		"TMP_DIR_NAME":"/tmp",
+		"GOOGLE_CLOSURE_PATH":"/../tools/google-closure/compiler.jar"
 	}
 }
