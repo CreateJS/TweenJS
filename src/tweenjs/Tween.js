@@ -67,6 +67,7 @@
  * TweenJS will work in all browsers.
  *
  * @module TweenJS
+ * @main TweenJS
  */
 
 // TODO: possibly add a END actionsMode (only runs actions that == position)?

@@ -26,6 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * @module TweenJS
+ */
+
 // namespace:
 this.createjs = this.createjs||{};
 
