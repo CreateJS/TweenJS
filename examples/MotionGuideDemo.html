@@ -6,7 +6,8 @@
 	<link rel="stylesheet" href="assets/demoStyles.css" />
 	<script type="text/javascript" src="./assets/easeljs-NEXT.min.js"></script>
 
-    <script type="text/javascript" src="../src/easeljs/events/EventDispatcher.js"></script>
+	<script type="text/javascript" src="../src/createjs/events/Event.js"></script>
+	<script type="text/javascript" src="../src/createjs/events/EventDispatcher.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Tween.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/Ease.js"></script>
 	<script type="text/javascript" src="../src/tweenjs/MotionGuidePlugin.js"></script>
@@ -43,10 +44,9 @@
 			g.endStroke();
 
 			var tween = createjs.Tween.get(ball, {loop:true}, true)
-						// fixed implies I ignore the regular rotation and follow the path, but you want to rotate me anyway or I'll revert to my non path rotation during the wait!
-				.to({rotation: 90, guide:{path:[100,100, 800,100, 800,300], orient:"fixed"}}, 5000)
+				.to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
 				.wait(1000)
-				.to({guide:{path:[800,300, 100,300, 100,100], end:0.75, orient:"fixed"}}, 3750)
+				.to({guide:{path:[800,300, 100,300, 100,100], end:0.75, orient:true}}, 3750)
 				;
 
 			stage.addChild(ball);
