@@ -285,16 +285,16 @@ var p = Tween.prototype;
 	};
 
 	/**
-	 * Indicates whether there are any active tweens on the target object (if specified) or in general.
+	 * Indicates whether there are any active tweens (and how many) on the target object (if specified) or in general.
 	 * @method hasActiveTweens
+	 * @param {Object} [target] The target to check for active tweens. If not specified, the return value will indicate
+	 * if there are any active tweens on any target.
+	 * @return {Boolean} If there are active tweens.
 	 * @static
-	 * @param {Object} target Optional. If not specified, the return value will indicate if there are any active tweens
-	 * on any target.
-	 * @return {Boolean} A boolean indicating whether there are any active tweens.
 	 */
 	Tween.hasActiveTweens = function(target) {
 		if (target) { return target.tweenjs_count; }
-		return Tween._tweens && Tween._tweens.length;
+		return Tween._tweens && !!Tween._tweens.length;
 	};
 
 	/**
