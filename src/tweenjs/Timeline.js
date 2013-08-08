@@ -138,10 +138,17 @@ var p = Timeline.prototype;
 
 	/**
 	 * @property _labels
-	 * @type Array[String]
+	 * @type Object
 	 * @protected
 	 **/
 	p._labels = null;
+	
+	/**
+	 * @property _labelList
+	 * @type Array[Object]
+	 * @protected
+	 **/
+	p._labelList = null;
 
 	/**
 	 * @property _prevPosition
@@ -236,7 +243,7 @@ var p = Timeline.prototype;
 			}
 		}
 		return false;
-	}
+	};
 
 	/**
 	 * Adds a label that can be used with {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
@@ -246,6 +253,11 @@ var p = Timeline.prototype;
 	 **/
 	p.addLabel = function(label, position) {
 		this._labels[label] = position;
+		var list = this._labelList;
+		if (list) {
+			for (var i= 0,l=list.length; i<l; i++) { if (position < list[i].position) { break; } }
+			list.splice(i, 0, {label:label, position:position});
+		}
 	};
 
 	/**
@@ -257,6 +269,25 @@ var p = Timeline.prototype;
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
 	};
+	
+	/**
+	 * Returns a sorted list of the labels defined on this timeline.
+	 * @method getLabels
+	 * @return {Array[Object]} A sorted array of objects with label and position properties.
+	 **/
+	p.getLabels = function() {
+		var list = this._labelList;
+		if (!list) {
+			list = this._labelList = [];
+			var labels = this._labels;
+			for (var n in labels) {
+				list.push({label:n, position:labels[n]});
+			}
+			list.sort(function (a,b) { return a.position- b.position; });
+		}
+		return list;
+	};
+	
 
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
