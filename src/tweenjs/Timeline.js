@@ -288,7 +288,27 @@ var p = Timeline.prototype;
 		return list;
 	};
 	
-
+	/**
+	 * Returns the name of the label on or immediately before the current position. For example, given a timeline with
+	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:<UL>
+	 * <LI>null if the current position is 2.</LI>
+	 * <LI>"first" if the current position is 4.</LI>
+	 * <LI>"first" if the current position is 7.</LI>
+	 * <LI>"second" if the current position is 15.</LI></UL>
+	 * @method getCurrentLabel
+	 * @return {String} The name of the current label or null if there is no label
+	 **/
+	p.getCurrentLabel = function() {
+		var labels = this.getLabels();
+		var pos = this.position;
+		var l = labels.length;
+		if (l) {
+			for (var i = 0; i<l; i++) { if (pos < labels[i].position) { break; } }
+			return (i==0) ? null : labels[i-1].label;
+		}
+		return null;
+	};
+	
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndPlay

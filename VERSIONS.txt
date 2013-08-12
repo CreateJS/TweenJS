@@ -20,7 +20,7 @@ CRITICAL (may break existing content):
 - Added "use strict"; to everything.
 - fixed an issue with EventDispatcher when adding the same listener to an event twice
 - fixed hasActiveTweens to return a Boolean consistently
-- added Timeline.getLabels()
+- added Timeline.getLabels() & getCurrentLabel()
 
 
 Version 0.4.1 [May 10, 2013]
