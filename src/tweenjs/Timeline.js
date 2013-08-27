@@ -53,13 +53,13 @@ this.createjs = this.createjs||{};
  *    <LI> position: indicates the initial position for this timeline.</LI>
  *    <LI> onChange: specifies a listener to add for the {{#crossLink "Timeline/change:event"}}{{/crossLink}} event.</LI>
  * </UL>
- * @uses EventDispatcher
+ * @extends EventDispatcher
  * @constructor
  **/
 var Timeline = function(tweens, labels, props) {
   this.initialize(tweens, labels, props);
 };
-var p = Timeline.prototype;
+var p = Timeline.prototype = new createjs.EventDispatcher();
 
 // public properties:
 
@@ -108,17 +108,6 @@ var p = Timeline.prototype;
 	 * @event change
 	 * @since 0.5.0
 	 **/
-
-// mix-ins:
-	// EventDispatcher methods:
-	p.addEventListener = null;
-	p.removeEventListener = null;
-	p.removeAllEventListeners = null;
-	p.dispatchEvent = null;
-	p.hasEventListener = null;
-	p._listeners = null;
-
-	createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.
 
 // private properties:
 

@@ -21,6 +21,7 @@ CRITICAL (may break existing content):
 - fixed an issue with EventDispatcher when adding the same listener to an event twice
 - fixed hasActiveTweens to return a Boolean consistently
 - added Timeline.getLabels() & getCurrentLabel()
+- Tween waits to add itself as a listener on Ticker until the first tween is started
 
 
 Version 0.4.1 [May 10, 2013]

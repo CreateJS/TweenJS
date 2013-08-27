@@ -120,13 +120,13 @@ this.createjs = this.createjs||{};
  * </UL>
  * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
  * plugins' documentation for details.
- * @uses EventDispatcher
+ * @extends EventDispatcher
  * @constructor
  */
 var Tween = function(target, props, pluginData) {
   this.initialize(target, props, pluginData);
 };
-var p = Tween.prototype;
+var p = Tween.prototype = new createjs.EventDispatcher();
 
 // static interface:
 	/**
@@ -231,9 +231,6 @@ var p = Tween.prototype;
 		}
 	};
 
-	// Static initialization of Ticker.
-	if (createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); }
-
 	/**
 	 * Handle events that result from Tween being used as an event handler. This is included to allow Tween to handle
 	 * tick events from <code>createjs.Ticker</code>. No other events are handled in Tween.
@@ -324,6 +321,8 @@ var p = Tween.prototype;
 	/**
 	 * Registers or unregisters a tween with the ticking system.
 	 * @method _register
+	 * @param {Tween} tween The tween instance to register or unregister.
+	 * @param {Boolean} value If true, the tween is registered. If false the tween is unregistered. 
 	 * @static
 	 * @protected
 	 */
@@ -334,6 +333,7 @@ var p = Tween.prototype;
 			// TODO: this approach might fail if a dev is using sealed objects in ES5
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
 			tweens.push(tween);
+			if (!Tween._inited && createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); Tween._inited = true; }
 		} else {
 			if (target) { target.tweenjs_count--; }
 			var i = tweens.length;
@@ -345,17 +345,6 @@ var p = Tween.prototype;
 			}
 		}
 	};
-
-// mix-ins:
-	// EventDispatcher methods:
-	p.addEventListener = null;
-	p.removeEventListener = null;
-	p.removeAllEventListeners = null;
-	p.dispatchEvent = null;
-	p.hasEventListener = null;
-	p._listeners = null;
-
-	createjs.EventDispatcher.initialize(p); // inject EventDispatcher methods.
 
 // public properties:
 	/**
@@ -521,6 +510,14 @@ var p = Tween.prototype;
 	 * @protected
 	 */
 	p._useTicks = false;
+
+	/**
+	 * @property _inited
+	 * @type {boolean}
+	 * @default false
+	 * @protected
+	 */
+	p._inited = false;
 
 // constructor:
 	/**
