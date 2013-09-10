@@ -20,7 +20,7 @@ CONFIGURATION
 
 var json = FILE.readFileSync(PATH.resolve("./config.json"), "UTF-8");
 json = JSON.parse(json);
-var config =json.config_tweenjs;
+var config =json.config_preloadjs;
 
 var SOURCE_FILES = [];
 // listing of all source files, with dependencies listed in order:
@@ -108,11 +108,11 @@ function main(argv)
 	//default doesn't seem to be working for OPTIMIST right now
 	//if task is not specified, we default to ALL
 	var task = (!argv.tasks)?"ALL":argv.tasks.toUpperCase();
-    format = (!argv.format)? "STANDARD" : argv.format.toUpperCase();
+    format = (!argv.format)? "STANDARD" : argv.format.toUpperCase() ;
     
 	if(!taskIsRecognized(task))
 	{
-		print("\033[31m"+"Unrecognized task : " + task+"\033[0m");
+		print(setColorText("Unrecognized task : " + task, "red"));
 		displayUsage();
 		process.exit(1);
 	}
@@ -253,9 +253,9 @@ function buildSourceTask(completeHandler)
 			file_args
                 ).concat(
                     ["--js_output_file", tmp_file]
-                );
+                ).concat(["--language_in", "ECMASCRIPT5"]);
     } else if (format == "PRETTY_PRINT") {
-        cmd = [ "java", "-jar", GOOGLE_CLOSURE_PATH ].concat(file_args).concat(["--js_output_file", tmp_file]).concat(["--formatting", "PRETTY_PRINT"]).concat(["--compilation_level", "WHITESPACE_ONLY"]);	
+        cmd = [ "java", "-jar", GOOGLE_CLOSURE_PATH ].concat(file_args).concat(["--js_output_file", tmp_file]).concat(["--formatting", "PRETTY_PRINT"]).concat(["--compilation_level", "WHITESPACE_ONLY"]).concat(["--language_in", "ECMASCRIPT5"]);	
     } 
 		
 	CHILD_PROCESS.exec(
@@ -377,6 +377,7 @@ function replaceMetaData(data, values) {
     }
     return finalResult;
 }
+
 
 function exitWithFailure()
 {

@@ -22,6 +22,7 @@ CRITICAL (may break existing content):
 - fixed hasActiveTweens to return a Boolean consistently
 - added Timeline.getLabels() & getCurrentLabel()
 - Tween waits to add itself as a listener on Ticker until the first tween is started
+- Updated the build process to use NodeJS & Grunt.js. Please refer to the readme in the build folder.
 
 
 Version 0.4.1 [May 10, 2013]
