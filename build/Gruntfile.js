@@ -34,6 +34,17 @@ module.exports = function (grunt) {
 					}
 				},
 
+				concat: {
+					options: {
+						separator: ''
+					},
+					build: {
+						files: {
+							'output/<%= pkg.name.toLowerCase() %>-<%= version %>.combined.js': getCombinedSource()
+						}
+					}
+				},
+
 				// Build docs using yuidoc
 				yuidoc: {
 					compile: {
@@ -117,7 +128,44 @@ module.exports = function (grunt) {
 		return config[name];
 	}
 
+	function getCombinedSource() {
+		var configs = [
+			{cwd: '', config:'config.json', source:'source'}
+		];
+
+		return combineSource(configs);
+	}
+
+	function combineSource(configs) {
+		// Pull out all the source paths.
+		var sourcePaths = [];
+		for (var i=0;i<configs.length;i++) {
+			var o = configs[i];
+			var json = grunt.file.readJSON(path.resolve(o.cwd, o.config));
+			var sources = json[o.source];
+			sources.forEach(function(item, index, array) {
+				array[index] = path.resolve(o.cwd, item);
+			});
+			sourcePaths = sourcePaths.concat(sources);
+		}
+
+		// Remove duplicates (Like EventDispatcher)
+		var dups = {};
+		var clean = [];
+		for (i=0;i<sourcePaths.length;i++) {
+			var src = sourcePaths[i];
+			var cleanSrc = src.substr(src.lastIndexOf('src' + path.sep));
+			if  (dups[cleanSrc] == null) {
+				clean.push(src);
+				dups[cleanSrc] = true;
+			}
+		}
+
+		return clean;
+	}
+
 	// Load all the tasks we need
+	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-yuidoc');
 	grunt.loadNpmTasks('grunt-contrib-compress');
@@ -160,5 +208,13 @@ module.exports = function (grunt) {
 	 */
 	grunt.registerTask('coreBuild', [
 		"updateversion", "uglify", "docs", "copy:src"
+	]);
+
+	/**
+	 * Task for exporting combined view.
+	 *
+	 */
+	grunt.registerTask('combine', 'Combine all source into a single, un-minified file.', [
+		"concat"
 	]);
 };
