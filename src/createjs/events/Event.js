@@ -34,6 +34,7 @@
  *      myObject.addEventListener("change", createjs.proxy(myMethod, scope));
  *
  * @module CreateJS
+ * @main CreateJS
  */
 
 // namespace:
