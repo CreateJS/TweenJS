@@ -1,0 +1,4 @@
+build/node_modules/
+build/output/
+config.local.json
+tools/7-Zip
