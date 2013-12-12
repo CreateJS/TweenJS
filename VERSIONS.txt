@@ -1,4 +1,4 @@
-Version NEXT [Not Released]
+Version 0.5.1 [December 12, 2013]
 ****************************************************************************************************
 - Updated to latest EventDispatcher
 
