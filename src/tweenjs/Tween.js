@@ -275,7 +275,7 @@ var p = Tween.prototype = new createjs.EventDispatcher();
 		var tweens = Tween._tweens;
 		for (var i= 0, l=tweens.length; i<l; i++) {
 			var tween = tweens[i];
-			tween.paused = true;
+			tween._paused = true;
 			tween.target.tweenjs_count = 0;
 		}
 		tweens.length = 0;
