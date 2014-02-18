@@ -22,7 +22,6 @@ CRITICAL (may break existing content):
 - Updated Ticker usage to use EventDispatcher instead. Added handleEvent to propagate tick event
 - Added TweenOnlyDemo to show TweenJS usage without EaselJS
 - Fixed incorrectly doc'd Timeline documented put all Timeline APIs into Tween instead.
-- Added "use strict"; to everything.
 - fixed an issue with EventDispatcher when adding the same listener to an event twice
 - fixed hasActiveTweens to return a Boolean consistently
 - added Timeline.getLabels() & getCurrentLabel()
