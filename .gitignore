@@ -1,4 +1,15 @@
-build/node_modules/
+.DS_Store
 build/output/
+build/tmp/
+*TMP*
+node_modules/
+.idea/
+*.sublime-project
+*.sublime-workspace
 config.local.json
-tools/7-Zip
+
+#-----------------------------
+# INVALID FILES
+# (for cross OS compatibility)
+#-----------------------------
+*[\<\>\:\"\/\\\|\?\*]*
