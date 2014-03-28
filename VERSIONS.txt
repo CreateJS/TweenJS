@@ -1,6 +1,11 @@
+Version NEXT [Not Released]
+****************************************************************************************************
+- Added bower support, including grunt task for updating the bower.json
+
+
 Version 0.5.1 [December 12, 2013]
 ****************************************************************************************************
-- Updated to latest EventDispatcher
+- Updates to EventDispatcher for latest combined build
 
 
 Version 0.5.0 [September 25, 2013]

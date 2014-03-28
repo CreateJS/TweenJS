@@ -208,7 +208,7 @@ module.exports = function (grunt) {
 	 *
 	 */
 	grunt.registerTask('build', [
-		"setVersion", "coreBuild", "copy:docsSite"
+		"setVersion", "coreBuild", "updatebower", "copy:docsSite"
 	]);
 
 	/**
