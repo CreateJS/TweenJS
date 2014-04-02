@@ -257,9 +257,10 @@ var p = Tween.prototype = new createjs.EventDispatcher();
 		if (!target.tweenjs_count) { return; }
 		var tweens = Tween._tweens;
 		for (var i=tweens.length-1; i>=0; i--) {
-			if (tweens[i]._target == target) {
-				tweens[i]._paused = true;
-				tweens.splice(i,1);
+			var tween = tweens[i];
+			if (tween._target == target) {
+				tween._paused = true;
+				tweens.splice(i, 1);
 			}
 		}
 		target.tweenjs_count = 0;
@@ -275,7 +276,7 @@ var p = Tween.prototype = new createjs.EventDispatcher();
 		var tweens = Tween._tweens;
 		for (var i= 0, l=tweens.length; i<l; i++) {
 			var tween = tweens[i];
-			tween.paused = true;
+			tween._paused = true;
 			tween.target.tweenjs_count = 0;
 		}
 		tweens.length = 0;
