@@ -724,6 +724,7 @@ var p = Tween.prototype = new createjs.EventDispatcher();
 	 * @return {Tween} This tween instance (for chaining calls)
 	 */
 	p.setPaused = function(value) {
+		if (this._paused === !!value) { return this; }
 		this._paused = !!value;
 		Tween._register(this, !value);
 		return this;
