@@ -127,6 +127,7 @@ var Tween = function(target, props, pluginData) {
   this.initialize(target, props, pluginData);
 };
 var p = Tween.prototype = new createjs.EventDispatcher();
+Tween.prototype.constructor = Tween;
 
 // static interface:
 	/**
@@ -323,7 +324,7 @@ var p = Tween.prototype = new createjs.EventDispatcher();
 	 * Registers or unregisters a tween with the ticking system.
 	 * @method _register
 	 * @param {Tween} tween The tween instance to register or unregister.
-	 * @param {Boolean} value If true, the tween is registered. If false the tween is unregistered. 
+	 * @param {Boolean} value If true, the tween is registered. If false the tween is unregistered.
 	 * @static
 	 * @protected
 	 */

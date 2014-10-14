@@ -60,6 +60,7 @@ var Timeline = function(tweens, labels, props) {
   this.initialize(tweens, labels, props);
 };
 var p = Timeline.prototype = new createjs.EventDispatcher();
+Timeline.prototype.constructor = Timeline;
 
 // public properties:
 
@@ -131,7 +132,7 @@ var p = Timeline.prototype = new createjs.EventDispatcher();
 	 * @protected
 	 **/
 	p._labels = null;
-	
+
 	/**
 	 * @property _labelList
 	 * @type Array[Object]
@@ -258,7 +259,7 @@ var p = Timeline.prototype = new createjs.EventDispatcher();
 	p.setLabels = function(o) {
 		this._labels = o ?  o : {};
 	};
-	
+
 	/**
 	 * Returns a sorted list of the labels defined on this timeline.
 	 * @method getLabels
@@ -276,7 +277,7 @@ var p = Timeline.prototype = new createjs.EventDispatcher();
 		}
 		return list;
 	};
-	
+
 	/**
 	 * Returns the name of the label on or immediately before the current position. For example, given a timeline with
 	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:<UL>
@@ -297,7 +298,7 @@ var p = Timeline.prototype = new createjs.EventDispatcher();
 		}
 		return null;
 	};
-	
+
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndPlay
