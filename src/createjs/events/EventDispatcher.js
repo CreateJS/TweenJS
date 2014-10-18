@@ -300,15 +300,18 @@ EventDispatcher.prototype.constructor = EventDispatcher;
 	p.dispatchEvent = function(eventObj, target) {
 		if (typeof eventObj == "string") {
 			// won't bubble, so skip everything if there's no listeners:
-			var listeners = this._listeners;
-			if (!listeners || !listeners[eventObj]) { return false; }
+			//var listeners = this._listeners;
+			//if (!listeners || !listeners[eventObj]) { return false; }
 			eventObj = new createjs.Event(eventObj);
 		}
 		// TODO: deprecated. Target param is deprecated, only use case is MouseEvent/mousemove, remove.
 		eventObj.target = target||this;
 
 		if (!eventObj.bubbles || !this.parent) {
-			this._dispatchEvent(eventObj, 2);
+			//capture call phase
+			this._dispatchEvent(eventObj, 1);
+			//bubbling call phase
+			this._dispatchEvent(eventObj, 3);
 		} else {
 			var top=this, list=[top];
 			while (top.parent) { list.push(top = top.parent); }
@@ -316,10 +319,10 @@ EventDispatcher.prototype.constructor = EventDispatcher;
 
 			// capture & atTarget
 			for (i=l-1; i>=0 && !eventObj.propagationStopped; i--) {
-				list[i]._dispatchEvent(eventObj, 1+(i==0));
+				list[i]._dispatchEvent(eventObj, 1);
 			}
 			// bubbling
-			for (i=1; i<l && !eventObj.propagationStopped; i++) {
+			for (i=0; i<l && !eventObj.propagationStopped; i++) {
 				list[i]._dispatchEvent(eventObj, 3);
 			}
 		}
@@ -372,13 +375,13 @@ EventDispatcher.prototype.constructor = EventDispatcher;
 	 * @param {Object} eventPhase
 	 * @protected
 	 **/
-	p._dispatchEvent = function(eventObj, eventPhase) {
-		var l, listeners = (eventPhase==1) ? this._captureListeners : this._listeners;
+	p._dispatchEvent = function(eventObj, callPhase) {
+		var l, listeners = (callPhase==1) ? this._captureListeners : this._listeners;
 		if (eventObj && listeners) {
 			var arr = listeners[eventObj.type];
 			if (!arr||!(l=arr.length)) { return; }
 			eventObj.currentTarget = this;
-			eventObj.eventPhase = eventPhase;
+			eventObj.eventPhase = eventObj.target == this ? 2 : callPhase;
 			eventObj.removed = false;
 			arr = arr.slice(); // to avoid issues with items being removed or added during the dispatch
 			for (var i=0; i<l && !eventObj.immediatePropagationStopped; i++) {
