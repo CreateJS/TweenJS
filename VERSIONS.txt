@@ -4,6 +4,7 @@ Version NEXT [Not Released]
 - Fixed issue with setPaused() stacking up tween ticks
 - Added constructors to all classes (Thanks kaesve)
 - Added .gitignore to subfolders under /docs (thanks mcfarljw)
+- Improved EventDispatcher's handling of redispatched event objects
 
 
 Version 0.5.1 [December 12, 2013]
