@@ -3,6 +3,7 @@ Version NEXT [Not Released]
 - Added bower support, including grunt task for updating the bower.json
 - Fixed issue with setPaused() stacking up tween ticks
 - Added constructors to all classes (Thanks kaesve)
+- Added .gitignore to subfolders under /docs (thanks mcfarljw)
 
 
 Version 0.5.1 [December 12, 2013]

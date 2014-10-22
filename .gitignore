@@ -7,6 +7,7 @@ node_modules/
 *.sublime-project
 *.sublime-workspace
 config.local.json
+docs/**/
 
 #-----------------------------
 # INVALID FILES
