@@ -384,7 +384,7 @@ Timeline.prototype.constructor = Timeline;
 	 * @param {String|Number} positionOrLabel A numeric position value or label string.
 	 **/
 	p.resolve = function(positionOrLabel) {
-		var pos = parseFloat(positionOrLabel);
+		var pos = Number(positionOrLabel);
 		if (isNaN(pos)) { pos = this._labels[positionOrLabel]; }
 		return pos;
 	};
