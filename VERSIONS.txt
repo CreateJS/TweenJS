@@ -1,5 +1,10 @@
 Version NEXT [Not Released]
 ****************************************************************************************************
+CRITICAL (may break existing content):
+- Added Ticker into the "createjs" package to remove reliance on EaselJS.
+
+*****
+OTHER:
 - Added bower support, including grunt task for updating the bower.json
 - Fixed issue with setPaused() stacking up tween ticks
 - Added constructors to all classes (Thanks kaesve)
