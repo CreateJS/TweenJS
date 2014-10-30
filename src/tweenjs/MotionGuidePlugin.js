@@ -35,6 +35,7 @@ this.createjs = this.createjs||{};
 
 (function() {
 	"use strict";
+
 	/**
 	 * A TweenJS plugin for working with motion guides.
 	 *
@@ -67,11 +68,12 @@ this.createjs = this.createjs||{};
 	 * @class MotionGuidePlugin
 	 * @constructor
 	 **/
-	var MotionGuidePlugin = function() {
+	function MotionGuidePlugin() {
 		throw("MotionGuidePlugin cannot be instantiated.")
 	};
 
-	// static interface:
+
+// static properties:
 	/**
 	 * @property priority
 	 * @protected
@@ -104,6 +106,8 @@ this.createjs = this.createjs||{};
 	 */
 	MotionGuidePlugin._rotNormE;
 
+
+// static methods
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
@@ -322,15 +326,6 @@ this.createjs = this.createjs||{};
 		return target;
 	};
 
-	// public properties:
-
-	// private properties:
-
-	// constructor:
-
-	// public methods:
-
-	// private methods:
-
 	createjs.MotionGuidePlugin = MotionGuidePlugin;
+
 }());

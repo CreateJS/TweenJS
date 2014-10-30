@@ -35,18 +35,19 @@ this.createjs = this.createjs||{};
 
 (function() {
 	"use strict";
-/**
- * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
- * how to build TweenJS plugins. Please look at the code for inline comments.
- *
- * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
- * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
- * @class SamplePlugin
- * @constructor
- **/
-var SamplePlugin = function() {
-  throw("SamplePlugin cannot be instantiated.")
-};
+
+	/**
+	 * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
+	 * how to build TweenJS plugins. Please look at the code for inline comments.
+	 *
+	 * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
+	 * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
+	 * @class SamplePlugin
+	 * @constructor
+	 **/
+	function SamplePlugin() {
+		throw("SamplePlugin cannot be instantiated.")
+	};
 
 // static interface:
 	/**
@@ -133,5 +134,7 @@ var SamplePlugin = function() {
 		return value;
 	};
 
-createjs.SamplePlugin = SamplePlugin;
+
+	createjs.SamplePlugin = SamplePlugin;
+
 }());

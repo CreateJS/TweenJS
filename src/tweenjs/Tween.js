@@ -73,58 +73,231 @@ this.createjs = this.createjs||{};
 
 (function() {
 	"use strict";
-/**
- * A Tween instance tweens properties for a single target. Instance methods can be chained for easy construction and sequencing:
- *
- * <h4>Example</h4>
- *
- *      target.alpha = 1;
- *	    Tween.get(target)
- *	         .wait(500)
- *	         .to({alpha:0, visible:false}, 1000)
- *	         .call(handleComplete);
- *	    function handleComplete() {
- *	    	//Tween complete
- *	    }
- *
- * Multiple tweens can point to the same instance, however if they affect the same properties there could be unexpected
- * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass <code>override:true</code>
- * in the props argument.
- *
- *      Tween.get(target, {override:true}).to({x:100});
- *
- * Subscribe to the "change" event to get notified when a property of the target is changed.
- *
- *      Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
- *      function handleChange(event) {
- *          // The tween changed.
- *      }
- *
- * See the Tween {{#crossLink "Tween/get"}}{{/crossLink}} method for additional param documentation.
- * @class Tween
- * @param {Object} target The target object that will have its properties tweened.
- * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:true, paused:true}`.
- * All properties default to false. Supported props are:<UL>
- *    <LI> loop: sets the loop property on this tween.</LI>
- *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
- *    <LI> ignoreGlobalPause: sets the {{#crossLink "Tween/ignoreGlobalPause:property"}}{{/crossLink}} property on this tween.</LI>
- *    <LI> override: if true, `Tween.removeTweens(target)` will be called to remove any other tweens with the same target.
- *    <LI> paused: indicates whether to start the tween paused.</LI>
- *    <LI> position: indicates the initial position for this tween.</LI>
- *    <LI> onChange: specifies a listener for the "change" event.</LI>
- * </UL>
- * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
- * plugins' documentation for details.
- * @extends EventDispatcher
- * @constructor
- */
-var Tween = function(target, props, pluginData) {
-  this.initialize(target, props, pluginData);
-};
-var p = Tween.prototype = new createjs.EventDispatcher();
-Tween.prototype.constructor = Tween;
 
-// static interface:
+
+// constructor
+	/**
+	 * A Tween instance tweens properties for a single target. Instance methods can be chained for easy construction and sequencing:
+	 *
+	 * <h4>Example</h4>
+	 *
+	 *      target.alpha = 1;
+	 *	    Tween.get(target)
+	 *	         .wait(500)
+	 *	         .to({alpha:0, visible:false}, 1000)
+	 *	         .call(handleComplete);
+	 *	    function handleComplete() {
+	 *	    	//Tween complete
+	 *	    }
+	 *
+	 * Multiple tweens can point to the same instance, however if they affect the same properties there could be unexpected
+	 * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass <code>override:true</code>
+	 * in the props argument.
+	 *
+	 *      Tween.get(target, {override:true}).to({x:100});
+	 *
+	 * Subscribe to the "change" event to get notified when a property of the target is changed.
+	 *
+	 *      Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
+	 *      function handleChange(event) {
+	 *          // The tween changed.
+	 *      }
+	 *
+	 * See the Tween {{#crossLink "Tween/get"}}{{/crossLink}} method for additional param documentation.
+	 * @class Tween
+	 * @param {Object} target The target object that will have its properties tweened.
+	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:true, paused:true}`.
+	 * All properties default to false. Supported props are:<UL>
+	 *    <LI> loop: sets the loop property on this tween.</LI>
+	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
+	 *    <LI> ignoreGlobalPause: sets the {{#crossLink "Tween/ignoreGlobalPause:property"}}{{/crossLink}} property on this tween.</LI>
+	 *    <LI> override: if true, `Tween.removeTweens(target)` will be called to remove any other tweens with the same target.
+	 *    <LI> paused: indicates whether to start the tween paused.</LI>
+	 *    <LI> position: indicates the initial position for this tween.</LI>
+	 *    <LI> onChange: specifies a listener for the "change" event.</LI>
+	 * </UL>
+	 * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual
+	 * plugins' documentation for details.
+	 * @extends EventDispatcher
+	 * @constructor
+	 */
+	function Tween(target, props, pluginData) {
+
+	// public properties:
+		/**
+		 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {{#crossLink "Ticker"}}{{/crossLink}},
+		 * then setting this to true (the default) will cause this tween to be paused when <code>Ticker.setPaused(true)</code>
+		 * is called. See the Tween {{#crossLink "Tween/tick"}}{{/crossLink}} method for more info. Can be set via the props
+		 * parameter.
+		 * @property ignoreGlobalPause
+		 * @type Boolean
+		 * @default false
+		 */
+		this.ignoreGlobalPause = false;
+	
+		/**
+		 * If true, the tween will loop when it reaches the end. Can be set via the props param.
+		 * @property loop
+		 * @type {Boolean}
+		 * @default false
+		 */
+		this.loop = false;
+	
+		/**
+		 * Read-only. Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
+		 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
+		 * behaviour.
+		 * @property duration
+		 * @type {Number}
+		 * @default 0
+		 */
+		this.duration = 0;
+	
+		/**
+		 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
+		 * you specify data by setting it to a property of pluginData with the same name as the plugin class.
+		 * @example
+		 *	myTween.pluginData.PluginClassName = data;
+		 * <br/>
+		 * Also, most plugins support a property to enable or disable them. This is typically the plugin class name followed by "_enabled".<br/>
+		 * @example
+		 *	myTween.pluginData.PluginClassName_enabled = false;<br/>
+		 * <br/>
+		 * Some plugins also store instance data in this object, usually in a property named _PluginClassName.
+		 * See the documentation for individual plugins for more details.
+		 * @property pluginData
+		 * @type {Object}
+		 */
+		this.pluginData = pluginData || {};
+	
+		/**
+		 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing
+		 * this property after the tween is created will not have any effect.
+		 * @property target
+		 * @type {Object}
+		 */
+		this.target = target;
+	
+		/**
+		 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
+		 * Changing this property directly will have no effect.
+		 * @property position
+		 * @type {Object}
+		 */
+		this.position = null;
+	
+		/**
+		 * Read-only. Indicates the tween's current position is within a passive wait.
+		 * @property passive
+		 * @type {Boolean}
+		 **/
+		this.passive = false;
+	
+	// private properties:	
+		/**
+		 * @property _paused
+		 * @type {Boolean}
+		 * @default false
+		 * @protected
+		 */
+		this._paused = false;
+	
+		/**
+		 * @property _curQueueProps
+		 * @type {Object}
+		 * @protected
+		 */
+		this._curQueueProps = {};
+	
+		/**
+		 * @property _initQueueProps
+		 * @type {Object}
+		 * @protected
+		 */
+		this._initQueueProps = {};
+	
+		/**
+		 * @property _steps
+		 * @type {Array}
+		 * @protected
+		 */
+		this._steps = [];
+	
+		/**
+		 * @property _actions
+		 * @type {Array}
+		 * @protected
+		 */
+		this._actions = [];
+	
+		/**
+		 * Raw position.
+		 * @property _prevPosition
+		 * @type {Number}
+		 * @default 0
+		 * @protected
+		 */
+		this._prevPosition = 0;
+	
+		/**
+		 * The position within the current stethis.
+		 * @property _stepPosition
+		 * @type {Number}
+		 * @default 0
+		 * @protected
+		 */
+		this._stepPosition = 0; // this is needed by MovieClithis.
+	
+		/**
+		 * Normalized position.
+		 * @property _prevPos
+		 * @type {Number}
+		 * @default -1
+		 * @protected
+		 */
+		this._prevPos = -1;
+	
+		/**
+		 * @property _target
+		 * @type {Object}
+		 * @protected
+		 */
+		this._target = target;
+	
+		/**
+		 * @property _useTicks
+		 * @type {Boolean}
+		 * @default false
+		 * @protected
+		 */
+		this._useTicks = false;
+	
+		/**
+		 * @property _inited
+		 * @type {boolean}
+		 * @default false
+		 * @protected
+		 */
+		this._inited = false;
+
+
+		if (props) {
+			this._useTicks = props.useTicks;
+			this.ignoreGlobalPause = props.ignoreGlobalPause;
+			this.loop = props.loop;
+			props.onChange && this.addEventListener("change", props.onChange);
+			if (props.override) { Tween.removeTweens(target); }
+		}
+		if (props&&props.paused) { this._paused=true; }
+		else { createjs.Tween._register(this,true); }
+		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
+
+	};
+
+	var p = createjs.extend(Tween, createjs.EventDispatcher);
+	
+
+// static properties
 	/**
 	 * Constant defining the none actionsMode for use with setPosition.
 	 * @property NONE
@@ -176,6 +349,8 @@ Tween.prototype.constructor = Tween;
 	 */
 	Tween._plugins = {};
 
+
+// static methods	
 	/**
 	 * Returns a new tween instance. This is functionally identical to using "new Tween(...)", but looks cleaner
 	 * with the chained syntax of TweenJS.
@@ -342,84 +517,6 @@ Tween.prototype.constructor = Tween;
 		}
 	};
 
-// public properties:
-	/**
-	 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {{#crossLink "Ticker"}}{{/crossLink}},
-	 * then setting this to true (the default) will cause this tween to be paused when <code>Ticker.setPaused(true)</code>
-	 * is called. See the Tween {{#crossLink "Tween/tick"}}{{/crossLink}} method for more info. Can be set via the props
-	 * parameter.
-	 * @property ignoreGlobalPause
-	 * @type Boolean
-	 * @default false
-	 */
-	p.ignoreGlobalPause = false;
-
-	/**
-	 * If true, the tween will loop when it reaches the end. Can be set via the props param.
-	 * @property loop
-	 * @type {Boolean}
-	 * @default false
-	 */
-	p.loop = false;
-
-	/**
-	 * Read-only. Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
-	 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
-	 * behaviour.
-	 * @property duration
-	 * @type {Number}
-	 * @default 0
-	 */
-	p.duration = 0;
-
-	/**
-	 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
-	 * you specify data by setting it to a property of pluginData with the same name as the plugin class.
-	 * @example
-	 *	myTween.pluginData.PluginClassName = data;
-	 * <br/>
-	 * Also, most plugins support a property to enable or disable them. This is typically the plugin class name followed by "_enabled".<br/>
-	 * @example
-	 *	myTween.pluginData.PluginClassName_enabled = false;<br/>
-	 * <br/>
-	 * Some plugins also store instance data in this object, usually in a property named _PluginClassName.
-	 * See the documentation for individual plugins for more details.
-	 * @property pluginData
-	 * @type {Object}
-	 */
-	p.pluginData = null;
-
-	// TODO: deprecated.
-	/**
-	 * REMOVED. Use {{#crossLink "EventDispatcher/addEventListener"}}{{/crossLink}} and the {{#crossLink "Tween/change:event"}}{{/crossLink}}
-	 * event.
-	 * @property onChange
-	 * @type {Function}
-	 * @deprecated Use addEventListener and the "change" event.
-	 */
-
-	/**
-	 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing
-	 * this property after the tween is created will not have any effect.
-	 * @property target
-	 * @type {Object}
-	 */
-	p.target = null;
-
-	/**
-	 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
-	 * Changing this property directly will have no effect.
-	 * @property position
-	 * @type {Object}
-	 */
-	p.position = null;
-
-	/**
-	 * Read-only. Indicates the tween's current position is within a passive wait.
-	 * @property passive
-	 * @type {Boolean}
-	 **/
-	p.passive = false;
 
 // events:
 	/**
@@ -427,122 +524,7 @@ Tween.prototype.constructor = Tween;
 	 * @event change
 	 * @since 0.4.0
 	 **/
-
-// private properties:
-
-	/**
-	 * @property _paused
-	 * @type {Boolean}
-	 * @default false
-	 * @protected
-	 */
-	p._paused = false;
-
-	/**
-	 * @property _curQueueProps
-	 * @type {Object}
-	 * @protected
-	 */
-	p._curQueueProps = null;
-
-	/**
-	 * @property _initQueueProps
-	 * @type {Object}
-	 * @protected
-	 */
-	p._initQueueProps = null;
-
-	/**
-	 * @property _steps
-	 * @type {Array}
-	 * @protected
-	 */
-	p._steps = null;
-
-	/**
-	 * @property _actions
-	 * @type {Array}
-	 * @protected
-	 */
-	p._actions = null;
-
-	/**
-	 * Raw position.
-	 * @property _prevPosition
-	 * @type {Number}
-	 * @default 0
-	 * @protected
-	 */
-	p._prevPosition = 0;
-
-	/**
-	 * The position within the current step.
-	 * @property _stepPosition
-	 * @type {Number}
-	 * @default 0
-	 * @protected
-	 */
-	p._stepPosition = 0; // this is needed by MovieClip.
-
-	/**
-	 * Normalized position.
-	 * @property _prevPos
-	 * @type {Number}
-	 * @default -1
-	 * @protected
-	 */
-	p._prevPos = -1;
-
-	/**
-	 * @property _target
-	 * @type {Object}
-	 * @protected
-	 */
-	p._target = null;
-
-	/**
-	 * @property _useTicks
-	 * @type {Boolean}
-	 * @default false
-	 * @protected
-	 */
-	p._useTicks = false;
-
-	/**
-	 * @property _inited
-	 * @type {boolean}
-	 * @default false
-	 * @protected
-	 */
-	p._inited = false;
-
-// constructor:
-	/**
-	 * @method initialize
-	 * @param {Object} target
-	 * @param {Object} props
-	 * @param {Object} pluginData
-	 * @protected
-	 */
-	p.initialize = function(target, props, pluginData) {
-		this.target = this._target = target;
-		if (props) {
-			this._useTicks = props.useTicks;
-			this.ignoreGlobalPause = props.ignoreGlobalPause;
-			this.loop = props.loop;
-			props.onChange&&this.addEventListener("change", props.onChange);
-			if (props.override) { Tween.removeTweens(target); }
-		}
-
-		this.pluginData = pluginData || {};
-		this._curQueueProps = {};
-		this._initQueueProps = {};
-		this._steps = [];
-		this._actions = [];
-		if (props&&props.paused) { this._paused=true; }
-		else { Tween._register(this,true); }
-		if (props&&props.position!=null) { this.setPosition(props.position, Tween.NONE); }
-	};
+	
 
 // public methods:
 	/**
@@ -913,5 +895,7 @@ Tween.prototype.constructor = Tween;
 		}
 	};
 
-createjs.Tween = Tween;
+
+	createjs.Tween = createjs.promote(Tween);
+
 }());

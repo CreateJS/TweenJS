@@ -1,5 +1,7 @@
 {
 	"source": [
+		"../src/createjs/utils/extend.js",
+		"../src/createjs/utils/promote.js",
 		"../src/createjs/events/Event.js",
 		"../src/createjs/events/EventDispatcher.js",
 		"../src/createjs/utils/Ticker.js",

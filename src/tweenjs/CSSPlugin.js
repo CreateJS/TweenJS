@@ -35,24 +35,26 @@ this.createjs = this.createjs||{};
 
 (function() {
 	"use strict";
-/**
- * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
- * TweenJS has loaded:
- *
- *      createjs.CSSPlugin.install();
- *
- * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
- * the top, left, bottom, right, width, height have a "px" suffix appended.
- *
- * Please note that the CSS Plugin is not included in the TweenJS minified file.
- * @class CSSPlugin
- * @constructor
- **/
-var CSSPlugin = function() {
-  throw("CSSPlugin cannot be instantiated.")
-}
 
-// static interface:
+	/**
+	 * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
+	 * TweenJS has loaded:
+	 *
+	 *      createjs.CSSPlugin.install();
+	 *
+	 * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
+	 * the top, left, bottom, right, width, height have a "px" suffix appended.
+	 *
+	 * Please note that the CSS Plugin is not included in the TweenJS minified file.
+	 * @class CSSPlugin
+	 * @constructor
+	 **/
+	function CSSPlugin() {
+		throw("CSSPlugin cannot be instantiated.")
+	}
+
+
+// static properties
 	/**
 	 * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
 	 * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
@@ -72,6 +74,8 @@ var CSSPlugin = function() {
 	 **/
 	CSSPlugin.priority = -100; // very low priority, should run last
 
+
+// static methods
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
@@ -82,7 +86,6 @@ var CSSPlugin = function() {
 		for (var n in map) { arr.push(n); }
 		createjs.Tween.installPlugin(CSSPlugin, arr);
 	}
-
 
 	/**
 	 * @method init
@@ -111,7 +114,6 @@ var CSSPlugin = function() {
 		// unused
 	}
 
-
 	/**
 	 * @method tween
 	 * @protected
@@ -124,16 +126,6 @@ var CSSPlugin = function() {
 		return createjs.Tween.IGNORE;
 	}
 
-// public properties:
+	createjs.CSSPlugin = CSSPlugin;
 
-// private properties:
-
-// constructor:
-
-// public methods:
-
-
-// private methods:
-
-createjs.CSSPlugin = CSSPlugin;
 }());

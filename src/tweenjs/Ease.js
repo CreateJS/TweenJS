@@ -36,43 +36,43 @@ this.createjs = this.createjs||{};
 (function() {
 	"use strict";
 
-// constructor:
-/**
- * The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param
- * easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
- *
- * Most methods on Ease can be passed directly as easing functions:
- *
- *      Tween.get(target).to({x:100}, 500, Ease.linear);
- *
- * However, methods beginning with "get" will return an easing function based on parameter values:
- *
- *      Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));
- *
- * Please see the <a href="http://www.createjs.com/#!/TweenJS/demos/sparkTable">spark table demo</a> for an overview
- * of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
- *
- * <i>Equations derived from work by Robert Penner.</i>
- * @class Ease
- * @static
- **/
-var Ease = function() {
-	throw "Ease cannot be instantiated.";
-}
-
-// public static methods:
 	/**
-	 * @method linear
+	 * The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param
+	 * easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
+	 *
+	 * Most methods on Ease can be passed directly as easing functions:
+	 *
+	 *      Tween.get(target).to({x:100}, 500, Ease.linear);
+	 *
+	 * However, methods beginning with "get" will return an easing function based on parameter values:
+	 *
+	 *      Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));
+	 *
+	 * Please see the <a href="http://www.createjs.com/#!/TweenJS/demos/sparkTable">spark table demo</a> for an overview
+	 * of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
+	 *
+	 * <i>Equations derived from work by Robert Penner.</i>
+	 * @class Ease
 	 * @static
 	 **/
-	Ease.linear = function(t) { return t; }
+	function Ease() {
+		throw "Ease cannot be instantiated.";
+	};
 
+
+// static methods and properties
 	/**
 	 * Identical to linear.
 	 * @method none
 	 * @static
 	 **/
 	Ease.none = Ease.linear;
+
+	/**
+	 * @method linear
+	 * @static
+	 **/
+	Ease.linear = function(t) { return t; }
 
 	/**
 	 * Mimics the simple -100 to 100 easing in Flash Pro.
@@ -102,7 +102,6 @@ var Ease = function() {
 		}
 	}
 
-
 	/**
 	 * Configurable exponential ease.
 	 * @method getPowOut
@@ -114,7 +113,6 @@ var Ease = function() {
 			return 1-Math.pow(1-t,pow);
 		}
 	}
-
 
 	/**
 	 * Configurable exponential ease.
@@ -128,7 +126,6 @@ var Ease = function() {
 			return 1-0.5*Math.abs(Math.pow(2-t,pow));
 		}
 	}
-
 
 	/**
 	 * @method quadIn
@@ -146,7 +143,6 @@ var Ease = function() {
 	 **/
 	Ease.quadInOut = Ease.getPowInOut(2);
 
-
 	/**
 	 * @method cubicIn
 	 * @static
@@ -162,7 +158,6 @@ var Ease = function() {
 	 * @static
 	 **/
 	Ease.cubicInOut = Ease.getPowInOut(3);
-
 
 	/**
 	 * @method quartIn
@@ -180,7 +175,6 @@ var Ease = function() {
 	 **/
 	Ease.quartInOut = Ease.getPowInOut(4);
 
-
 	/**
 	 * @method quintIn
 	 * @static
@@ -196,7 +190,6 @@ var Ease = function() {
 	 * @static
 	 **/
 	Ease.quintInOut = Ease.getPowInOut(5);
-
 
 	/**
 	 * @method sineIn
@@ -221,7 +214,6 @@ var Ease = function() {
 	Ease.sineInOut = function(t) {
 		return -0.5*(Math.cos(Math.PI*t) - 1)
 	}
-
 
 	/**
 	 * Configurable "back in" ease.
@@ -275,7 +267,6 @@ var Ease = function() {
 	 * @static
 	 **/
 	Ease.backInOut = Ease.getBackInOut(1.7);
-
 
 	/**
 	 * @method circIn
@@ -334,7 +325,6 @@ var Ease = function() {
 		if (t<0.5) return Ease.bounceIn (t*2) * .5;
 		return Ease.bounceOut(t*2-1)*0.5+0.5;
 	}
-
 
 	/**
 	 * Configurable elastic ease.
@@ -399,5 +389,6 @@ var Ease = function() {
 	 **/
 	Ease.elasticInOut = Ease.getElasticInOut(1,0.3*1.5);
 
-createjs.Ease = Ease;
+	createjs.Ease = Ease;
+
 }());
