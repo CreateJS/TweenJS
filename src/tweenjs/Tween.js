@@ -896,6 +896,6 @@ this.createjs = this.createjs||{};
 	};
 
 
-	createjs.Tween = createjs.promote(Tween);
+	createjs.Tween = createjs.promote(Tween, "EventDispatcher");
 
 }());

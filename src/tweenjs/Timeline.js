@@ -404,6 +404,6 @@ this.createjs = this.createjs||{};
 	};
 
 
-	createjs.Timeline = createjs.promote(Timeline);
+	createjs.Timeline = createjs.promote(Timeline, "EventDispatcher");
 
 }());
