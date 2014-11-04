@@ -62,17 +62,17 @@ this.createjs = this.createjs||{};
 
 // static methods and properties
 	/**
+	 * @method linear
+	 * @static
+	 **/
+	Ease.linear = function(t) { return t; }
+
+	/**
 	 * Identical to linear.
 	 * @method none
 	 * @static
 	 **/
 	Ease.none = Ease.linear;
-
-	/**
-	 * @method linear
-	 * @static
-	 **/
-	Ease.linear = function(t) { return t; }
 
 	/**
 	 * Mimics the simple -100 to 100 easing in Flash Pro.
