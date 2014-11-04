@@ -94,10 +94,16 @@ module.exports = function (grunt) {
 				},
 
 				updateversion: {
-					build: {
+					tween: {
 						file: '../src/tweenjs/version.js',
 						version: '<%= version %>'
-					},
+					}
+				},
+
+				clearversion: {
+					tween: {
+						file: '../src/tweenjs/version.js'
+					}
 				}
 			}
 	);
@@ -203,6 +209,14 @@ module.exports = function (grunt) {
 	]);
 
 	/**
+	 * Task for exporting only the next lib.
+	 *
+	 */
+	grunt.registerTask('nextlib', [
+		"updateversion", "combine", "uglify", "clearversion", "copy:src"
+	]);
+
+	/**
 	 * Task for exporting a release build (version based on package.json)
 	 *
 	 */
@@ -215,7 +229,7 @@ module.exports = function (grunt) {
 	 *
 	 */
 	grunt.registerTask('coreBuild', [
-		"updateversion", "combine", "uglify", "docs", "copy:src"
+		"updateversion", "combine", "uglify", "clearversion", "docs", "copy:src"
 	]);
 
 	/**
