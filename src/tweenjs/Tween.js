@@ -560,7 +560,7 @@ Tween.prototype.constructor = Tween;
 	p.wait = function(duration, passive) {
 		if (duration == null || duration <= 0) { return this; }
 		var o = this._cloneProps(this._curQueueProps);
-		return this._addStep({d:duration, p0:o, e:this._linearEase, p1:o, v:passive});
+		return this._addStep({d:Number(duration), p0:o, e:this._linearEase, p1:o, v:passive});
 	};
 
 	/**
@@ -579,7 +579,7 @@ Tween.prototype.constructor = Tween;
 	 */
 	p.to = function(props, duration, ease) {
 		if (isNaN(duration) || duration < 0) { duration = 0; }
-		return this._addStep({d:duration||0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
+		return this._addStep({d:Number(duration)||0, p0:this._cloneProps(this._curQueueProps), e:ease, p1:this._cloneProps(this._appendQueueProps(props))});
 	};
 
 	/**
