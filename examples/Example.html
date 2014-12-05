@@ -1,87 +1,94 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>TweenJS: Canvas Tweening Example</title>
+	<title>TweenJS: Canvas Tweening Example</title>
 
-	<link rel="stylesheet" href="assets/demoStyles.css" />
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
 
-	<script type="text/javascript" src="./assets/easeljs-NEXT.min.js"></script>
+	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
 	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
-	<script>
+<script id="editable">
 	function init() {
 		stage = new createjs.Stage("canvas1");
 
 		var circle = new createjs.Shape();
-		circle.graphics.beginFill("#FF0000").drawCircle(0,0,50);
+		circle.graphics.beginFill("#FF0000").drawCircle(0, 0, 50);
 
 		var highlight = new createjs.Shape();
-		highlight.graphics.beginFill("#FFFF66").drawRect(-50,-5,100,30);
+		highlight.graphics.beginFill("#FFFF66").drawRect(-50, -5, 100, 30);
 		highlight.x = 250;
 		highlight.y = 250;
 
 		var txt = new createjs.Text("TweenJS", "bold 20px Arial");
 		txt.textAlign = "center";
-		txt.x =  250;
+		txt.x = 250;
 		txt.y = 250;
 
-		stage.addChild(circle,highlight,txt);
+		stage.addChild(circle, highlight, txt);
 
 		// set up a tween that tweens between scale 0.3 and 1 every second.
-		createjs.Tween.get(circle,{loop:true})
-			.wait(1000) // wait for 1 second
-			.to({scaleX:0.2,scaleY:0.2}) // jump to the new scale properties (default duration of 0)
-            .set({x:100}, circle)
-			.wait(1000)
-                .set({y:200}, circle)
-			.to({scaleX:1,scaleY:1},1000,createjs.Ease.bounceOut) // tween to scaleX/Y of 1 with ease bounce out
+		createjs.Tween.get(circle, {loop: true})
+				.wait(1000) // wait for 1 second
+				.to({scaleX: 0.2, scaleY: 0.2}) // jump to the new scale properties (default duration of 0)
+				.set({x: 100}, circle)
+				.wait(1000)
+				.set({y: 200}, circle)
+				.to({scaleX: 1, scaleY: 1}, 1000, createjs.Ease.bounceOut) // tween to scaleX/Y of 1 with ease bounce out
 
 		// for demonstration purposes, try setting the override (third) parameter to true
 		// this will override any previous tweens on the circle and replace them with this tween
 		// resulting in the scaling tween above being cleared.
-		createjs.Tween.get(circle, {loop:true}, true) // get a new tween targeting circle
-			.to({x:500,y:200,alpha:0.1},1000,createjs.Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
-			.to({x:0},1000,createjs.Ease.get(-1)) // tween x over 0.5s with ease in
-			.to({y:400}) // jump to new y property (defaults to a duration of 0)
-			.call(console.log, ["wait..."], console) // call console.log("wait...")
-			.wait(800) // wait for 0.8s
-			.to({y:0,alpha:1},300) // tween y/alpha over 0.3s
-			.call(console.log, ["done!"],console) // call console.log("done!");
+		createjs.Tween.get(circle, {loop: true}, true) // get a new tween targeting circle
+				.to({x: 500, y: 200, alpha: 0.1}, 1000, createjs.Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
+				.to({x: 0}, 1000, createjs.Ease.get(-1)) // tween x over 0.5s with ease in
+				.to({y: 400}) // jump to new y property (defaults to a duration of 0)
+				.call(console.log, ["wait..."], console) // call console.log("wait...")
+				.wait(800) // wait for 0.8s
+				.to({y: 0, alpha: 1}, 300) // tween y/alpha over 0.3s
+				.call(console.log, ["done!"], console) // call console.log("done!");
 
 		// this tween doesn't actually tween anything, it just sequences some actions:
 		// note that it has pauseable set to false, so it will keep playing even when Ticker is paused.
-		createjs.Tween.get(txt,{loop:true, ignoreGlobalPause:true}) // get a tween targeting txt
-			.to({text:"the new javascript tweening engine"},1500) // change text after 1.5s
-			.set({visible:false},highlight) // set visible=false on highlight
-			.to({text:"by Grant Skinner, gskinner.com"},1500) // change text after 1.5s
-			.to({text:"TweenJS"},1500).set({visible:true},highlight); // change text after 1.5s & set visible=true on highlight
-			/*
-			// We could also do the above using wait and set:
-			.wait(1500) // wait 1.5s
-			.set({visible:false},highlight) // set visible=false on highlight
-			.set({text:"the new javascript tweening engine"}) // set the text property of the target
-			.wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
-			.wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
-			*/
+		createjs.Tween.get(txt, {loop: true, ignoreGlobalPause: true}) // get a tween targeting txt
+				.to({text: "the new javascript tweening engine"}, 1500) // change text after 1.5s
+				.set({visible: false}, highlight) // set visible=false on highlight
+				.to({text: "by Grant Skinner, gskinner.com"}, 1500) // change text after 1.5s
+				.to({text: "TweenJS"}, 1500).set({visible: true}, highlight); // change text after 1.5s & set visible=true on highlight
+		/*
+		 // We could also do the above using wait and set:
+		 .wait(1500) // wait 1.5s
+		 .set({visible:false},highlight) // set visible=false on highlight
+		 .set({text:"the new javascript tweening engine"}) // set the text property of the target
+		 .wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
+		 .wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
+		 */
 
 		createjs.Ticker.setFPS(20);
 		// in order for the stage to continue to redraw when the Ticker is paused we need to add it with
 		// the second ("pauseable") param set to false.
 		createjs.Ticker.addEventListener("tick", stage);
 	}
-	</script>
+</script>
 </head>
 
 <body onload="init();">
 
-	<header id="header" class="TweenJS">
-	    <h1><span class="text-product">Tween<strong>JS</strong></span> TweenJS Example</h1>
-	    <p>This example shows how to use TweenJS, including animation, delays, and function calls</p>
-	</header>
+<header class="TweenJS">
+	<h1>TweenJS Example</h1>
 
-	<canvas id="canvas1" width="960" height="350"></canvas><br/>
-	<input type="button" value="toggle paused" onclick="createjs.Ticker.setPaused(!createjs.Ticker.getPaused());"
+	<p>This example shows how to use TweenJS, including animation, delays, and
+		function calls</p>
+</header>
+
+<canvas id="canvas1" width="960" height="350"></canvas>
+<br/>
+<input type="button" value="toggle paused"
+	   onclick="createjs.Ticker.setPaused(!createjs.Ticker.getPaused());"
 </body>
 </html>
