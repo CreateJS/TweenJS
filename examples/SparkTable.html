@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>TweenJS: Spark Table</title>
+	<title>TweenJS: Spark Table</title>
 
-	<link rel="stylesheet" href="assets/demoStyles.css" />
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
 
-	<script type="text/javascript" src="./assets/easeljs-NEXT.min.js"></script>
+	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
 	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
-	<script>
-
-	var eases = [createjs.Ease.none,createjs.Ease.quadIn,createjs.Ease.getPowIn(2.5),createjs.Ease.cubicIn,createjs.Ease.quartIn,createjs.Ease.quintIn];
+<script id="editable">
+	var eases = [createjs.Ease.none, createjs.Ease.quadIn, createjs.Ease.getPowIn(2.5), createjs.Ease.cubicIn, createjs.Ease.quartIn, createjs.Ease.quintIn];
 
 	function init() {
-		if (window.top != window) {
-			document.getElementById("header").style.display = "none";
-		}
-
 		canvas = document.getElementById("canvas1");
 		stage = new createjs.Stage(canvas);
 
@@ -26,34 +24,35 @@
 		var g = graph.graphics;
 		stage.addChild(graph);
 
-		var w = canvas.width-10;
-		var h = canvas.height-10;
+		var w = canvas.width - 10;
+		var h = canvas.height - 10;
 
-		for (var j=0,l=eases.length;j<l;j++) {
-			g.beginFill(createjs.Graphics.getHSL(j/l*360,50,50));
+		for (var j = 0, l = eases.length; j < l; j++) {
+			g.beginFill(createjs.Graphics.getHSL(j / l * 360, 50, 50));
 			var ease = eases[j];
-			for (var i=0; i<100; i++) {
-				var x = i/100*w+5;
-				var y = h-ease(i/100)*h+5;
-				g.drawCircle(x,y,3);
+			for (var i = 0; i < 100; i++) {
+				var x = i / 100 * w + 5;
+				var y = h - ease(i / 100) * h + 5;
+				g.drawCircle(x, y, 3);
 				g.closePath();
 			}
 		}
 		stage.update();
 
 	}
-	</script>
+</script>
 </head>
 
 <body onload="init();">
 
-	<header id="header" class="TweenJS">
-	    <h1><span class="text-product">Tween<strong>JS</strong></span> Spark Table</h1>
-	    <p>You can edit this example to test different ease functions.</p>
-	</header>
+<header class="TweenJS">
+	<h1>Spark Table</h1>
 
-	<canvas id="canvas1" width="960" height="400"></canvas>
+	<p>You can edit this example to test different ease functions.</p>
+</header>
+
+<canvas id="canvas1" width="960" height="400"></canvas>
 
 </body>
 </html>
-		
+
