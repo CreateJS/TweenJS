@@ -3,89 +3,87 @@
 <head>
 	<title>TweenJS: Simple Motion Guide Demo</title>
 
-	<link rel="stylesheet" href="assets/demoStyles.css" />
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
 
-	<script type="text/javascript" src="./assets/easeljs-NEXT.min.js"></script>
+	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
 	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
-	<script>
-		var canvas;
-		var stage;
+<script id="editable">
+	var canvas;
+	var stage;
 
-		function init() {
-			if (window.top != window) {
-				document.getElementById("header").style.display = "none";
-			}
+	function init() {
 
-			createjs.MotionGuidePlugin.install(createjs.Tween);
+		createjs.MotionGuidePlugin.install(createjs.Tween);
 
-			canvas = document.getElementById("testCanvas");
-			stage = new createjs.Stage(canvas);
-			stage.autoClear = true;
+		canvas = document.getElementById("testCanvas");
+		stage = new createjs.Stage(canvas);
+		stage.autoClear = true;
 
-			var ball = new createjs.Shape();
-			ball.graphics.setStrokeStyle(5, 'round', 'round');
-			ball.graphics.beginStroke(('#000000'));
-			ball.graphics.beginFill("#FF0000").drawCircle(0,0,50);
-			ball.graphics.endStroke();
-			ball.graphics.endFill();
-			ball.graphics.setStrokeStyle(1, 'round', 'round');
-			ball.graphics.beginStroke(('#000000'));
-			ball.graphics.moveTo(0,0);
-			ball.graphics.lineTo(50,0);
-			ball.graphics.endStroke();
+		var ball = new createjs.Shape();
+		ball.graphics.setStrokeStyle(5, 'round', 'round');
+		ball.graphics.beginStroke(('#000000'));
+		ball.graphics.beginFill("#FF0000").drawCircle(0, 0, 50);
+		ball.graphics.endStroke();
+		ball.graphics.endFill();
+		ball.graphics.setStrokeStyle(1, 'round', 'round');
+		ball.graphics.beginStroke(('#000000'));
+		ball.graphics.moveTo(0, 0);
+		ball.graphics.lineTo(50, 0);
+		ball.graphics.endStroke();
 
-			ball.x = 0;
-			ball.y = 400;
-			/*var tween = createjs.Tween.get(ball, {loop:true}, true)
-					.wait(1000)
-					.to({x:300,y:300}, 5000)
-					.wait(1000)
-					.to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
-					.wait(1000)
-					.to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
-					.to({x:300,y:300}, 5000)
-					.to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
-			;*/
-			var tween = createjs.Tween.get(ball, {loop:true}, true)
-					.to({x:150,y:150}, 3000)
-					.to({rotation: -45}, 1000)
-					.to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
-					.to({x:900,y:300}, 2000)
-					.wait(2000)
-					.to({rotation: 360}, 2000)
-					.to({guide:{path:[100,100, 800,100, 800,300], start:1, end:0}}, 5000)
-					.wait(2000)
-					.to({x:200,y:200}, 1000)
-					.to({rotation: -360, guide:{path:[100,100, 800,100, 800,300]}}, 3000)
+		ball.x = 0;
+		ball.y = 400;
+		/*var tween = createjs.Tween.get(ball, {loop:true}, true)
+		 .wait(1000)
+		 .to({x:300,y:300}, 5000)
+		 .wait(1000)
+		 .to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
+		 .wait(1000)
+		 .to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
+		 .to({x:300,y:300}, 5000)
+		 .to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
+		 ;*/
+		var tween = createjs.Tween.get(ball, {loop: true}, true)
+						.to({x: 150, y: 150}, 3000)
+						.to({rotation: -45}, 1000)
+						.to({guide: {path: [100, 100, 800, 100, 800, 300], orient: true}}, 5000)
+						.to({x: 900, y: 300}, 2000)
+						.wait(2000)
+						.to({rotation: 360}, 2000)
+						.to({guide: {path: [100, 100, 800, 100, 800, 300], start: 1, end: 0}}, 5000)
+						.wait(2000)
+						.to({x: 200, y: 200}, 1000)
+						.to({rotation: -360, guide: {path: [100, 100, 800, 100, 800, 300]}}, 3000)
 				;
 
-			stage.addChild(ball);
+		stage.addChild(ball);
 
-			createjs.Ticker.addEventListener("tick", stage);
-		}
+		createjs.Ticker.addEventListener("tick", stage);
+	}
 
-		function handleComplete(tween) {
-			var ball = tween._target;
+	function handleComplete(tween) {
+		var ball = tween._target;
 
-		}
+	}
 
-	</script>
-	<link rel="stylesheet" href="assets/demoStyles.css"/>
+</script>
 </head>
-<body onload="init();" >
+<body onload="init();">
 
-<div class="canvasHolder">
+<div>
+	<header class="EaselJS">
+		<h1>Simple Tween Demo</h1>
 
-	<header id="header" class="EaselJS">
-	    <h1><span class="text-product">Tween<strong>JS</strong></span> Simple Tween Demo</h1>
-	    <p>This example shows a simple use of the MotionGuidePlugin.</p>
+		<p>This example shows a simple use of the MotionGuidePlugin.</p>
 	</header>
 
 	<canvas id="testCanvas" width="960" height="400"></canvas>
-
 </div>
 
 </body>
