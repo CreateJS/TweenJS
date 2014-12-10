@@ -16,3 +16,4 @@ docs/**/
 *[\<\>\:\"\/\\\|\?\*]*
 main.css
 *.codekit
+*.sass-cache
