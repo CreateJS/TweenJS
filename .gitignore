@@ -14,3 +14,5 @@ docs/**/
 # (for cross OS compatibility)
 #-----------------------------
 *[\<\>\:\"\/\\\|\?\*]*
+main.css
+*.codekit
