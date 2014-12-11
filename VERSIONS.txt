@@ -2,14 +2,19 @@ Version NEXT [Not Released]
 ****************************************************************************************************
 CRITICAL (may break existing content):
 - Added Ticker into the "createjs" package to remove reliance on EaselJS.
+- re-architected the class and inheritance model
+	- initialize methods removed, use MySuperClass_constructor instead
+	- helper methods: extend & promote (see the "Utility Methods" docs)
+	- property definitions are now instance level, and in the constructor (performance gains)
+	- the .constructor is now set correctly on all classes (thanks kaesve)
 
 *****
 OTHER:
 - Added bower support, including grunt task for updating the bower.json
 - Fixed issue with setPaused() stacking up tween ticks
-- Added constructors to all classes (Thanks kaesve)
 - Added .gitignore to subfolders under /docs (thanks mcfarljw)
 - Improved EventDispatcher's handling of redispatched event objects
+- Fixed "none" Ease
 
 
 Version 0.5.1 [December 12, 2013]
