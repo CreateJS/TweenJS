@@ -14,30 +14,16 @@
   http://code.createjs.com -->
 
 <script id="editable">
-	var canvas;
 	var stage;
-	var count = 0;
-	var prevPoint;
-	var bar;
-	var container;
-	var oldX;
-	var dataProvider;
-	var tweenType;
-	var currentClip;
-	var selectedFunction;
-	var selectedItem;
-	var resetRuninng;
-	var hue;
-	var selectedIndex = 0;
+	var prevPoint, dataProvider, rect = new createjs.Rectangle(20,20,700,360);
+	var bar, container, currentClip;
+	var selectedFunction, selectedItem, selectedIndex = 0;
+	var resetRuninng = false, startTimeout;
 	var clips = [];
+	var activeTween;
 
 	function init() {
-
-		canvas = document.getElementById("testCanvas");
-		stage = new createjs.Stage(canvas);
-
-		resetRuninng = false;
-		graphics = new createjs.Graphics();
+		stage = new createjs.Stage("testCanvas");
 
 		var Ease = createjs.Ease; // shortcut.
 		dataProvider = [
@@ -57,8 +43,7 @@
 			{type: Ease.elasticIn, label: "elasticIn"},
 			{type: Ease.elasticInOut, label: "elasticInOut"},
 			{type: Ease.elasticOut, label: "elasticOut"},
-			{type: Ease.linear, label: "linear"},
-			{type: Ease.none, label: "none"},
+			{type: Ease.linear, label: "linear/none"},
 			{type: Ease.quadIn, label: "quadIn"},
 			{type: Ease.quadInOut, label: "quadInOut"},
 			{type: Ease.quadOut, label: "quadOut"},
@@ -110,38 +95,39 @@
 			}
 		}
 
+		createjs.Ticker.setFPS(60);
 		createjs.Ticker.addEventListener("tick", tick);
 
-		container = new createjs.Container();
-		container.x = 20;
-		container.y = 20;
-		stage.addChild(container);
+		prevPoint = new createjs.Point(rect.x, rect.y);
 
-		prevPoint = new createjs.Point(212, 0);
+		container = stage.addChild(new createjs.Container());
+		bar = container.addChild(new createjs.Shape()
+										 .set({alpha:0.7, x:rect.x, y:rect.y}));
+		bar.graphics.f("#000").setStrokeStyle(1)
+				.drawRect(-2, 0, 4, 15)
+				.drawRect(-2, rect.height-15, 4, 15)
+				.setStrokeStyle(1)
+				.beginFill("#000")
+				.drawRect(-1, 15, 2, rect.height-15*2);
 
-		bar = new createjs.Shape();
-		bar.graphics.f("#FFFFFF").ss(1).dr(2, 0, 4, 15).dr(2, 330, 4, 15).ef().ss(1).f("#FFFFFF").dr(3, 10, 2, 320);
-		bar.alpha = 0.7;
-		container.addChild(bar);
-
-		var bounds = new createjs.Shape();
-		bounds.graphics.ss(1).s("#FFFFFF").mt(0, 0).lt(0, 350).lt(700, 350).lt(700, 0);
-		bounds.alpha = 0.7;
-		container.addChild(bounds);
+		var bounds = container.addChild(new createjs.Shape()
+												.set({alpha:0.7}));
+		bounds.graphics.setStrokeStyle(1)
+				.beginStroke("#000")
+				.drawRect(rect.x, rect.y, rect.width, rect.height);
 
 		stage.update();
 
-		run();
+		startTimeout = setTimeout(run, 1000);
 	}
 
 	function stop() {
-		//Ticker.removeListener(window);
+		Ticker.off("tick", tick);
 	}
 
 	function selectItem() {
-		if (clips.length > 0) {
-			fade();
-		}
+		clearTimeout(startTimeout);
+		if (clips.length > 0) { fade(); }
 
 		if (selectedItem != null && selectedItem != this) {
 			selectedItem.className = "";
@@ -153,63 +139,55 @@
 		selectedFunction = dataProvider[selectedIndex].type;
 
 		resetRuninng = true;
-		createjs.Tween.get(bar, {override: true}).to({x: 0, y: 0}, 500).call(resetComplete);
+		createjs.Tween.get(bar, {override: true}).to({x: rect.x}, 500).call(resetComplete);
 		return false;
 	}
 
 	function run(easeType) {
-		currentClip = new createjs.Shape();
+		currentClip = stage.addChild(new createjs.Shape());
 		clips.push(currentClip);
-		stage.addChild(currentClip);
-		update = true;
-		oldX = 0;
-		prevPoint.x = prevPoint.y = 0;
-
-		createjs.Tween.get(bar, {override: true}).to({x: 700}, 1500, easeType);
-
+		prevPoint.setValues(rect.x, rect.y);
+		activeTween = createjs.Tween.get(bar, {override: true}).to({x: rect.x+rect.width}, 1500, easeType);
 	}
 
 	function resetComplete() {
-		count = 0;
-		bar.x = 0;
+		bar.x = rect.x;
 		resetRuninng = false;
 		currentClip = null;
+		prevPoint.setValues(rect.x, rect.y);
 
 		run(selectedFunction);
 	}
 
 	function tick(event) {
-		if (bar.x != oldX && !resetRuninng) {
-			var g = currentClip.graphics;
-			var pt = new createjs.Point(container.x + prevPoint.x, container.y + prevPoint.y);
+		if (!resetRuninng && currentClip != null) {
+			var hue = (selectedIndex / dataProvider.length) * 360;
+			var g = currentClip.graphics
+					.setStrokeStyle(1, "round", "round")
+					.beginStroke(createjs.Graphics.getHSL(hue, 50, 50))
+					.moveTo(prevPoint.x, prevPoint.y);
 
-			g.moveTo(pt.x, pt.y);
-
-			count++;
 			prevPoint.x = bar.x;
-			prevPoint.y = (count * 11);
+			prevPoint.y = rect.x+ activeTween.position/1500 * rect.height;
 
-			g.setStrokeStyle(1, "round", "round");
-			hue = (selectedIndex / dataProvider.length) * 360;
-
-			g.beginStroke(createjs.Graphics.getHSL(hue, 50, 50));
-			g.lineTo(container.x + prevPoint.x, container.y + prevPoint.y);
-			g.beginStroke(createjs.Graphics.getHSL(hue, 100, 50));
-			g.beginFill(createjs.Graphics.getHSL(hue, 100, 50));
-			g.drawCircle(pt.x, pt.y, 2);
-			g.endFill();
+			g.lineTo(prevPoint.x, prevPoint.y)
+					.beginStroke(createjs.Graphics.getHSL(hue, 100, 50))
+					.beginFill(createjs.Graphics.getHSL(hue, 100, 50))
+					.drawCircle(prevPoint.x, prevPoint.y, 2)
+					.endFill();
 
 			stage.update(event);
 		} else if (resetRuninng) {
 			stage.update(event);
 		}
-		oldX = bar.x;
 	}
 
 	function fade() {
 		for (var i = 0; i < clips.length; i++) {
 			var clip = clips[i];
-			createjs.Tween.get(clip, {override: true}).to({alpha: clip.alpha - 0.4}, 1000).call(fadeTweenComplete);
+			createjs.Tween.get(clip, {override: true})
+					.to({alpha: clip.alpha - 0.4}, 1000)
+					.call(fadeTweenComplete);
 		}
 	}
 
@@ -224,13 +202,18 @@
 </script>
 
 <style type="text/css">
+	.content {
+		position: relative;
+		width: 960px;
+		padding: 0;
+	}
 	#eases {
-		width: 200px;
-		height: 400px;
-		padding: 5px;
-		border-left: 2px solid #777;
 		position: absolute;
-		left: 755px;
+		right: 0;
+		width: 220px;
+		height: 400px;
+		border-left: 2px solid #777;
+		padding: 5px 10px;
 	}
 
 	#eases SPAN {
@@ -241,6 +224,7 @@
 	}
 
 	#eases A {
+		font-size: 0.9em;
 		float: left;
 		padding: 1px 3px;
 	}
@@ -257,6 +241,10 @@
 		background-color: #f90;
 		color: #333;
 	}
+
+	.content {
+		background-color: rgba(255,255,255,0.5);
+	}
 </style>
 
 </head>
@@ -268,12 +256,10 @@
 	<p>Preview a number of different ease functions.</p>
 </header>
 
-<div id="eases" class="content"></div>
-<canvas id="testCanvas" width="960" height="400"></canvas>
-
-<!--<select id="library" size="20" multiple="multiple" onchange="selectItem(this)" class="select">
-		<option value="-1">-- Eases--</option>
-</select>-->
+<div class="content">
+	<div id="eases" class="content"></div>
+	<canvas id="testCanvas" width="960" height="400"></canvas>
+</div>
 
 </body>
 </html>
