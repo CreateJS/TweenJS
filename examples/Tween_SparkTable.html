@@ -111,7 +111,7 @@
 				.drawRect(-1, 15, 2, rect.height-15*2);
 
 		var bounds = container.addChild(new createjs.Shape()
-												.set({alpha:0.7}));
+												.set({alpha:0.7, x:0.5, y:0.5}));
 		bounds.graphics.setStrokeStyle(1)
 				.beginStroke("#000")
 				.drawRect(rect.x, rect.y, rect.width, rect.height);
