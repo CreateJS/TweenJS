@@ -1,4 +1,4 @@
-Version NEXT [Not Released]
+Version 0.6.0
 ****************************************************************************************************
 CRITICAL (may break existing content):
 - Added Ticker into the "createjs" package to remove reliance on EaselJS.
