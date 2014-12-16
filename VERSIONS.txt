@@ -1,4 +1,9 @@
-Version 0.6.0
+Version NEXT [not yet released]
+****************************************************************************************************
+
+
+
+Version 0.6.0 [December 12, 2014]
 ****************************************************************************************************
 CRITICAL (may break existing content):
 - Added Ticker into the "createjs" package to remove reliance on EaselJS.
