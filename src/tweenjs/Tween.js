@@ -240,13 +240,13 @@ this.createjs = this.createjs||{};
 		this._prevPosition = 0;
 	
 		/**
-		 * The position within the current stethis.
+		 * The position within the current step.
 		 * @property _stepPosition
 		 * @type {Number}
 		 * @default 0
 		 * @protected
 		 */
-		this._stepPosition = 0; // this is needed by MovieClithis.
+		this._stepPosition = 0; // this is needed by MovieClip.
 	
 		/**
 		 * Normalized position.
@@ -600,7 +600,7 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-	 * Queues an action to to play (unpause) the specified tween. This enables you to sequence multiple tweens.
+	 * Queues an action to play (unpause) the specified tween. This enables you to sequence multiple tweens.
 	 * @example
 	 *	myTween.to({x:100},500).play(otherTween);
 	 * @method play
@@ -613,7 +613,7 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-	 * Queues an action to to pause the specified tween.
+	 * Queues an action to pause the specified tween.
 	 * @method pause
 	 * @param {Tween} tween The tween to play. If null, it pauses this tween.
 	 * @return {Tween} This tween instance (for chaining calls)
