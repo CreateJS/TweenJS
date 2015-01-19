@@ -48,7 +48,7 @@ this.createjs = this.createjs||{};
 	 *
 	 *      Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));
 	 *
-	 * Please see the <a href="http://www.createjs.com/#!/TweenJS/demos/sparkTable">spark table demo</a> for an overview
+	 * Please see the <a href="http://www.createjs.com/#!/Demos/TweenJS/Spark-Table">spark table demo</a> for an overview
 	 * of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
 	 *
 	 * <i>Equations derived from work by Robert Penner.</i>
