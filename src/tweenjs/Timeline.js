@@ -72,11 +72,13 @@ this.createjs = this.createjs||{};
 		this.ignoreGlobalPause = false;
 
 		/**
-		 * Read-only property specifying the total duration of this timeline in milliseconds (or ticks if `useTicks `is
-		 * `true`). This value is usually automatically updated as you modify the timeline. See {{#crossLink "Timeline/updateDuration"}}{{/crossLink}}
+		 * The total duration of this timeline in milliseconds (or ticks if `useTicks `is `true`). This value is usually
+		 * automatically updated as you modify the timeline. See {{#crossLink "Timeline/updateDuration"}}{{/crossLink}}
 		 * for more information.
 		 * @property duration
 		 * @type Number
+		 * @default 0
+		 * @readonly
 		 **/
 		this.duration = 0;
 
@@ -88,11 +90,12 @@ this.createjs = this.createjs||{};
 		this.loop = false;
 
 		/**
-		 * Read-only. The current normalized position of the timeline. This will always be a value between 0 and
+		 * The current normalized position of the timeline. This will always be a value between 0 and
 		 * {{#crossLink "Timeline/duration:property"}}{{/crossLink}}.
 		 * Changing this property directly will have no effect.
 		 * @property position
 		 * @type Object
+		 * @readonly
 		 **/
 		this.position = null;
 

@@ -145,12 +145,13 @@ this.createjs = this.createjs||{};
 		this.loop = false;
 	
 		/**
-		 * Read-only. Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
+		 * Specifies the total duration of this tween in milliseconds (or ticks if useTicks is true).
 		 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
 		 * behaviour.
 		 * @property duration
 		 * @type {Number}
 		 * @default 0
+		 * @readonly
 		 */
 		this.duration = 0;
 	
@@ -172,25 +173,29 @@ this.createjs = this.createjs||{};
 		this.pluginData = pluginData || {};
 	
 		/**
-		 * Read-only. The target of this tween. This is the object on which the tweened properties will be changed. Changing
+		 * The target of this tween. This is the object on which the tweened properties will be changed. Changing
 		 * this property after the tween is created will not have any effect.
 		 * @property target
 		 * @type {Object}
+		 * @readonly
 		 */
 		this.target = target;
 	
 		/**
-		 * Read-only. The current normalized position of the tween. This will always be a value between 0 and duration.
+		 * The current normalized position of the tween. This will always be a value between 0 and duration.
 		 * Changing this property directly will have no effect.
 		 * @property position
 		 * @type {Object}
+		 * @readonly
 		 */
 		this.position = null;
 	
 		/**
-		 * Read-only. Indicates the tween's current position is within a passive wait.
+		 * Indicates the tween's current position is within a passive wait.
 		 * @property passive
 		 * @type {Boolean}
+		 * @default false
+		 * @readonly
 		 **/
 		this.passive = false;
 	
