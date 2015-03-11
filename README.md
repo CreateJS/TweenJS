@@ -7,7 +7,9 @@ tweening of both numeric object properties & CSS style properties.
 ## Example
 The API is simple but very powerful, making it easy to create complex tweens by chaining commands.
 
-    var tween = createjs.Tween.get(myTarget).to({x:300},400).set({label:"hello!"}).wait(500).to({alpha:0,visible:false},1000).call(onComplete);
+```javascript
+var tween = createjs.Tween.get(myTarget).to({x:300},400).set({label:"hello!"}).wait(500).to({alpha:0,visible:false},1000).call(onComplete);
+```
 
 The example above will create a new tween instance that:
 
