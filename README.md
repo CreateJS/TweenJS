@@ -30,7 +30,10 @@ and pause actions.
 This library is currently alpha. It has been tested (though not extensively), and is likely to change somewhat as it matures.
 
 Tweens support a number of configuration properties, which are specified as the second param when creating a new tween:
+
+```javascript
 createjs.Tween.get(target, {loop:true, useTicks:true, css:true, ignoreGlobalPause:true}).to(etc...);
+```
 
 All configuration properties default to false. The properties are:
 loop - indicates whether the tween should loop when it reaches the end
@@ -39,8 +42,10 @@ css - enables css mapping for some css properties
 ignoreGlobalPause - the tween will continue ticking even when Ticker is paused.
 
 When using Tween.get, you can also specify true as the third parameter to override any active tweens on the target.
-createjs.Tween.get(target,null,true); // this will remove any existing tweens on the target.
 
+```javascript
+createjs.Tween.get(target,null,true); // this will remove any existing tweens on the target.
+```
 
 ## Support and Resources
 * Find examples and more information at the [TweenJS web site](http://tweenjs.com/)
