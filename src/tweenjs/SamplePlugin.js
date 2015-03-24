@@ -71,7 +71,7 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Called by TweenJS when a new tween property initializes that this plugin is registered for. Generally, the call
-	 * to <code>Plugin.init</code> will be immediately followed by a call to <code>Plugin.to</code>.
+	 * to <code>Plugin.init</code> will be immediately followed by a call to <code>Plugin.step</code>.
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.

@@ -151,6 +151,15 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 **/
 		this._useTicks = false;
+		
+		/**
+		 * Indicates whether the timeline is currently registered with Tween.
+		 * @property _registered
+		 * @type {boolean}
+		 * @default false
+		 * @protected
+		 */
+		this._registered = false;
 
 
 		if (props) {
@@ -351,7 +360,7 @@ this.createjs = this.createjs||{};
 	 * @param {Boolean} value Indicates whether the tween should be paused (`true`) or played (`false`).
 	 **/
 	p.setPaused = function(value) {
-		this._paused = !!value;
+		this._paused = !!value; 
 		createjs.Tween._register(this, !value);
 	};
 

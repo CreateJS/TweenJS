@@ -285,6 +285,15 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._inited = false;
+		
+		/**
+		 * Indicates whether the tween is currently registered with Tween.
+		 * @property _registered
+		 * @type {boolean}
+		 * @default false
+		 * @protected
+		 */
+		this._registered = false;
 
 
 		if (props) {
@@ -515,12 +524,12 @@ this.createjs = this.createjs||{};
 	Tween._register = function(tween, value) {
 		var target = tween._target;
 		var tweens = Tween._tweens;
-		if (value) {
+		if (value && !tween._registered) {
 			// TODO: this approach might fail if a dev is using sealed objects in ES5
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
 			tweens.push(tween);
 			if (!Tween._inited && createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); Tween._inited = true; }
-		} else {
+		} else if (!value && tween._registered) {
 			if (target) { target.tweenjs_count--; }
 			var i = tweens.length;
 			while (i--) {
@@ -530,6 +539,7 @@ this.createjs = this.createjs||{};
 				}
 			}
 		}
+		tween._registered = value;
 	};
 
 
