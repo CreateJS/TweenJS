@@ -471,7 +471,7 @@ this.createjs = this.createjs||{};
 		for (var i= 0, l=tweens.length; i<l; i++) {
 			var tween = tweens[i];
 			tween._paused = true;
-			tween.target.tweenjs_count = 0;
+			tween.target&&(tween.target.tweenjs_count = 0);
 		}
 		tweens.length = 0;
 	};
