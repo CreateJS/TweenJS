@@ -2,10 +2,26 @@ Version NEXT [not yet released]
 ****************************************************************************************************
 CRITICAL (may break existing content):
 
+THIS BRANCH IS A WORK IN PROGRESS.
+NOT EVERYTHING IS WORKING YET (EX. TIMELINE) AND IT IS NOT COMPATIBLE WITH MOVIECLIP YET
+SOME THINGS ARE LIKELY TO CHANGE SIGNIFICANTLY (EX. PLUGINS)
+DOCUMENTATION IS NOT UP TO DATE
+
+- Plugin model has changed significantly. See SamplePlugin for information (NOT UPDATED YET, AND STILL IN FLUX)
+- Removed Tween.
+
+
 *****
 OTHER:
+- Very significant performance improvements to Tween and CSSPlugin
 - Fixed an issue with Tween.removeAllTweens and tweens with no target
 - Fixed an issue that could cause tweens to be ticked multiple times per tick
+- Added Tween.reversed and Tween.bounce properties (AND EVENTUALLY, TIMELINE)
+- Added Tween.advance() (AND EVENTUALLY, TIMELINE)
+- Tween.loop now supports setting a numeric loop count value
+- Added Tween.rawPosition and Tween.useTicks read-only properties
+- Second param of Tween.setPosition() is now runActions boolean
+- Removed Tween.NONE, Tween.LOOP, and Tween.REVERSE constants
 
 
 

@@ -101,7 +101,7 @@ this.createjs = this.createjs||{};
 		if ((sfx1 = str.substr(i)) != sfx0) {
 			throw("CSSPlugin Error: Suffixes do not match. ("+sfx0+":"+sfx1+")");
 		} else {
-			return parseInt(str.substr(0,i));
+			return parseInt(str);
 		}
 	}
 
@@ -120,9 +120,9 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, wait, end) {
-		var style,map = CSSPlugin.cssSuffixMap;
-		if (map[prop] == null || !(style = tween.target.style)) { return value; }
-		style[prop] = value+map[prop];
+		var style,map = CSSPlugin.cssSuffixMap, sfx=map[prop];
+		if (sfx == null || !(style = tween.target.style)) { return value; }
+		style[prop] = (value|0)+sfx;
 		return createjs.Tween.IGNORE;
 	}
 

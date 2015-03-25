@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TweenJS: CSS Tweening Example</title>
+
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
+	<script src="../src/tweenjs/Tween.js"></script>
+	<script src="../src/tweenjs/Ease.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/CSSPlugin.js"></script>
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+
+<script id="editable">
+	var c=createjs, stage, centerX, centerY, radius, fpsFld;
+	var duration=750, count=2000, displayTime=3000;
+
+	function init() {
+		createjs.CSSPlugin.install(createjs.Tween);
+		fpsFld = document.getElementById("fps");
+		stage = document.body;
+		stage.style.overflow = "hidden";
+		
+		centerX = window.innerWidth/2;
+		centerY = window.innerHeight/2;
+		
+		radius = Math.sqrt(centerX*centerX + centerY*centerY);
+		
+		var i = 0;
+		while (i++ < count) {
+			var dot = getDot();
+			stage.appendChild(dot);
+			tween(dot);
+		}
+		
+		c.Ticker.framerate = 60;
+		c.Ticker.timingMode = c.Ticker.RAF;
+		c.Ticker.on("tick",tick);
+	}
+	
+	function getDot() {
+		var dot = document.createElement("img");
+		dot.src = "../_assets/art/dot.png";
+		return dot;
+	}
+	
+	function tween(dot) {
+		dot.style.cssText = "position:absolute; left:" + centerX + "px; top:" + centerY + "px; width: 1px; height: 1px;"
+		
+		var angle = Math.random() * Math.PI * 2;
+		c.Tween.get(dot).wait( Math.random() * duration ).to({
+				left:Math.cos(angle) * radius + centerX,
+				top:Math.sin(angle) * radius + centerY,
+				width:32, height:32
+			}, duration, c.Ease.cubicIn).call(tween, [dot]);
+		
+		return dot;
+	}
+	
+	function tick(evt) {
+		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(1)+"fps";
+	}
+
+</script>
+</head>
+
+<body onload="init();" style="background-color:#111111">
+
+<header class="TweenJS">
+	<h1>CSS Performance Test</h1>
+	
+	<p id="fps">-- fps</p>
+</header>
+</body>
+</html>
