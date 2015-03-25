@@ -27,9 +27,9 @@
 		stageH = stage.canvas.height;
 		var i = 0, g = new c.Graphics().f("#012").dc(0,0,8);
 		
-		createjs.DummyPlugin.install(createjs.Tween);
+		//createjs.DummyPlugin.install(createjs.Tween);
 		while (i++ < count) {
-			tween(null,stage.addChild(new c.Shape(g)));
+			tween(stage.addChild(new c.Shape(g)));
 		}
 		
 		c.Ticker.framerate = 60;
@@ -37,7 +37,7 @@
 		c.Ticker.on("tick",tick);
 	}
 	
-	function tween(evt, dot) {
+	function tween(dot) {
 		var angle = Math.random() * Math.PI * 2;
 		dot.x = stageW/2;
 		dot.y = Math.random()*stageH;
@@ -48,7 +48,7 @@
 				//y:Math.sin(angle) * radius + centerY,
 				//scaleX:1,
 				//scaleY:1
-			}, duration, c.Ease.cubicIn).call(tween,[null,dot]);
+			}, duration, c.Ease.cubicIn).call(tween,[dot]);
 		return dot;
 	}
 	

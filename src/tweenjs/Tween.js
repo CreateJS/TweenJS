@@ -679,7 +679,7 @@ this.createjs = this.createjs||{};
 		this.position = t;
 		this.rawPosition = value;
 		
-		if (!runActions) { this._runActions(); }
+		if (runActions) { this._runActions(); }
 
 		this.dispatchEvent("change");
 		return end;
@@ -817,7 +817,6 @@ this.createjs = this.createjs||{};
 		var action = rev ? this._actionTail : this._actionHead;
 		var ePos = endPos, sPos = startPos;
 		if (rev) { ePos=startPos; sPos=endPos; }
-		
 		while (action) {
 			var pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
