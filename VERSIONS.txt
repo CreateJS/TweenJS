@@ -7,7 +7,7 @@ NOT EVERYTHING IS WORKING YET (EX. TIMELINE) AND IT IS NOT COMPATIBLE WITH MOVIE
 SOME THINGS ARE LIKELY TO CHANGE SIGNIFICANTLY (EX. PLUGINS)
 DOCUMENTATION IS NOT UP TO DATE
 
-- Plugin model has changed significantly. See SamplePlugin for information (NOT UPDATED YET, AND STILL IN FLUX)
+- Plugin model has changed significantly. See SamplePlugin for information. (STILL IN FLUX)
 - Removed Tween.
 
 

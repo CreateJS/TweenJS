@@ -550,8 +550,8 @@ this.createjs = this.createjs||{};
 	 * @return {Tween} This tween instance (for chaining calls).
 	 **/
 	p.wait = function(duration, passive) {
-		if (duration == null || duration <= 0) { return this; }
-		return this._addStep(duration, this._stepTail.props, null, passive);
+		if (duration > 0) { this._addStep(duration, this._stepTail.props, null, passive); }
+		return this;
 	};
 
 	/**
@@ -571,8 +571,10 @@ this.createjs = this.createjs||{};
 	 * @return {Tween} This tween instance (for chaining calls).
 	 */
 	p.to = function(props, duration, ease) {
-		if (isNaN(duration) || duration < 0) { duration = 0; }
-		return this._addStep(duration, this._cloneProps(this._appendProps(props)), ease);
+		if (duration <= 0) { duration = 0; } // catches null too.
+		var step = this._addStep(duration, null, ease);
+		step.props = this._cloneProps(this._appendProps(props, step));
+		return this;
 	};
 
 	/**
@@ -770,7 +772,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._updateTargetProps = function(step, ratio, end) {
-		if (this.passive = !!step.passive) { return; }; // don't update props.
+		if (this.passive = !!step.passive) { return; } // don't update props.
 		
 		var p0,p1,v,v0,v1;
 		p0 = step.prev.props;
@@ -779,8 +781,8 @@ this.createjs = this.createjs||{};
 		
 		var initProps=this._stepHead.props, plugins = Tween._plugins;
 		for (var n in initProps) {
-			if ((v0 = p0[n]) === undefined) { p0[n] = v0 = initProps[n]; }
-			if ((v1 = p1[n]) === undefined) { p1[n] = v1 = v0; }
+			v0 = p0[n];
+			v1 = p1[n];
 			if (ratio === 1) { v= v1; } // at end
 			else if (v0 === v1 || ratio === 0 || (typeof(v0) !== "number")) {
 				// no interpolation - at start, values didn't change, or the value is non-numeric.
@@ -789,17 +791,14 @@ this.createjs = this.createjs||{};
 				v = v0+(v1-v0)*ratio;
 			}
 			
-			var ignore = false;
-			
 			if (plugins) {
 				for (var i=0,l=plugins.length;i<l;i++) {
-					var v2 = plugins[i].tween(this, n, v, p0, p1, ratio, p0===p1, end);
-					if (v2 === Tween.IGNORE) { ignore = true; }
-					else { v = v2; }
+					v = plugins[i].tween(this, step, n, v, ratio, end);
+					if (v === Tween.IGNORE) { break; }
 				}
 			}
 			
-			if (!ignore) { this.target[n] = v; }
+			if (v !== Tween.IGNORE) { this.target[n] = v; }
 			
 		}
 
@@ -831,26 +830,25 @@ this.createjs = this.createjs||{};
 	 * @param {Object} props
 	 * @protected
 	 */
-	p._appendProps = function(props) {
+	p._appendProps = function(props, step) {
 		var initProps = this._stepHead.props, curProps = this._curProps, target = this.target, plugins = Tween._plugins;
 		var n, i, l, value, oldValue, inject, ignored;
 		
 		for (n in props) {
-			if (initProps[n] === undefined) {
-				oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
-				
-				if (plugins) {
-					for (i = 0, l = plugins.length; i < l; i++) {
-						if ((oldValue = plugins[i].init(this, n, oldValue)) === Tween.IGNORE) {
-							(ignored = ignored || {})[n] = true;
-							break;
-						};
-					}
+			if (initProps[n] !== undefined) { continue; }
+			oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
+			
+			if (plugins) {
+				for (i = 0, l = plugins.length; i < l; i++) {
+					if ((oldValue = plugins[i].init(this, n, oldValue)) === Tween.IGNORE) {
+						(ignored = ignored || {})[n] = true;
+						break;
+					};
 				}
-				if (oldValue !== Tween.IGNORE) {
-					if (oldValue === undefined) { oldValue = target[n]; }
-					initProps[n] = curProps[n] = (oldValue === undefined) ? null : oldValue;
-				}
+			}
+			if (oldValue !== Tween.IGNORE) {
+				if (oldValue === undefined) { oldValue = target[n]; }
+				curProps[n] = (oldValue === undefined) ? null : oldValue;
 			}
 		}
 		
@@ -858,14 +856,22 @@ this.createjs = this.createjs||{};
 			if (ignored && ignored[n]) { continue; }
 			value = props[n];
 			oldValue = curProps[n];
+			
+			// propagate old value to previous steps:
+			var o = step;
+			while ((o = o.prev) && o.props[n] === undefined) {
+				o.props[n] = oldValue;
+			}
+			
 			if (plugins) {
 				for (i = 0, l = plugins.length; i < l; i++) {
-					inject = plugins[i].step(this, n, oldValue, value, inject) || inject;
+					inject = plugins[i].step(this, step, n, inject) || inject;
 				}
 			}
+			
 			curProps[n] = value;
 		}
-		if (inject) { this._appendProps(inject); }
+		if (inject) { this._appendProps(inject, step); }
 		
 		return curProps;
 	};
@@ -894,8 +900,7 @@ this.createjs = this.createjs||{};
 	p._addStep = function(duration, props, ease, passive) {
 		var step = new TweenStep(this._stepTail, this.duration, duration, props, ease, passive||false);
 		this.duration += duration;
-		this._stepTail = this._stepTail.next = step;
-		return this;
+		return this._stepTail = this._stepTail.next = step;
 	};
 
 	/**

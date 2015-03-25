@@ -70,66 +70,137 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-	 * Called by TweenJS when a new tween property initializes that this plugin is registered for. Generally, the call
+	 * Called by TweenJS when a new property initializes on a tween. Generally, the call
 	 * to <code>Plugin.init</code> will be immediately followed by a call to <code>Plugin.step</code>.
+	 * 
+	 * For example:
+	 * 	foo.x = 0;
+	 * 	foo.y = 100;
+	 * 	
+	 * 	Tween.get(foo)
+	 * 		.to({x:10}) // init called with prop = "x", value = 0
+	 * 		.to({x:20}) // init is NOT called
+	 * 		.to({y:200}) // init called with prop = "y", value = 100
+	 * 
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.
-	 * @param {any} value The current value of the property on the tween's target.
+	 * @param {any} value If another plugin has returned a starting value, it will be passed in. Otherwise value will be undefined.
 	 * @return {any} The starting tween value for the property. In most cases, you would simply
-	 * return the value parameter, but some plugins may need to modify the starting value.
+	 * return the value parameter, but some plugins may need to modify the starting value. You can also return
+	 * `Tween.IGNORE` to prevent this tween
 	 * @static
 	 **/
 	SamplePlugin.init = function(tween, prop, value) {
-		console.log("init", prop, value);
-
-		// return the unmodified property value:
+		console.log("init: ", prop, value);
+		
+		// filter which properties you want to work on by using "prop":
+		if (prop !== "x" && prop !== "y") { return value; }
+		
+		// you can grab the current value on the target using:
+		var targetValue = tween.target[prop];
+		
+		// this would get the current starting value for the property, using value from previous plugins if specified, or the target value if not:
+		// this is a bit of a pain, but it prevents accessing target values that aren't needed, which can be very expensive (ex. width on a HTMLElement, when we actually want to grab it from style)
+		var defaultValue = (value === undefined) ? targetValue : value;
+		
+		// this would round the starting value of "x" properties:
+		if (prop === "x") { return Math.round(defaultValue); }
+		
+		// this would tell the tween to not include the "y" property:
+		// if (prop === "y") { return Tween.IGNORE }
+		
+		// you can attach arbitrary data to the tween for later use:
+		var data = tween.pluginData;
+		if (!data) { data = tween.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
+		data.SamplePlugin_foo = 200; // namespacing your values will help prevent conflicts
+		
+		// if you don't want to make changes, then makes sure to pass other plugins changes through:
 		return value;
 	};
 
 	/**
-	 * Called by TweenJS when a new step is added to a tween that includes a property the plugin is registered for (ie.
-	 * a new "to" action is added to a tween).
+	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 * 
+	 * For example:
+	 * 	Tween.get(foo)
+	 * 		.to({x:10}) // step called with prop = "x"
+	 * 		.to({y:100}) // step called with prop = "y"
+	 * 		.to({x:20, y:200}) // step is called twice
+	 * 
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
+	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {String} prop The name of the property being tweened.
-	 * @param {any} startValue The value of the property at the beginning of the step. This will
-	 * be the same as the init value if this is the first step, or the same as the
-	 * endValue of the previous step if not.
-	 * @param {Object} injectProps A generic object to which the plugin can append other properties which should be updated on this step.
-	 * @param {any} endValue The value of the property at the end of the step.
+	 * @param {Object} injectProps If a previous plugin returned an injectProps object, it will be passed here.
+	 * @return {Object} If you'd like to inject new properties into the tween, you can return a generic object with name value pairs. You should add to the existing injectProps object if it exists.
 	 * @static
 	 **/
-	SamplePlugin.step = function(tween, prop, startValue, endValue, injectProps) {
-		console.log("to: ", prop, startValue, endValue);
+	SamplePlugin.step = function(tween, step, prop, injectProps) {
+		console.log("step: ", step, prop, injectProps);
+		
+		// filter which properties you want to work on by using "prop":
+		if (prop !== "x") { return; }
+		
+		// you can grab the end value for the step via its props object:
+		var endValue = step.props[prop];
+		
+		// similarly, you can grab the start value from previous step:
+		var startValue = step.prev.props[prop];
+		
+		// you could even modify this step's end value:
+		// step.props[prop] = Math.round(endValue);
+		
+		// or specify other properties that you'd like to include in the tween:
+		// make sure you use the existing injectProps if it exists:
+		// injectProps = injectProps||{}; // preserve other tween's injections
+		// injectProps.foo = 27;
+		// return injectProps;
+		
+		// you can attach arbitrary data to the step for later use:
+		var data = step.pluginData;
+		if (!data) { data = step.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
+		data.SamplePlugin_bar = 30; // namespacing your values will help prevent conflicts
 	};
 
 	/**
-	 * Called when a tween property advances that this plugin is registered for.
+	 * Called before a property is by the tween.
 	 * @method tween
 	 * @param {Tween} tween The related tween instance.
+	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {String} prop The name of the property being tweened.
-	 * @param {any} value The current tweened value of the property, as calculated by TweenJS.
-	 * @param {Object} startValues A hash of all of the property values at the start of the current
-	 * step. You could access the start value of the current property using
-	 * startValues[prop].
-	 * @param {Object} endValues A hash of all of the property values at the end of the current
-	 * step.
+	 * @param {any} value The current tweened value of the property, as calculated by TweenJS. Previous plugins may have modified this value.
 	 * @param {Number} ratio A value indicating the eased progress through the current step. This
 	 * number is generally between 0 and 1, though some eases will generate values outside
 	 * this range.
-	 * @param {Boolean} wait Indicates whether the current step is a "wait" step.
 	 * @param {Boolean} end Indicates that the tween has reached the end.
-	 * @return {any} Return the value that should be assigned to the target property. For example
-	 * returning <code>Math.round(value)</code> would assign the default calculated value
-	 * as an integer. Returning Tween.IGNORE will prevent Tween from assigning a value to
-	 * the target property.
+	 * @return {any} Return the value that should be assigned to the target property.
 	 * @static
 	 **/
-	SamplePlugin.tween = function(tween, prop, value, startValues, endValues, ratio, wait, end) {
+	SamplePlugin.tween = function(tween, step, prop, value, ratio, end) {
 		// ratio is the eased ratio
-		console.log("tween", prop, value, ratio, wait, end);
-
+		console.log("tween", step, prop, value, ratio, end);
+		
+		// filter which properties you want to work on by using "prop":
+		if (prop !== "x") { return value; } // make sure you ALWAYS pass through value!
+		
+		// you can grab the end value for the step via its props object:
+		var endValue = step.props[prop];
+		
+		// similarly, you can grab the start value from previous step:
+		var startValue = step.prev.props[prop];
+		
+		// you could calculate the unmodified tweened value using the ratio:
+		// this will be the same as "value" unless a previous plugin returned a modified value
+		var unmodifiedValue = startValue + (endValue - startValue) * ratio;
+		if (value !== unmodifiedValue) { /* a previous plugin modified the value */ }
+		
+		// check if the tween is currently in a "wait" by comparing the props objects of this and the previous step:
+		var inWait = (step.props === step.prev.props);
+		
+		// tell the tween to not set the value on the target:
+		// return Tween.IGNORE;
+		
 		// return the unmodified calculated tween value (use the default tweening behaviour):
 		return value;
 	};

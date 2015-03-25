@@ -85,7 +85,7 @@ this.createjs = this.createjs||{};
 		var arr = [], map = CSSPlugin.cssSuffixMap;
 		for (var n in map) { arr.push(n); }
 		createjs.Tween.installPlugin(CSSPlugin, arr);
-	}
+	};
 
 	/**
 	 * @method init
@@ -103,28 +103,28 @@ this.createjs = this.createjs||{};
 		} else {
 			return parseInt(str);
 		}
-	}
+	};
 
 	/**
 	 * @method step
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.step = function(tween, prop, startValue, endValue, injectProps) {
+	CSSPlugin.step = function(tween, step, prop, injectProps) {
 		// unused
-	}
+	};
 
 	/**
 	 * @method tween
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.tween = function(tween, prop, value, startValues, endValues, ratio, wait, end) {
+	CSSPlugin.tween = function(tween, step, prop, value, ratio, end) {
 		var style,map = CSSPlugin.cssSuffixMap, sfx=map[prop];
 		if (sfx == null || !(style = tween.target.style)) { return value; }
 		style[prop] = (value|0)+sfx;
 		return createjs.Tween.IGNORE;
-	}
+	};
 
 	createjs.CSSPlugin = CSSPlugin;
 
