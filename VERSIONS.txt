@@ -1,5 +1,11 @@
 Version NEXT [not yet released]
 ****************************************************************************************************
+CRITICAL (may break existing content):
+
+*****
+OTHER:
+- Fixed an issue with Tween.removeAllTweens and tweens with no target
+- Fixed an issue that could cause tweens to be ticked multiple times per tick
 
 
 
