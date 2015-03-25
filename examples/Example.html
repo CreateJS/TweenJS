@@ -36,20 +36,18 @@
 		createjs.Tween.get(circle, {loop: true})
 				.wait(1000) // wait for 1 second
 				.to({scaleX: 0.2, scaleY: 0.2}) // jump to the new scale properties (default duration of 0)
-				.set({x: 100}, circle)
 				.wait(1000)
-				.set({y: 200}, circle)
 				.to({scaleX: 1, scaleY: 1}, 1000, createjs.Ease.bounceOut) // tween to scaleX/Y of 1 with ease bounce out
 
-		// for demonstration purposes, try setting the override (third) parameter to true
+		// for demonstration purposes, try setting the override (fourth) parameter to true
 		// this will override any previous tweens on the circle and replace them with this tween
 		// resulting in the scaling tween above being cleared.
-		createjs.Tween.get(circle, {loop: true}, true) // get a new tween targeting circle
+		createjs.Tween.get(circle, {loop: true}, null, false) // get a new tween targeting circle
 				.to({x: 500, y: 200, alpha: 0.1}, 1000, createjs.Ease.get(1)) // tween x/y/alpha properties over 1s (1000ms) with ease out
 				.to({x: 0}, 1000, createjs.Ease.get(-1)) // tween x over 0.5s with ease in
-				.to({y: 400}) // jump to new y property (defaults to a duration of 0)
+				.to({y:350}) // jump to new y property (defaults to a duration of 0)
 				.call(console.log, ["wait..."], console) // call console.log("wait...")
-				.wait(800) // wait for 0.8s
+				.wait(700) // wait for 0.8s
 				.to({y: 0, alpha: 1}, 300) // tween y/alpha over 0.3s
 				.call(console.log, ["done!"], console) // call console.log("done!");
 
