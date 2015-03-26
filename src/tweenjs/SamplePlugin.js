@@ -94,8 +94,21 @@ this.createjs = this.createjs||{};
 	SamplePlugin.init = function(tween, prop, value) {
 		console.log("init: ", prop, value);
 		
+		// its good practice to let users opt out (or in some cases, maybe in) via pluginData:
+		// be aware that pluginData is null by default, so make sure to check for it:
+		var data = tween.pluginData;
+		if (data && data.Sample_disabled) { return; }
+		
 		// filter which properties you want to work on by using "prop":
 		if (prop !== "x" && prop !== "y") { return value; }
+		
+		// you can then add this plugin to the tween:
+		// most plugins can just be a single shared plugin class:
+		tween.addPlugin(SamplePlugin);
+		// but you can also add an instance, if you wanted to store data on the plugin:
+		// tween.addPlugin(new SamplePlugin());
+		
+		// note that it's also possible to create a plugin that doesn't add itself, but hooks into the "change" event instead.
 		
 		// you can grab the current value on the target using:
 		var targetValue = tween.target[prop];
@@ -110,10 +123,9 @@ this.createjs = this.createjs||{};
 		// this would tell the tween to not include the "y" property:
 		// if (prop === "y") { return Tween.IGNORE }
 		
-		// you can attach arbitrary data to the tween for later use:
-		var data = tween.pluginData;
+		// you can also use pluginData to attach arbitrary data to the tween for later use:
 		if (!data) { data = tween.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
-		data.SamplePlugin_foo = 200; // namespacing your values will help prevent conflicts
+		data.Sample_foo = 200; // namespacing your values will help prevent conflicts
 		
 		// if you don't want to make changes, then makes sure to pass other plugins changes through:
 		return value;
@@ -155,10 +167,8 @@ this.createjs = this.createjs||{};
 		// injectProps.foo = 27;
 		// return injectProps;
 		
-		// you can attach arbitrary data to the step for later use:
-		var data = step.pluginData;
-		if (!data) { data = step.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
-		data.SamplePlugin_bar = 30; // namespacing your values will help prevent conflicts
+		// if this was an instance plugin, you could store step specific data using step.index:
+		// this.steps[step.index] = {arbitraryData:foo};
 	};
 
 	/**

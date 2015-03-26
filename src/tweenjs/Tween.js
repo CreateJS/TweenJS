@@ -304,6 +304,8 @@ this.createjs = this.createjs||{};
 		 */
 		this._registered = false;
 		
+		// TODO: doc.
+		this._plugins = null;
 		this._next = this._prev = null;
 
 		if (props) {
@@ -378,14 +380,11 @@ this.createjs = this.createjs||{};
 	 * </UL>
 	 * @param {Object} [pluginData] An object containing data for use by installed plugins. See individual plugins'
 	 * documentation for details.
-	 * @param {Boolean} [override=false] If true, any previous tweens on the same target will be removed. This is the
-	 * same as calling `Tween.removeTweens(target)`.
 	 * @return {Tween} A reference to the created tween. Additional chained tweens, method calls, or callbacks can be
 	 * applied to the returned tween instance.
 	 * @static
 	 */
-	Tween.get = function(target, props, pluginData, override) {
-		if (override) { Tween.removeTweens(target); }
+	Tween.get = function(target, props, pluginData) {
 		return new Tween(target, props, pluginData);
 	};
 
@@ -400,7 +399,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 */
 	Tween.tick = function(delta, paused) {
-		var tween = Tween._tweenHead; // to avoid race conditions.
+		var tween = Tween._tweenHead;
 		while (tween) {
 			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
 			tween.tick(tween._useTicks?1:delta);
@@ -739,6 +738,12 @@ this.createjs = this.createjs||{};
 		Tween._register(this, !value);
 		return this;
 	};
+	
+	// TODO: doc. Protected or public?
+	p.addPlugin = function(plugin) {
+		if (!this._plugins) { this._plugins = []; }
+		this._plugins.push(plugin);
+	};
 
 	// tiny api (primarily for tool output):
 	p.w = p.wait;
@@ -779,7 +784,7 @@ this.createjs = this.createjs||{};
 		p1 = step.props;
 		if (step.ease) { ratio = step.ease(ratio,0,1,1); }
 		
-		var initProps=this._stepHead.props, plugins = Tween._plugins;
+		var initProps=this._stepHead.props, plugins = this._plugins;
 		for (var n in initProps) {
 			v0 = p0[n];
 			v1 = p1[n];
@@ -853,6 +858,7 @@ this.createjs = this.createjs||{};
 		}
 		
 		step.props = curProps;
+		plugins = this._plugins;
 		for (n in props) {
 			if (ignored && ignored[n]) { continue; }
 			value = props[n];
@@ -899,7 +905,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._addStep = function(duration, props, ease, passive) {
-		var step = new TweenStep(prev, this.duration, duration, props, ease, passive||false);
+		var step = new TweenStep(this._stepTail, this.duration, duration, props, ease, passive||false);
 		this.duration += duration;
 		return this._stepTail = this._stepTail.next = step;
 	};

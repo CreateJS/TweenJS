@@ -40,19 +40,22 @@ this.createjs = this.createjs||{};
 	function SmartRotationPlugin() {
 		throw("SmartRotation plugin cannot be instantiated.")
 	}
+	var s = SmartRotationPlugin;
 	
-	SmartRotationPlugin.props = {rotation:1, rotationX:1, rotationY:1, rotationZ:1};
+	s.props = {rotation:1, rotationX:1, rotationY:1, rotationZ:1};
 
-	SmartRotationPlugin.install = function() {
+	s.install = function() {
 		createjs.Tween.installPlugin(SmartRotationPlugin);
 	};
 
-	SmartRotationPlugin.init = function(tween, prop, value) {
+	s.init = function(tween, prop, value) {
+		var data = tween.pluginData;
+		if (s.props[prop] && !(data && data.SmartRotation_disabled)) { tween.addPlugin(s); }
 		return value;
 	};
 	
-	SmartRotationPlugin.step = function(tween, step, prop, value, injectProps) {
-		if (!SmartRotationPlugin.props[prop]) { return; }
+	s.step = function(tween, step, prop, value, injectProps) {
+		if (!s.props[prop]) { return; }
 		var start = step.prev.props[prop];
 		var delta = (value-start)%360;
 		if (delta > 180) { delta -= 360; }
@@ -60,7 +63,7 @@ this.createjs = this.createjs||{};
 		step.props[prop] = start+delta;
 	};
 
-	SmartRotationPlugin.tween = function(tween, step, prop, value, ratio, end) {
+	s.tween = function(tween, step, prop, value, ratio, end) {
 		// do nothing.
 		return value;
 	};

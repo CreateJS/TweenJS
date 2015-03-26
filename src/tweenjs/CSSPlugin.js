@@ -52,7 +52,7 @@ this.createjs = this.createjs||{};
 	function CSSPlugin() {
 		throw("CSSPlugin cannot be instantiated.")
 	}
-
+// TODO: update docs.
 
 // static properties
 	/**
@@ -82,9 +82,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.install = function() {
-		var arr = [], map = CSSPlugin.cssSuffixMap;
-		for (var n in map) { arr.push(n); }
-		createjs.Tween.installPlugin(CSSPlugin, arr);
+		createjs.Tween.installPlugin(CSSPlugin);
 	};
 
 	/**
@@ -93,8 +91,12 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.init = function(tween, prop, value) {
+		var data = tween.pluginData;
+		if (data && data.CSS_disable) { return; }
+		
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
-		if ((sfx0 = map[prop]) == null || !(style = tween.target.style)) { return value; }
+		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
+		tween.addPlugin(CSSPlugin);
 		var str = style[prop];
 		if (!str) { return 0; } // no style set.
 		var i = str.length-sfx0.length;
@@ -121,7 +123,7 @@ this.createjs = this.createjs||{};
 	 **/
 	CSSPlugin.tween = function(tween, step, prop, value, ratio, end) {
 		var style,map = CSSPlugin.cssSuffixMap, sfx=map[prop];
-		if (sfx == null || !(style = tween.target.style)) { return value; }
+		if (sfx === undefined || !(style = tween.target.style)) { return value; }
 		style[prop] = (value|0)+sfx;
 		return createjs.Tween.IGNORE;
 	};
