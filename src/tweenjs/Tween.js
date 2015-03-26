@@ -852,6 +852,7 @@ this.createjs = this.createjs||{};
 			}
 		}
 		
+		step.props = curProps;
 		for (n in props) {
 			if (ignored && ignored[n]) { continue; }
 			value = props[n];
@@ -863,13 +864,13 @@ this.createjs = this.createjs||{};
 				o.props[n] = oldValue;
 			}
 			
+			curProps[n] = value;
+			
 			if (plugins) {
 				for (i = 0, l = plugins.length; i < l; i++) {
-					inject = plugins[i].step(this, step, n, inject) || inject;
+					inject = plugins[i].step(this, step, n, value, inject) || inject;
 				}
 			}
-			
-			curProps[n] = value;
 		}
 		if (inject) { this._appendProps(inject, step); }
 		
@@ -898,7 +899,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._addStep = function(duration, props, ease, passive) {
-		var step = new TweenStep(this._stepTail, this.duration, duration, props, ease, passive||false);
+		var step = new TweenStep(prev, this.duration, duration, props, ease, passive||false);
 		this.duration += duration;
 		return this._stepTail = this._stepTail.next = step;
 	};
@@ -940,7 +941,7 @@ this.createjs = this.createjs||{};
 		this.props = props;
 		this.ease = ease;
 		this.passive = passive;
-		this.pluginData = null;
+		this.index = prev ? prev.index+1 : 0;
 	};
 	
 	function TweenAction(prev, t, scope, funct, params) {

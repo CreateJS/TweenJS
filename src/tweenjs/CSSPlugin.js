@@ -110,7 +110,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.step = function(tween, step, prop, injectProps) {
+	CSSPlugin.step = function(tween, step, prop, value, injectProps) {
 		// unused
 	};
 

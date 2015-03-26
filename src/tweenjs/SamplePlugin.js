@@ -132,24 +132,22 @@ this.createjs = this.createjs||{};
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {String} prop The name of the property being tweened.
+	 * @param {String} value The value of the property for this step.
 	 * @param {Object} injectProps If a previous plugin returned an injectProps object, it will be passed here.
 	 * @return {Object} If you'd like to inject new properties into the tween, you can return a generic object with name value pairs. You should add to the existing injectProps object if it exists.
 	 * @static
 	 **/
-	SamplePlugin.step = function(tween, step, prop, injectProps) {
+	SamplePlugin.step = function(tween, step, prop, value, injectProps) {
 		console.log("step: ", step, prop, injectProps);
 		
 		// filter which properties you want to work on by using "prop":
 		if (prop !== "x") { return; }
 		
-		// you can grab the end value for the step via its props object:
-		var endValue = step.props[prop];
-		
-		// similarly, you can grab the start value from previous step:
+		// you can grab the start value from previous step:
 		var startValue = step.prev.props[prop];
 		
 		// you could even modify this step's end value:
-		// step.props[prop] = Math.round(endValue);
+		// step.props[prop] = Math.round(value);
 		
 		// or specify other properties that you'd like to include in the tween:
 		// make sure you use the existing injectProps if it exists:
