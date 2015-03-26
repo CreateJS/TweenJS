@@ -97,10 +97,10 @@ this.createjs = this.createjs||{};
 		// its good practice to let users opt out (or in some cases, maybe in) via pluginData:
 		// be aware that pluginData is null by default, so make sure to check for it:
 		var data = tween.pluginData;
-		if (data && data.Sample_disabled) { return; }
+		if (data && data.Sample_disabled) { return value; } // make sure to pass through value.
 		
 		// filter which properties you want to work on by using "prop":
-		if (prop !== "x" && prop !== "y") { return value; }
+		if (prop !== "x" && prop !== "y") { return value; } // make sure to pass through value.
 		
 		// you can then add this plugin to the tween:
 		// most plugins can just be a single shared plugin class:
