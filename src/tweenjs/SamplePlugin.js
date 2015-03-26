@@ -66,7 +66,7 @@ this.createjs = this.createjs||{};
 	 **/
 	SamplePlugin.install = function() {
 		// this registers this plugin to work with the "test" property.
-		createjs.Tween.installPlugin(SamplePlugin, ["test"]);
+		createjs.Tween._installPlugin(SamplePlugin, ["test"]);
 	};
 
 	/**
@@ -104,7 +104,7 @@ this.createjs = this.createjs||{};
 		
 		// you can then add this plugin to the tween:
 		// most plugins can just be a single shared plugin class:
-		tween.addPlugin(SamplePlugin);
+		tween._addPlugin(SamplePlugin);
 		// but you can also add an instance, if you wanted to store data on the plugin:
 		// tween.addPlugin(new SamplePlugin());
 		
@@ -125,7 +125,7 @@ this.createjs = this.createjs||{};
 		
 		// you can also use pluginData to attach arbitrary data to the tween for later use:
 		if (!data) { data = tween.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
-		data.Sample_foo = 200; // namespacing your values will help prevent conflicts
+		data._Sample_value = 200; // namespacing your values will help prevent conflicts
 		
 		// if you don't want to make changes, then makes sure to pass other plugins changes through:
 		return value;

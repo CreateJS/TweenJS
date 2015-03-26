@@ -45,12 +45,12 @@ this.createjs = this.createjs||{};
 	s.props = {rotation:1, rotationX:1, rotationY:1, rotationZ:1};
 
 	s.install = function() {
-		createjs.Tween.installPlugin(SmartRotationPlugin);
+		createjs.Tween._installPlugin(SmartRotationPlugin);
 	};
 
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
-		if (s.props[prop] && !(data && data.SmartRotation_disabled)) { tween.addPlugin(s); }
+		if (s.props[prop] && !(data && data.SmartRotation_disabled)) { tween._addPlugin(s); }
 		return value;
 	};
 	

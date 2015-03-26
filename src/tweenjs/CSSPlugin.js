@@ -82,7 +82,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.install = function() {
-		createjs.Tween.installPlugin(CSSPlugin);
+		createjs.Tween._installPlugin(CSSPlugin);
 	};
 
 	/**
@@ -96,7 +96,7 @@ this.createjs = this.createjs||{};
 		
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
 		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
-		tween.addPlugin(CSSPlugin);
+		tween._addPlugin(CSSPlugin);
 		var str = style[prop];
 		if (!str) { return 0; } // no style set.
 		var i = str.length-sfx0.length;
