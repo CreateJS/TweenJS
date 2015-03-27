@@ -876,6 +876,7 @@ this.createjs = this.createjs||{};
 				for (i = 0, l = plugins.length; i < l; i++) {
 					if ((oldValue = plugins[i].init(this, n, oldValue)) === Tween.IGNORE) {
 						(ignored = ignored || {})[n] = true;
+						delete(stepProps[n]);
 						break;
 					};
 				}
