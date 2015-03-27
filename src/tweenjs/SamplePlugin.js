@@ -54,29 +54,27 @@ this.createjs = this.createjs||{};
 	 * Used by TweenJS to determine when to call this plugin. Plugins with higher priority have their methods called
 	 * before plugins with lower priority. The priority value can be any positive or negative number.
 	 * @property priority
+	 * @type {Number}
+	 * @default 0
 	 * @static
 	 **/
 	SamplePlugin.priority = 0;
 
 	/**
-	 * Installs this plugin for use with TweenJS, and registers for a list of properties that this plugin will operate
-	 * with. Call this once after TweenJS is loaded to enable this plugin.
+	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
 	 **/
 	SamplePlugin.install = function() {
-		// this registers this plugin to work with the "test" property.
-		createjs.Tween._installPlugin(SamplePlugin, ["test"]);
+		createjs.Tween._installPlugin(SamplePlugin);
 	};
 
 	/**
 	 * Called by TweenJS when a new property initializes on a tween. Generally, the call
-	 * to <code>Plugin.init</code> will be immediately followed by a call to <code>Plugin.step</code>.
+	 * to `Plugin.init` will be immediately followed by a call to `Plugin.step`.
 	 * 
 	 * For example:
-	 * 	foo.x = 0;
-	 * 	foo.y = 100;
-	 * 	
+	 * 
 	 * 	Tween.get(foo)
 	 * 		.to({x:10}) // init called with prop = "x", value = 0
 	 * 		.to({x:20}) // init is NOT called
@@ -86,9 +84,9 @@ this.createjs = this.createjs||{};
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.
 	 * @param {any} value If another plugin has returned a starting value, it will be passed in. Otherwise value will be undefined.
-	 * @return {any} The starting tween value for the property. In most cases, you would simply
-	 * return the value parameter, but some plugins may need to modify the starting value. You can also return
-	 * `Tween.IGNORE` to prevent this tween
+	 * @return {any} The starting tween value for the property. In most cases, you would simply return the value parameter, 
+	 * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this tween
+	 * from being added to the tween.
 	 * @static
 	 **/
 	SamplePlugin.init = function(tween, prop, value) {
@@ -133,8 +131,8 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * 
 	 * For example:
+	 * 
 	 * 	Tween.get(foo)
 	 * 		.to({x:10}) // step called with prop = "x"
 	 * 		.to({y:100}) // step called with prop = "y"
@@ -172,7 +170,7 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-	 * Called before a property is by the tween.
+	 * Called before a property is updated by the tween.
 	 * @method tween
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
