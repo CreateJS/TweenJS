@@ -237,13 +237,6 @@ this.createjs = this.createjs||{};
 		this._paused = true;
 	
 		/**
-		 * @property _curProps
-		 * @type {Object}
-		 * @protected
-		 */
-		this._curProps = {};
-	
-		/**
 		 * @property _stepHead
 		 * @type {TweenStep}
 		 * @protected
@@ -595,7 +588,7 @@ this.createjs = this.createjs||{};
 	p.to = function(props, duration, ease) {
 		if (duration == null || duration < 0) { duration = 0; } // catches null too.
 		var step = this._addStep(duration, null, ease);
-		step.props = this._cloneProps(this._appendProps(props, step));
+		this._appendProps(props, step);
 		return this;
 	};
 
@@ -867,13 +860,18 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._appendProps = function(props, step) {
-		var initProps = this._stepHead.props, curProps = this._curProps, target = this.target, plugins = Tween._plugins;
+		var initProps = this._stepHead.props, target = this.target, plugins = Tween._plugins;
 		var n, i, l, value, oldValue, inject, ignored;
 		
+		var oldStep = step.prev, oldProps = oldStep.props;
+		var stepProps = step.props = this._cloneProps(oldProps);
+		
 		for (n in props) {
-			if (initProps[n] !== undefined) { continue; }
-			oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
+			stepProps[n] = props[n];
 			
+			if (initProps[n] !== undefined) { continue; }
+			
+			oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
 			if (plugins) {
 				for (i = 0, l = plugins.length; i < l; i++) {
 					if ((oldValue = plugins[i].init(this, n, oldValue)) === Tween.IGNORE) {
@@ -882,26 +880,23 @@ this.createjs = this.createjs||{};
 					};
 				}
 			}
+			
 			if (oldValue !== Tween.IGNORE) {
 				if (oldValue === undefined) { oldValue = target[n]; }
-				curProps[n] = (oldValue === undefined) ? null : oldValue;
+				oldProps[n] = (oldValue === undefined) ? null : oldValue;
 			}
 		}
 		
-		step.props = curProps;
 		plugins = this._plugins;
 		for (n in props) {
 			if (ignored && ignored[n]) { continue; }
 			value = props[n];
-			oldValue = curProps[n];
 			
 			// propagate old value to previous steps:
-			var o = step;
+			var o = oldStep;
 			while ((o = o.prev) && o.props[n] === undefined) {
-				o.props[n] = oldValue;
+				o.props[n] = oldProps[n];
 			}
-			
-			curProps[n] = value;
 			
 			if (plugins) {
 				for (i = 0, l = plugins.length; i < l; i++) {
@@ -910,8 +905,6 @@ this.createjs = this.createjs||{};
 			}
 		}
 		if (inject) { this._appendProps(inject, step); }
-		
-		return curProps;
 	};
 
 	/**
