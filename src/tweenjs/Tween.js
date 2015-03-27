@@ -292,6 +292,15 @@ this.createjs = this.createjs||{};
 		this._plugins = null;
 		
 		/**
+		 * Used by plugins to inject new properties.
+		 * @property _injected
+		 * @type {Object}
+		 * @default null
+		 * @protected
+		 */
+		this._injected = null;
+		
+		/**
 		 * @property _next
 		 * @type {Tween}
 		 * @default null
@@ -317,6 +326,7 @@ this.createjs = this.createjs||{};
 			props.onChange && this.addEventListener("change", props.onChange);
 			if (props.override) { Tween.removeTweens(target); }
 		}
+		if (!this.pluginData) { this.pluginData = {}; }
 		if (!props || !props.paused) { this.setPaused(false); }
 		if (props&&props.position!=null) { this.setPosition(props.position); } // TODO: test this - nothing is defined yet.
 	};
@@ -498,10 +508,10 @@ this.createjs = this.createjs||{};
 		var priority = plugin.priority, arr = Tween._plugins;
 		if (priority == null) { plugin.priority = priority = 0; }
 		if (!arr) { arr = Tween._plugins = []; }
-		for (var j=0,jl=arr.length;j<jl;j++) {
-			if (priority < arr[j].priority) { break; }
+		for (var i=0,l=arr.length;i<l;i++) {
+			if (priority < arr[i].priority) { break; }
 		}
-		arr.splice(j,0,plugin);
+		arr.splice(i,0,plugin);
 	};
 
 	/**
@@ -757,8 +767,18 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._addPlugin = function(plugin) {
-		if (!this._plugins) { this._plugins = []; }
-		this._plugins.push(plugin);
+		var plugins = this._plugins, priority=plugin.priority, added=false;
+		if (!plugins) { plugins = this._plugins = []; }
+		for (var i=0,l=plugins.length;i<l;i++) {
+			if (plugins[i] === plugin) {
+				if (!added) { return; }
+				else { plugins.splice(i,1); }
+			} else if (!added && priority < plugins[i].priority) {
+				plugins.splice(i,0,plugin);
+				added = true;
+			}
+		}
+		if (!added) { plugins.push(plugin); }
 	};
 	
 	/**
@@ -790,8 +810,9 @@ this.createjs = this.createjs||{};
 			
 			if (plugins) {
 				for (var i=0,l=plugins.length;i<l;i++) {
-					v = plugins[i].tween(this, step, n, v, ratio, end);
+					var value = plugins[i].tween(this, step, n, v, ratio, end);
 					if (v === Tween.IGNORE) { break; }
+					if (value !== undefined) { v = value; }
 				}
 			}
 			
@@ -862,50 +883,68 @@ this.createjs = this.createjs||{};
 	p._appendProps = function(props, step) {
 		var initProps = this._stepHead.props, target = this.target, plugins = Tween._plugins;
 		var n, i, l, value, oldValue, inject, ignored;
-		
+
 		var oldStep = step.prev, oldProps = oldStep.props;
 		var stepProps = step.props = this._cloneProps(oldProps);
-		
+
 		for (n in props) {
 			stepProps[n] = props[n];
-			
+
 			if (initProps[n] !== undefined) { continue; }
-			
+
 			oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
 			if (plugins) {
 				for (i = 0, l = plugins.length; i < l; i++) {
-					if ((oldValue = plugins[i].init(this, n, oldValue)) === Tween.IGNORE) {
+					value = plugins[i].init(this, n, oldValue);
+					if (value !== undefined) { oldValue = value; }
+					if (oldValue === Tween.IGNORE) {
 						(ignored = ignored || {})[n] = true;
 						delete(stepProps[n]);
 						break;
-					};
+					}
 				}
 			}
-			
+
 			if (oldValue !== Tween.IGNORE) {
 				if (oldValue === undefined) { oldValue = target[n]; }
 				oldProps[n] = (oldValue === undefined) ? null : oldValue;
 			}
 		}
-		
+
 		plugins = this._plugins;
 		for (n in props) {
 			if (ignored && ignored[n]) { continue; }
 			value = props[n];
-			
+
 			// propagate old value to previous steps:
 			var o = oldStep;
 			while ((o = o.prev) && o.props[n] === undefined) {
 				o.props[n] = oldProps[n];
 			}
-			
+
 			if (plugins) {
 				for (i = 0, l = plugins.length; i < l; i++) {
-					inject = plugins[i].step(this, step, n, value, inject) || inject;
+					value = plugins[i].step(this, step, n, value);
+					if (value !== undefined) { step.props[n] = value; }
 				}
 			}
 		}
-		if (inject) { this._appendProps(inject, step); }
+		if (inject = this._injected) {
+			this._injected = null;
+			this._appendProps(inject, step);
+		}
+	};
+	
+	/**
+	 * Used by plugins to inject properties. Called from within `Plugin.step` calls.
+	 * @method _injectProps
+	 * @param {Object} props
+	 * @protected
+	 */
+	p._injectProps = function(props) {
+		var o = this._injected;
+		if (!this._injected) { o = this._injected = {}; }
+		for (var n in props) { o[n] = props[n]; }
 	};
 
 	/**
@@ -962,7 +1001,6 @@ this.createjs = this.createjs||{};
 	};
 
 	createjs.Tween = createjs.promote(Tween, "EventDispatcher");
-	
 	
 	function TweenStep(prev, t, d, props, ease, passive) {
 		this.next = null;

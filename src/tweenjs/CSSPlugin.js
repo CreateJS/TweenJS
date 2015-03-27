@@ -91,8 +91,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.init = function(tween, prop, value) {
-		var data = tween.pluginData;
-		if (data && data.CSS_disable) { return; }
+		if (tween.pluginData.CSS_disable) { return; }
 		
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
 		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
@@ -123,7 +122,7 @@ this.createjs = this.createjs||{};
 	 **/
 	CSSPlugin.tween = function(tween, step, prop, value, ratio, end) {
 		var style,map = CSSPlugin.cssSuffixMap, sfx=map[prop];
-		if (sfx === undefined || !(style = tween.target.style)) { return value; }
+		if (sfx === undefined || !(style = tween.target.style)) { return; }
 		style[prop] = (value|0)+sfx;
 		return createjs.Tween.IGNORE;
 	};

@@ -95,7 +95,6 @@ this.createjs = this.createjs||{};
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
 		if (s.props[prop] && !(data && data.Rotation_disabled)) { tween._addPlugin(s); }
-		return value;
 	};
 	
 	/**
@@ -106,13 +105,14 @@ this.createjs = this.createjs||{};
 	 * @param {TweenStep} step
 	 * @param {String} prop
 	 * @param {String} value
-	 * @param {Object} injectProps
-	 * @return {Object}
+	 * @return {any}
 	 * @static
 	 **/
-	s.step = function(tween, step, prop, value, injectProps) {
+	s.step = function(tween, step, prop, value) {
+		if (!s.props[prop]) { return; }
+		tween.pluginData.Rotation_end = value;
 		var dir;
-		if (!s.props[prop] || (dir = step.props.rotationDir) === 0) { return; }
+		if ((dir = step.props.rotationDir) === 0) { return; }
 		
 		dir = dir||0;
 		var start = step.prev.props[prop];
@@ -120,7 +120,7 @@ this.createjs = this.createjs||{};
 		
 		if ((dir === 0 && delta > 180) || (dir===-1 && delta > 0)) { delta -= 360; }
 		else if ((dir === 0 && delta < -180) || (dir ===1 && delta < 0)) { delta += 360; }
-		step.props[prop] = start+delta;
+		return start+delta;
 	};
 
 	/**
@@ -138,8 +138,7 @@ this.createjs = this.createjs||{};
 	 **/
 	s.tween = function(tween, step, prop, value, ratio, end) {
 		if (prop === "rotationDir") { return createjs.Tween.IGNORE; }
-		// do nothing.
-		return value;
+		if (end && s.props[prop]) { return tween.pluginData.Rotation_end; }
 	};
 
 	createjs.RotationPlugin = s;
