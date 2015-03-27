@@ -148,10 +148,12 @@ this.createjs = this.createjs||{};
 		/**
 		 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
 		 * you specify data by assigning it to a property of `pluginData` with the same name as the plugin.
+		 * Note that in many cases, this data is used as soon as the plugin initializes itself for the tween.
+		 * As such, this data should be set before the first `to` call in most cases.
 		 * @example
 		 *	myTween.pluginData.SmartRotation = data;
 		 * 
-		 * Most plugins also support a property to disable them for a specific tween. This is typically the plugin name followed by "_disabled".<br/>
+		 * Most plugins also support a property to disable them for a specific tween. This is typically the plugin name followed by "_disabled".
 		 * @example
 		 *	myTween.pluginData.SmartRotation_disabled = true;
 		 * 
@@ -160,7 +162,7 @@ this.createjs = this.createjs||{};
 		 * @property pluginData
 		 * @type {Object}
 		 */
-		this.pluginData = pluginData;
+		this.pluginData = null;
 	
 		/**
 		 * The target of this tween. This is the object on which the tweened properties will be changed. Changing
@@ -367,6 +369,22 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	Tween._plugins = null;
+	
+	/**
+	 * @property _tweenHead
+	 * @type Tween
+	 * @static
+	 * @protected
+	 */
+	Tween._tweenHead = null;
+	
+	/**
+	 * @property _tweenTail
+	 * @type Tween
+	 * @static
+	 * @protected
+	 */
+	Tween._tweenTail = null;
 
 
 // static methods	
@@ -412,8 +430,9 @@ this.createjs = this.createjs||{};
 		var tween = Tween._tweenHead;
 		while (tween) {
 			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
+			var next = tween._next; // in case it completes.
 			tween.tick(tween._useTicks?1:delta);
-			tween = tween._next;
+			tween = next;
 		}
 	};
 
@@ -441,34 +460,32 @@ this.createjs = this.createjs||{};
 	 * @param {Object} target The target object to remove existing tweens from.
 	 * @static
 	 */
-	Tween.removeTweens = function(target) { // TODO: this needs to be updated.
+	Tween.removeTweens = function(target) {
 		if (!target.tweenjs_count) { return; }
-		var tweens = Tween._tweens;
-		for (var i=tweens.length-1; i>=0; i--) {
-			var tween = tweens[i];
-			if (tween.target === target) {
-				tween._paused = true;
-				tweens.splice(i, 1);
-			}
+		var tween = Tween._tweenHead;
+		while (tween) {
+			if (tween.target === target) { Tween._register(tween, false); }
+			tween = tween.next;
 		}
 		target.tweenjs_count = 0;
 	};
 
-	// TODO: this could be combined with removeTweens, similar to hasActiveTweens, but it's more destructive.
 	/**
 	 * Stop and remove all existing tweens.
 	 * @method removeAllTweens
 	 * @static
 	 * @since 0.4.1
 	 */
-	Tween.removeAllTweens = function() { // TODO: this needs to be updated.
-		var tweens = Tween._tweens;
-		for (var i= 0, l=tweens.length; i<l; i++) {
-			var tween = tweens[i];
+	Tween.removeAllTweens = function() {
+		var tween = Tween._tweenHead;
+		while (tween) {
+			var next = tween._next;
 			tween._paused = true;
 			tween.target&&(tween.target.tweenjs_count = 0);
+			tween._registered = tween._next = tween._prev = null;
+			tween = next;
 		}
-		tweens.length = 0;
+		Tween._tweenHead = Tween._tweenTail = null;
 	};
 
 	/**
@@ -527,14 +544,15 @@ this.createjs = this.createjs||{};
 			if (target) { target.tweenjs_count--; }
 			var next = tween._next, prev = tween._prev;
 			
-			if (!next) { Tween._tweenTail = prev; }
-			else { next._prev = prev; }
-			if (!prev) { Tween._tweenHead = next; }
-			else { prev._next = next; }
+			if (next) { next._prev = prev; }
+			else { Tween._tweenTail = prev; } // was tail
+			if (prev) { prev._next = next; }
+			else { Tween._tweenHead = next; } // was head.
+			
+			tween._next = tween._prev = null;
 		}
 		tween._registered = value;
 	};
-	Tween._tweenHead = Tween.tweenTail = null;
 
 
 // events:
@@ -678,18 +696,17 @@ this.createjs = this.createjs||{};
 		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop, step, stepNext;
 		
 		// normalize position:
-		if (value < 0) { value = 0; }
-		var loop = value/d|0;
-		var t = value%d;
+		if (position < 0) { position = 0; }
+		var loop = position/d|0;
+		var t = position%d;
 		
 		var end = (loop > loopCount && loopCount !== -1);
-		if (end) { value = (t=d)*(loop=loopCount)+d; }
+		if (end) { position = (t=d)*(loop=loopCount)+d; }
 		
-		if (value === prevPos) { return end; } // no need to update
+		if (position === prevPos) { return end; } // no need to update
 		
 		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
 		if (rev) { t = d-t; }
-		
 		// handle tweens:
 		if (this.target && (step = this._stepHead.next)) {
 			// find our new step index:
@@ -704,7 +721,7 @@ this.createjs = this.createjs||{};
 		// set this in advance in case an action modifies position:
 		this._prevPos = this.rawPosition;
 		this.position = t;
-		this.rawPosition = value;
+		this.rawPosition = position;
 		
 		if (runActions) { this._runActions(); }
 
