@@ -12,6 +12,7 @@ DOCUMENTATION IS NOT UP TO DATE
 - Removed Tween.NONE, Tween.LOOP, and Tween.REVERSE constants
 - pluginData is now a property in the props param, instead of its own param
 - Removed Tween.installPlugin, in favour of Plugin.install()
+- Removed Tween.tick (instance) in favour of Tween.advance
 
 
 *****
@@ -19,8 +20,7 @@ OTHER:
 - Very significant performance improvements to Tween and CSSPlugin
 - Fixed an issue with Tween.removeAllTweens and tweens with no target
 - Fixed an issue that could cause tweens to be ticked multiple times per tick
-- Added Tween.reversed and Tween.bounce properties (AND EVENTUALLY, TIMELINE)
-- Added Tween.advance() (AND EVENTUALLY, TIMELINE)
+- Added Tween.reversed and Tween.bounce properties
 - Tween.loop now supports setting a numeric loop count value
 - Added Tween.rawPosition and Tween.useTicks read-only properties
 

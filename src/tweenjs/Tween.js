@@ -234,7 +234,7 @@ this.createjs = this.createjs||{};
 		 * @default false
 		 * @protected
 		 */
-		this._paused = false;
+		this._paused = true;
 	
 		/**
 		 * @property _curProps
@@ -290,15 +290,6 @@ this.createjs = this.createjs||{};
 		this._prevPos = -1;
 		
 		/**
-		 * Indicates whether the tween is currently registered with Tween.
-		 * @property _registered
-		 * @type {boolean}
-		 * @default false
-		 * @protected
-		 */
-		this._registered = false;
-		
-		/**
 		 * Plugins added to this tween instance.
 		 * @property _plugins
 		 * @type {Array}
@@ -333,8 +324,7 @@ this.createjs = this.createjs||{};
 			props.onChange && this.addEventListener("change", props.onChange);
 			if (props.override) { Tween.removeTweens(target); }
 		}
-		if (props&&props.paused) { this._paused=true; }
-		else { createjs.Tween._register(this,true); }
+		if (!props || !props.paused) { this.setPaused(false); }
 		if (props&&props.position!=null) { this.setPosition(props.position); } // TODO: test this - nothing is defined yet.
 	};
 
@@ -430,8 +420,8 @@ this.createjs = this.createjs||{};
 		var tween = Tween._tweenHead;
 		while (tween) {
 			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
-			var next = tween._next; // in case it completes.
-			tween.tick(tween._useTicks?1:delta);
+			var next = tween._next; // in case it completes and wipes its _next property
+			tween.advance(tween._useTicks?1:delta);
 			tween = next;
 		}
 	};
@@ -464,8 +454,9 @@ this.createjs = this.createjs||{};
 		if (!target.tweenjs_count) { return; }
 		var tween = Tween._tweenHead;
 		while (tween) {
+			var next = tween._next;
 			if (tween.target === target) { Tween._register(tween, false); }
-			tween = tween.next;
+			tween = next;
 		}
 		target.tweenjs_count = 0;
 	};
@@ -482,7 +473,7 @@ this.createjs = this.createjs||{};
 			var next = tween._next;
 			tween._paused = true;
 			tween.target&&(tween.target.tweenjs_count = 0);
-			tween._registered = tween._next = tween._prev = null;
+			tween._next = tween._prev = null;
 			tween = next;
 		}
 		Tween._tweenHead = Tween._tweenTail = null;
@@ -524,13 +515,13 @@ this.createjs = this.createjs||{};
 	 * Registers or unregisters a tween with the ticking system.
 	 * @method _register
 	 * @param {Tween} tween The tween instance to register or unregister.
-	 * @param {Boolean} value If `true`, the tween is registered. If `false` the tween is unregistered.
+	 * @param {Boolean} paused If `false`, the tween is registered. If `true` the tween is unregistered.
 	 * @static
 	 * @protected
 	 */
-	Tween._register = function(tween, value) {
+	Tween._register = function(tween, paused) {
 		var target = tween.target;
-		if (value && !tween._registered) {
+		if (!paused && tween._paused) {
 			// TODO: this approach might fail if a dev is using sealed objects in ES5
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count+1 : 1; }
 			var tail = Tween._tweenTail;
@@ -540,7 +531,7 @@ this.createjs = this.createjs||{};
 				tween._prev = tail;
 			}
 			if (!Tween._inited && createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); Tween._inited = true; }
-		} else if (!value && tween._registered) {
+		} else if (paused && !tween._paused) {
 			if (target) { target.tweenjs_count--; }
 			var next = tween._next, prev = tween._prev;
 			
@@ -551,7 +542,7 @@ this.createjs = this.createjs||{};
 			
 			tween._next = tween._prev = null;
 		}
-		tween._registered = value;
+		tween._paused = paused;
 	};
 
 
@@ -730,25 +721,14 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-	 * Advances this tween by the specified amount if it is not paused.
-	 * This is normally called automatically by the Tween engine (via {{#crossLink "Tween/tick"}}{{/crossLink}}).
-	 * @method tick
-	 * @param {Number} delta The time to advance in milliseconds (or ticks if `useTicks` is `true`).
-	 */
-	p.tick = function(delta) {
-		if (!this._paused) { this.advance(delta); }
-	};
-
-	/**
 	 * Pauses or plays this tween.
 	 * @method setPaused
 	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
 	 * @return {Tween} This tween instance (for chaining calls)
+	 * @chainable
 	 */
-	p.setPaused = function(value) { // TODO: should this be a getter/setter?
-		if (this._paused === !!value) { return this; }
-		this._paused = !!value;
-		Tween._register(this, !value);
+	p.setPaused = function(value) {
+		Tween._register(this, value);
 		return this;
 	};
 
