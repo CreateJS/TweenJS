@@ -593,7 +593,7 @@ this.createjs = this.createjs||{};
 	 * @chainable
 	 */
 	p.to = function(props, duration, ease) {
-		if (duration <= 0) { duration = 0; } // catches null too.
+		if (duration == null || duration < 0) { duration = 0; } // catches null too.
 		var step = this._addStep(duration, null, ease);
 		step.props = this._cloneProps(this._appendProps(props, step));
 		return this;
