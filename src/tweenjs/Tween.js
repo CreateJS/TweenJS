@@ -114,36 +114,9 @@ this.createjs = this.createjs||{};
 	 * @constructor
 	 */
 	function Tween(target, props) {
+		this.AbstractTween_constructor(props);
+		
 	// public properties:
-		/**
-		 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {{#crossLink "Ticker"}}{{/crossLink}},
-		 * then setting this to false (the default) will cause this tween to be paused when `Ticker.setPaused(true)`
-		 * is called. See the {{#crossLink "Tween/tick"}}{{/crossLink}} method for more info. Can be set via the `props`
-		 * parameter.
-		 * @property ignoreGlobalPause
-		 * @type Boolean
-		 * @default false
-		 */
-		this.ignoreGlobalPause = false;
-	
-		/**
-		 * Indicates the number of times to loop. If set to -1, the tween will loop continuously.
-		 * @property loop
-		 * @type {Number}
-		 * @default 0
-		 */
-		this.loop = 0;
-	
-		/**
-		 * Indicates the duration of this tween in milliseconds (or ticks if `useTicks` is true), irrespective of `loops`.
-		 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
-		 * behaviour.
-		 * @property duration
-		 * @type {Number}
-		 * @default 0
-		 * @readonly
-		 */
-		this.duration = 0;
 	
 		/**
 		 * Allows you to specify data that will be used by installed plugins. Each plugin uses this differently, but in general
@@ -174,25 +147,6 @@ this.createjs = this.createjs||{};
 		this.target = target;
 	
 		/**
-		 * The current normalized position of the tween. This will always be a value between 0 and `duration`.
-		 * Changing this property directly will have unexpected results, use {{#crossLink "Tween/setPosition"}}{{/crossLink}}.
-		 * @property position
-		 * @type {Object}
-		 * @default 0
-		 * @readonly
-		 */
-		this.position = 0;
-		
-		/**
-		 * The raw tween position. This value will be between `0` and `loops * duration` while the tween is active.
-		 * @property rawPosition
-		 * @type {Number}
-		 * @default -1
-		 * @readonly
-		 */
-		this.rawPosition = -1;
-	
-		/**
 		 * Indicates the tween's current position is within a passive wait.
 		 * @property passive
 		 * @type {Boolean}
@@ -200,41 +154,9 @@ this.createjs = this.createjs||{};
 		 * @readonly
 		 **/
 		this.passive = false;
-	
-		/**
-		 * Uses ticks for all durations instead of milliseconds. This also changes the behaviour of actions (such as `call`):
-		 * Only actions on the current position will be executed when `useTicks` is true.
-		 * @property useTicks
-		 * @type {Boolean}
-		 * @default false
-		 * @readonly
-		 */
-		this.useTicks = false;
 		
-		/**
-		 * Causes the tween to play in reverse.
-		 * @property reversed
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this.reversed = false;
 		
-		/**
-		 * Causes the tween to reverse direction at the end of each loop.
-		 * @property bounce
-		 * @type {Boolean}
-		 * @default false
-		 */
-		this.bounce = false;
-	
-	// private properties:	
-		/**
-		 * @property _paused
-		 * @type {Boolean}
-		 * @default false
-		 * @protected
-		 */
-		this._paused = true;
+	// private properties:
 	
 		/**
 		 * @property _stepHead
@@ -271,21 +193,12 @@ this.createjs = this.createjs||{};
 		 * @default 0
 		 * @protected
 		 */
-		this._stepPosition = 0;
-	
-		/**
-		 * Previous position.
-		 * @property _prevPos
-		 * @type {Number}
-		 * @default -1
-		 * @protected
-		 */
-		this._prevPos = -1;
+		this._stepPosition = 0; // TODO: move to AbstractTween?
 		
 		/**
 		 * Plugins added to this tween instance.
 		 * @property _plugins
-		 * @type {Array}
+		 * @type Array[Object]
 		 * @default null
 		 * @protected
 		 */
@@ -299,39 +212,16 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._injected = null;
-		
-		/**
-		 * @property _next
-		 * @type {Tween}
-		 * @default null
-		 * @protected
-		 */
-		this._next = null;
-		
-		/**
-		 * @property _prev
-		 * @type {Tween}
-		 * @default null
-		 * @protected
-		 */
-		this._prev = null;
 
 		if (props) {
-			this._useTicks = !!props.useTicks;
-			this.ignoreGlobalPause = !!props.ignoreGlobalPause;
-			this.loop = props.loop === true ? -1 : (props.loop||0);
-			this.reversed = !!props.reversed;
-			this.bounce = !!props.bounce;
 			this.pluginData = props.pluginData;
-			props.onChange && this.addEventListener("change", props.onChange);
 			if (props.override) { Tween.removeTweens(target); }
 		}
 		if (!this.pluginData) { this.pluginData = {}; }
-		if (!props || !props.paused) { this.setPaused(false); }
-		if (props&&props.position!=null) { this.setPosition(props.position); } // TODO: test this - nothing is defined yet.
+		if (props&&props.position!=null) { this.setPosition(props.position); }
 	};
 
-	var p = createjs.extend(Tween, createjs.EventDispatcher);
+	var p = createjs.extend(Tween, createjs.AbstractTween);
 
 	// TODO: deprecated
 	// p.initialize = function() {}; // searchable for devs wondering where it is. REMOVED. See docs for details.
@@ -550,12 +440,6 @@ this.createjs = this.createjs||{};
 
 
 // events:
-	/**
-	 * Called whenever the tween's position changes.
-	 * @event change
-	 * @since 0.4.0
-	 **/
-	
 
 // public methods:
 	/**
@@ -667,73 +551,6 @@ this.createjs = this.createjs||{};
 	p.pause = function(tween) {
 		return this.call(this.setPaused, [true], tween||this);
 	};
-	
-	/**
-	 * Advances the tween by a specified amount.
-	 * @method advance
-	 * @param {Number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
-	 * @param {Number} [ignoreActions=false] If true, actions will not be executed due to this change in position.
-	 * @return {Boolean} Returns `true` if the tween is complete.
-	 */
-	p.advance = function(delta, ignoreActions) {
-		return this.setPosition(this.rawPosition+delta, !ignoreActions);
-	};
-	
-	/**
-	 * Advances the tween to a specified position.
-	 * @method setPosition
-	 * @param {Number} position The raw position to seek to in milliseconds (or ticks if useTicks is true).
-	 * @param {Number} [runActions=false] If true, all actions between the previous and new position will be run (except when useTicks is true, in which case only the actions on the new position will be run).
-	 * @return {Boolean} Returns `true` if the tween is complete.
-	 */
-	p.setPosition = function(position, runActions) {
-		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop, step, stepNext;
-		
-		// normalize position:
-		if (position < 0) { position = 0; }
-		var loop = position/d|0;
-		var t = position%d;
-		
-		var end = (loop > loopCount && loopCount !== -1);
-		if (end) { position = (t=d)*(loop=loopCount)+d; }
-		
-		if (position === prevPos) { return end; } // no need to update
-		
-		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
-		if (rev) { t = d-t; }
-		// handle tweens:
-		if (this.target && (step = this._stepHead.next)) {
-			// find our new step index:
-			stepNext = step.next;
-			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
-			var ratio = end ? t/d : (this._stepPosition = t-step.t)/step.d;
-			this._updateTargetProps(step,ratio,end);
-		}
-		
-		if (end) { this.setPaused(true); }
-		
-		// set this in advance in case an action modifies position:
-		this._prevPos = this.rawPosition;
-		this.position = t;
-		this.rawPosition = position;
-		
-		if (runActions) { this._runActions(); }
-
-		this.dispatchEvent("change");
-		return end;
-	};
-
-	/**
-	 * Pauses or plays this tween.
-	 * @method setPaused
-	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-	 * @return {Tween} This tween instance (for chaining calls)
-	 * @chainable
-	 */
-	p.setPaused = function(value) {
-		Tween._register(this, value);
-		return this;
-	};
 
 	// tiny api (primarily for tool output):
 	p.w = p.wait;
@@ -781,6 +598,19 @@ this.createjs = this.createjs||{};
 		if (!added) { plugins.push(plugin); }
 	};
 	
+	// Docced in AbstractTween
+	p._setPosition = function(t, end) {
+		// handle tweens:
+		var step = this._stepHead.next, d=this.duration;
+		if (this.target && step) {
+			// find our new step index:
+			var stepNext = step.next;
+			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
+			var ratio = end ? t/d : (this._stepPosition = t-step.t)/step.d; // TODO: revisit this.
+			this._updateTargetProps(step,ratio,end);
+		}
+	};
+	
 	/**
 	 * @method _updateTargetProps
 	 * @param {Object} step
@@ -796,8 +626,8 @@ this.createjs = this.createjs||{};
 		p1 = step.props;
 		if (step.ease) { ratio = step.ease(ratio,0,1,1); }
 		
-		var initProps=this._stepHead.props, plugins = this._plugins;
-		for (var n in initProps) {
+		var plugins = this._plugins;
+		for (var n in p0) {
 			v0 = p0[n];
 			v1 = p1[n];
 			if (ratio === 1) { v= v1; } // at end
@@ -822,10 +652,7 @@ this.createjs = this.createjs||{};
 
 	};
 	
-	/**
-	 * @method _runActions
-	 * @protected
-	 */
+	// Docced in AbstractTween
 	p._runActions = function() {
 		// runs actions between _prevPos & position. Separated for use by MovieClip.
 		if (!this._actionHead) { return; }
@@ -948,19 +775,6 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
-	 * @method _cloneProps
-	 * @param {Object} props
-	 * @protected
-	 */
-	p._cloneProps = function(props) {
-		var o = {};
-		for (var n in props) {
-			o[n] = props[n];
-		}
-		return o;
-	};
-
-	/**
 	 * @method _addStep
 	 * @param {Number} duration
 	 * @param {Object} props
@@ -1000,7 +814,7 @@ this.createjs = this.createjs||{};
 		}
 	};
 
-	createjs.Tween = createjs.promote(Tween, "EventDispatcher");
+	createjs.Tween = createjs.promote(Tween, "AbstractTween");
 	
 	function TweenStep(prev, t, d, props, ease, passive) {
 		this.next = null;
