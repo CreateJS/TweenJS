@@ -485,7 +485,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 */
 	Tween.hasActiveTweens = function(target) {
-		if (target) { return target.tweenjs_count; }
+		if (target) { return target.tweenjs_count != null && !!target.tweenjs_count; }
 		return Tween._tweens && !!Tween._tweens.length;
 	};
 
@@ -535,7 +535,7 @@ this.createjs = this.createjs||{};
 			while (i--) {
 				if (tweens[i] == tween) {
 					tweens.splice(i, 1);
-					return;
+					break;
 				}
 			}
 		}
@@ -647,7 +647,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * Queues an action to pause the specified tween.
 	 * @method pause
-	 * @param {Tween} tween The tween to play. If null, it pauses this tween.
+	 * @param {Tween} tween The tween to pause. If null, it pauses this tween.
 	 * @return {Tween} This tween instance (for chaining calls)
 	 */
 	p.pause = function(tween) {
