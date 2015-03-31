@@ -17,3 +17,5 @@ docs/**/
 main.css
 *.codekit
 *.sass-cache
+tests/.grunt
+_SpecRunner.html
