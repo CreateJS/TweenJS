@@ -520,7 +520,7 @@ this.createjs = this.createjs||{};
 	 * @chainable
 	 */
 	p.set = function(props, target) {
-		return this._addAction(target||this.target, this._set, props);
+		return this._addAction(target||this.target, this._set, [props]);
 	};
 
 	/**
