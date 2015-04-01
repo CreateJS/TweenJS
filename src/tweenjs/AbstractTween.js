@@ -285,9 +285,11 @@ this.createjs = this.createjs||{};
 	p.setPosition = function(position, runActions) {
 		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop, step, stepNext;
 		
-		if (d === 0 && prevPos !== 0) {
-			this._prevPos = this.rawPosition = this.position = 0;
-			this._setPosition(0, true);
+		if (d === 0) {
+			if (prevPos !== 0) {
+				this._prevPos = this.rawPosition = this.position = 0;
+				this._setPosition(0, true);
+			}
 			return true;
 		}
 		
