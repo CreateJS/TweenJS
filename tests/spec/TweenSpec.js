@@ -39,28 +39,39 @@ describe("TweenJS", function () {
 		var obj = {x: 0};
 		var tween = createjs.Tween.get(obj);
 
-		tween.on("change", function () {
-			expect(true).toBe(true);
-			done();
-		});
+		var func =  {
+			change: function() { }
+		};
+
+		spyOn(func, "change");
+
+		tween.on("change", func.change);
 		tween.to({x: 50});
+		setTimeout(function() {
+			expect(func.change).toHaveBeenCalled();
+			done();
+		}, 50);
 	});
 
 	it("setPaused() should work", function (done) {
 		var obj = {x: 0};
 		var tween = createjs.Tween.get(obj);
-		var changeCount = 0;
 
-		tween.on("change", function () {
-			changeCount++;
-		});
+		var func = {
+			change: function () {
+			}
+		};
+
+		spyOn(func, "change");
+
+		tween.on("change", func.change);
 		tween.to({x: 200}, 2000);
 		tween.setPaused(true);
 
 		setTimeout(function () {
 			tween.setPaused(false);
 			tween.on("change", function () {
-				expect(++changeCount).toBe(2);
+				expect(func.change.calls.count()).toBe(1);
 				done();
 			});
 		}, 250);
@@ -107,12 +118,18 @@ describe("TweenJS", function () {
 	it("tweens should loop", function (done) {
 		var obj = {};
 
-		var count = 0;
-		createjs.Tween.get(obj, {loop: true}).to({x: 50}, 100).call(function () {
-			if (++count == 2) {
-				expect(true).toBe(true);
-				done();
+		var func = {
+			complete: function () {
 			}
-		});
+		};
+
+		spyOn(func, "complete");
+
+		createjs.Tween.get(obj, {loop: true}).to({x: 50}, 100).call(func.complete);
+
+		setTimeout(function () {
+			expect(func.complete.calls.count()).toBeGreaterThan(1);
+			done();
+		}, 500);
 	});
 });
