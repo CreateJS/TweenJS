@@ -266,6 +266,7 @@ this.createjs = this.createjs||{};
 			this.loop = props.loop === true ? -1 : (props.loop||0);
 			this.reversed = !!props.reversed;
 			this.bounce = !!props.bounce;
+			this.timeScale = props.timeScale||1;
 			props.onChange && this.addEventListener("change", props.onChange);
 		}
 		if (!props || !props.paused) { this.setPaused(false); }
