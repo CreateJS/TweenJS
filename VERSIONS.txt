@@ -27,6 +27,8 @@ OTHER:
 - Added Tween.rawPosition and Tween.useTicks read-only properties (also on Timeline)
 - Timeline now correctly removes tweens from other timelines when adding them
 - Tween and Timeline now extend AbstractTween
+- Added .label() to Tween
+- Tweens now support getLabels(), addLabel(), setLabels(), gotoAndPlay(), gotoAndStop(), and resolve()
 
 
 

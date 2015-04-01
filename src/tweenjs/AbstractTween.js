@@ -235,6 +235,20 @@ this.createjs = this.createjs||{};
 		 */
 		this._parent = null;
 
+		/**
+		 * @property _labels
+		 * @type Object
+		 * @protected
+		 **/
+		this._labels = null;
+
+		/**
+		 * @property _labelList
+		 * @type Array[Object]
+		 * @protected
+		 **/
+		this._labelList = null;
+
 		if (props) {
 			this.useTicks = !!props.useTicks;
 			this.ignoreGlobalPause = !!props.ignoreGlobalPause;
@@ -321,6 +335,106 @@ this.createjs = this.createjs||{};
 		return end;
 	};
 	
+	
+	/**
+	 * Returns a sorted list of the labels defined on this tween.
+	 * @method getLabels
+	 * @return {Array[Object]} A sorted array of objects with label and position properties.
+	 **/
+	p.getLabels = function() {
+		var list = this._labelList;
+		if (!list) {
+			list = this._labelList = [];
+			var labels = this._labels;
+			for (var n in labels) {
+				list.push({label:n, position:labels[n]});
+			}
+			list.sort(function (a,b) { return a.position- b.position; });
+		}
+		return list;
+	};
+	
+
+	/**
+	 * Defines labels for use with gotoAndPlay/Stop. Overwrites any previously set labels.
+	 * @method setLabels
+	 * @param {Object} labels An object defining labels for using {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}
+	 * in the form `{labelName:time}` where time is in milliseconds (or ticks if `useTicks` is `true`).
+	 **/
+	p.setLabels = function(labels) {
+		this._labels = labels;
+		this._labelList = null;
+	};
+
+	/**
+	 * Adds a label that can be used with {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
+	 * @method addLabel
+	 * @param {String} label The label name.
+	 * @param {Number} position The position this label represents.
+	 **/
+	p.addLabel = function(label, position) {
+		if (!this._labels) { this._labels = {}; }
+		this._labels[label] = position;
+		var list = this._labelList;
+		if (list) {
+			for (var i= 0,l=list.length; i<l; i++) { if (position < list[i].position) { break; } }
+			list.splice(i, 0, {label:label, position:position});
+		}
+	};
+
+	/**
+	 * Returns the name of the label on or immediately before the current position. For example, given a tween with
+	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
+	 * <UL>
+	 * 		<LI>null if the current position is 2.</LI>
+	 * 		<LI>"first" if the current position is 4.</LI>
+	 * 		<LI>"first" if the current position is 7.</LI>
+	 * 		<LI>"second" if the current position is 15.</LI>
+	 * </UL>
+	 * @method getCurrentLabel
+	 * @return {String} The name of the current label or null if there is no label
+	 **/
+	p.getCurrentLabel = function(pos) {
+		var labels = this.getLabels();
+		if (pos == null) { pos = this.position; }
+		for (var i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
+		return (i===0) ? null : labels[i-1].label;
+	};
+	
+	/**
+	 * Unpauses this timeline and jumps to the specified position or label.
+	 * @method gotoAndPlay
+	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
+	 * or label to jump to.
+	 **/
+	p.gotoAndPlay = function(positionOrLabel) {
+		this.setPaused(false);
+		this._goto(positionOrLabel);
+	};
+
+	/**
+	 * Pauses this timeline and jumps to the specified position or label.
+	 * @method gotoAndStop
+	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`) or label
+	 * to jump to.
+	 **/
+	p.gotoAndStop = function(positionOrLabel) {
+		this.setPaused(true);
+		this._goto(positionOrLabel);
+	};
+	
+	/**
+	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
+	 * corresponding frame label will be returned, or `null` if a matching label is not defined.
+	 * @method resolve
+	 * @param {String|Number} positionOrLabel A numeric position value or label string.
+	 **/
+	p.resolve = function(positionOrLabel) {
+		var pos = Number(positionOrLabel);
+		if (isNaN(pos)) { pos = this._labels && this._labels[positionOrLabel]; }
+		return pos;
+	};
+	
 
 	/**
 	 * Pauses or plays this tween.
@@ -361,6 +475,15 @@ this.createjs = this.createjs||{};
 	 */
 	p._setPosition = function(t, end) {
 		// abstract.
+	};
+	
+	/**
+	 * @method _goto
+	 * @protected
+	 **/
+	p._goto = function(positionOrLabel) {
+		var pos = this.resolve(positionOrLabel);
+		if (pos != null) { this.setPosition(pos); }
 	};
 	
 	/**

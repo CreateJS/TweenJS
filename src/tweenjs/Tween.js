@@ -485,6 +485,28 @@ this.createjs = this.createjs||{};
 		this._appendProps(props, step);
 		return this;
 	};
+	
+	/**
+	 * Adds a label that can be used with {{#crossLink "Tween/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Tween/gotoAndStop"}}{{/crossLink}}
+	 * at the current point in the tween. For example:
+	 * 
+	 * 	var tween = createjs.Tween.get(foo)
+	 * 					.to({x:100}, 1000)
+	 * 					.label("myLabel")
+	 * 					.to({x:200}, 1000);
+	 * // ...
+	 * tween.gotoAndPlay("myLabel"); // would play from 1000ms in.
+	 * 
+	 * @method addLabel
+	 * @param {String} label The label name.
+	 * @param {Number} position The position this label represents.
+	 * @return {Tween} This tween instance (for chaining calls).
+	 * @chainable
+	 **/
+	p.label = function(name) {
+		this.addLabel(name, this.duration);
+		return this;
+	};
 
 	/**
 	 * Adds an action to call the specified function.
