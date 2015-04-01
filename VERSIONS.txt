@@ -3,8 +3,7 @@ Version NEXT [not yet released]
 CRITICAL (may break existing content):
 
 THIS BRANCH IS A WORK IN PROGRESS.
-NOT EVERYTHING IS WORKING YET (EX. TIMELINE) AND IT IS NOT COMPATIBLE WITH MOVIECLIP YET
-SOME THINGS ARE LIKELY TO CHANGE SIGNIFICANTLY (EX. PLUGINS)
+NOT EVERYTHING IS WORKING YET AND IT IS NOT COMPATIBLE WITH MOVIECLIP YET
 DOCUMENTATION IS NOT UP TO DATE
 
 - Plugin model has changed significantly. See SamplePlugin for information. (STILL IN FLUX)
@@ -29,6 +28,7 @@ OTHER:
 - Tween and Timeline now extend AbstractTween
 - Added .label() to Tween
 - Tweens now support getLabels(), addLabel(), setLabels(), gotoAndPlay(), gotoAndStop(), and resolve()
+- Added Tween.timeScale & Timeline.timeScale
 
 
 

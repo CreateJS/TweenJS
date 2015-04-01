@@ -192,6 +192,17 @@ this.createjs = this.createjs||{};
 		 */
 		this.bounce = false;
 		
+		/**
+		 * Changes the rate at which the tween advances. For example, a `timeScale` value of `2` will double the
+		 * playback speed, a value of `0.5` would halve it.
+		 * 
+		 * This feature is currently not supported in conjunction with `useTicks`.
+		 * @property timeScale
+		 * @type {Number}
+		 * @default 1
+		 */
+		this.timeScale = 1;
+		
 		
 	// private properties:
 		/**
@@ -276,8 +287,6 @@ this.createjs = this.createjs||{};
 	
 
 // public methods:
-	
-	
 	/**
 	 * Advances the tween by a specified amount.
 	 * @method advance
@@ -286,7 +295,8 @@ this.createjs = this.createjs||{};
 	 * @return {Boolean} Returns `true` if the tween is complete.
 	 */
 	p.advance = function(delta, ignoreActions) {
-		return this.setPosition(this.rawPosition+delta, !ignoreActions);
+		var scale = this.useTicks ? 1 : this.timeScale;
+		return this.setPosition(this.rawPosition+delta*scale, !ignoreActions);
 	};
 	
 	/**
@@ -297,7 +307,7 @@ this.createjs = this.createjs||{};
 	 * @return {Boolean} Returns `true` if the tween is complete.
 	 */
 	p.setPosition = function(position, runActions) {
-		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop, step, stepNext;
+		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop;
 		
 		if (d === 0) {
 			if (prevPos !== 0) {
