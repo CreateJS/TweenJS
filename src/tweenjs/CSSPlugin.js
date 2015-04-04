@@ -91,7 +91,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.init = function(tween, prop, value) {
-		if (tween.pluginData.CSS_disable) { return; }
+		if (tween.pluginData.CSS_disable || !(tween.target instanceof HTMLElement)) { return; }
 		
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
 		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
