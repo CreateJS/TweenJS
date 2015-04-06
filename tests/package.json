@@ -1,9 +1,9 @@
 {
-  "name": "PreloadJS-UnitTests",
+  "name": "TweenJS-UnitTests",
   "version": "0.0.1",
-  "description": "PreloadJS unit testing.",
-  "url": "http://www.createjs.com/#!/PreloadJS",
-  "logo": "assets/docs-icon-PreloadJS.png",
+  "description": "TweenJS unit testing.",
+  "url": "http://www.createjs.com/TweenJS",
+  "logo": "assets/docs-icon-TweenJS.png",
   "devDependencies": {
     "body-parser": "^1.9.2",
     "grunt": "~0.4.5",
