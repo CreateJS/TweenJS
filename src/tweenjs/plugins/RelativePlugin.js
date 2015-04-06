@@ -89,7 +89,7 @@ this.createjs = this.createjs||{};
 	s.step = function(tween, step, prop, value) {
 		if (typeof value !== "string") { return; }
 		var prev = step.prev.props[prop], char0 = value[0], val;
-		if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = parseFloat(value))) { return; }
+		if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = +value)) { return; }
 		return prev + val;
 	};
 
