@@ -9,7 +9,7 @@
 		"../src/tweenjs/Tween.js",
 		"../src/tweenjs/Timeline.js",
 		"../src/tweenjs/Ease.js",
-		"../src/tweenjs/MotionGuidePlugin.js",
+		"../src/tweenjs/plugins/MotionGuidePlugin.js",
 		"../src/tweenjs/version.js"
 	],
 
