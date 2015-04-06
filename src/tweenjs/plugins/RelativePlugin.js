@@ -1,5 +1,5 @@
 /*
-* RotationPlugin
+* RelativePlugin
 * Visit http://createjs.com/ for documentation, updates and examples.
 *
 * Copyright (c) 2010 gskinner.com, inc.
@@ -32,40 +32,24 @@ this.createjs = this.createjs||{};
 	"use strict";
 
 	/**
-	 * The RotationPlugin for TweenJS modifies tweens of rotation properties. These properties can be changed using the
-	 * `RotationPlugin.props` property. Install using:
+	 * The RelativePlugin for TweenJS enables relative numeric values for tweens. Install using:
 	 * 
 	 * 	RotationPlugin.install();
 	 * 
-	 * After installation, by default all rotation tweens will rotate in the shortest direction. For example, if you
-	 * tween from `rotation=15` to `rotation=330`, it will rotate counter-clockwise. You can modify this behaviour by
-	 * specifying a `rotationDir` tween value. A value of `-1` will force CCW rotation, `1` will force CW, and `0` will
-	 * disable the plugin effects for that portion of the tween.
+	 * Once installed, you can pass in relative numeric property values as strings beginning with "+" or "-". For example,
+	 * the following tween would tween the x position of `foo` from its initial value of `200` to `50` (200-150), then to
+	 * `125` (50+75).
 	 * 
-	 * Note that the `rotationDir` value will persist until overridden in future `to` calls.
+	 * 	foo.x = 200;
+	 * 	Tween.get(foo).to({x:"-150"}, 500).to({x:"+75"}, 500);
 	 * 
-	 * 	// this tween will rotate: CCW, then CCW (persisted), then CW.
-	 * 	myTween.get(foo).to({rotation:30, rotationDir:-1}).to({rotation:60}).to({rotation:10, rotationDir:1});
-	 * 
-	 * You can also disable the plugin completely for a tween by setting `tween.pluginData.Rotation_disabled=true`.
-	 * 
-	 * @class RotationPlugin
+	 * @class RelativePlugin
 	 * @static
 	 **/
-	function RotationPlugin() {
-		throw("SmartRotation plugin cannot be instantiated.")
+	function RelativePlugin() {
+		throw("RelativePlugin plugin cannot be instantiated.")
 	}
-	var s = RotationPlugin;
-	
-	/**
-	 * An object defining the properties this tween acts on. For example, setting `RotationPlugin.props = {angle:true}`
-	 * will cause the plugin to only act on the `angle` property. By default the properties are `rotation`
-	 * `rotationX`, `rotationY`, and `rotationZ`.
-	 * @property props
-	 * @type {Object}
-	 * @static
-	 **/
-	s.props = {rotation:1, rotationX:1, rotationY:1, rotationZ:1};
+	var s = RelativePlugin;
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
@@ -73,7 +57,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	s.install = function() {
-		createjs.Tween._installPlugin(RotationPlugin);
+		createjs.Tween._installPlugin(RelativePlugin);
 	};
 	
 	/**
@@ -88,7 +72,7 @@ this.createjs = this.createjs||{};
 	 **/
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
-		if (s.props[prop] && !(data && data.Rotation_disabled)) { tween._addPlugin(s); }
+		if (!(data && data.Relative_disabled)) { tween._addPlugin(s); }
 	};
 	
 	/**
@@ -103,18 +87,10 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	s.step = function(tween, step, prop, value) {
-		if (!s.props[prop]) { return; }
-		tween.pluginData.Rotation_end = value;
-		var dir;
-		if ((dir = step.props.rotationDir) === 0) { return; }
-		
-		dir = dir||0;
-		var start = step.prev.props[prop];
-		var delta = (value-start)%360;
-		
-		if ((dir === 0 && delta > 180) || (dir===-1 && delta > 0)) { delta -= 360; }
-		else if ((dir === 0 && delta < -180) || (dir ===1 && delta < 0)) { delta += 360; }
-		return start+delta;
+		if (typeof value !== "string") { return; }
+		var prev = step.prev.props[prop], char0 = value[0], val;
+		if (typeof prev !== "number" || !(char0 === "+" || char0 === "-" || isNaN(val = parseFloat(value)))) { return; }
+		return prev + val;
 	};
 
 	/**
@@ -131,9 +107,8 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	s.tween = function(tween, step, prop, value, ratio, end) {
-		if (prop === "rotationDir") { return createjs.Tween.IGNORE; }
-		if (end && s.props[prop]) { return tween.pluginData.Rotation_end; }
+		// nothing
 	};
 
-	createjs.RotationPlugin = s;
+	createjs.RelativePlugin = s;
 }());
