@@ -99,16 +99,21 @@ this.createjs = this.createjs||{};
 	 * See the {{#crossLink "Tween/get"}}{{/crossLink}} method also.
 	 * @class Tween
 	 * @param {Object} target The target object that will have its properties tweened.
-	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:true, paused:true}`).
-	 * All boolean properties default to false. Supported props are:<UL>
-	 *    <LI> `loop`: sets the loop property on this tween.</LI>
-	 *    <LI> `useTicks`: uses ticks for all durations instead of milliseconds.</LI>
-	 *    <LI> `ignoreGlobalPause`: sets the {{#crossLink "Tween/ignoreGlobalPause:property"}}{{/crossLink}} property on this tween.</LI>
-	 *    <LI> `override`: if true, {{#crossLink "Tween/removeTweens"}}{{/crossLink}} will be called to remove any active tweens with the same target.
+	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:-1, paused:true}`).
+	 * Supported props are listed below. These props are set on the corresponding instance properties except where
+	 * specified.<UL>
+	 *    <LI> `useTicks`</LI>
+	 *    <LI> `ignoreGlobalPause`</LI>
+	 *    <LI> `loop`</LI>
+	 *    <LI> `reversed`</LI>
+	 *    <LI> `bounce`</LI>
+	 *    <LI> `timeScale`</LI>
 	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
-	 *    <LI> `pluginData`: An object containing data for use by installed plugins. See the {{#crossLink "Tween/pluginData:property"}}{{/crossLink}} property for details.</LI>
-	 *    <LI> `onChange`: specifies a listener for the {{#crossLink "Tween/change:event"}}{{/crossLink}} event.</LI>
+	 *    <LI> `pluginData`</LI>
+	 *    <LI> `override`: if true, removes all existing tweens for the target</LI>
+	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
+	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
 	 * </UL>
 	 * @extends EventDispatcher
 	 * @constructor

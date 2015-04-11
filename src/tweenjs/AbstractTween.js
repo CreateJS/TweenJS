@@ -74,42 +74,10 @@ this.createjs = this.createjs||{};
 
 // constructor
 	/**
-	 * Tweens properties for a single target. Methods can be chained to create complex animation sequences:
-	 *
-	 * <h4>Example</h4>
-	 *
-	 *	createjs.Tween.get(target)
-	 *		.wait(500)
-	 *		.to({alpha:0, visible:false}, 1000)
-	 *		.call(handleComplete);
-	 *
-	 * Multiple tweens can share a target, however if they affect the same properties there could be unexpected
-	 * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass `override:true`
-	 * in the props argument.
-	 *
-	 * 	createjs.Tween.get(target, {override:true}).to({x:100});
-	 *
-	 * Subscribe to the {{#crossLink "Tween/change:event"}}{{/crossLink}} event to be notified when the tween position changes.
-	 *
-	 * 	createjs.Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
-	 * 	function handleChange(event) {
-	 * 		// The tween changed.
-	 * 	}
-	 *
-	 * See the {{#crossLink "Tween/get"}}{{/crossLink}} method also.
+	 * Base class that both {{#crossLink "Tween"}}{{/crossLink}} and {{#crossLink "Timeline"}}{{/crossLink}} extend. Should not be instantiated directly.
+	 * 
 	 * @class Tween
-	 * @param {Object} target The target object that will have its properties tweened.
-	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:true, paused:true}`).
-	 * All boolean properties default to false. Supported props are:<UL>
-	 *    <LI> `loop`: sets the loop property on this tween.</LI>
-	 *    <LI> `useTicks`: uses ticks for all durations instead of milliseconds.</LI>
-	 *    <LI> `ignoreGlobalPause`: sets the {{#crossLink "Tween/ignoreGlobalPause:property"}}{{/crossLink}} property on this tween.</LI>
-	 *    <LI> `override`: if true, {{#crossLink "Tween/removeTweens"}}{{/crossLink}} will be called to remove any active tweens with the same target.
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
-	 *    <LI> `position`: indicates the initial position for this tween.</LI>
-	 *    <LI> `pluginData`: An object containing data for use by installed plugins. See the {{#crossLink "Tween/pluginData:property"}}{{/crossLink}} property for details.</LI>
-	 *    <LI> `onChange`: specifies a listener for the {{#crossLink "Tween/change:event"}}{{/crossLink}} event.</LI>
-	 * </UL>
+	 * @param {Object} [props]
 	 * @extends EventDispatcher
 	 * @constructor
 	 */
