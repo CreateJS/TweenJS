@@ -136,7 +136,6 @@ this.createjs = this.createjs||{};
 	
 		/**
 		 * Uses ticks for all durations instead of milliseconds. This also changes the behaviour of actions (such as `call`):
-		 * Only actions on the current position will be executed when `useTicks` is true.
 		 * @property useTicks
 		 * @type {Boolean}
 		 * @default false
@@ -163,8 +162,6 @@ this.createjs = this.createjs||{};
 		/**
 		 * Changes the rate at which the tween advances. For example, a `timeScale` value of `2` will double the
 		 * playback speed, a value of `0.5` would halve it.
-		 * 
-		 * This feature is currently not supported in conjunction with `useTicks`.
 		 * @property timeScale
 		 * @type {Number}
 		 * @default 1
@@ -189,6 +186,11 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._prevPos = -1;
+		
+		// TODO: doc.
+		this._end = false;
+		this._jump = false;
+		this._rawPos = -1; // completely unmodified position value.
 		
 		/**
 		 * @property _next
@@ -267,27 +269,26 @@ this.createjs = this.createjs||{};
 	 * @method advance
 	 * @param {Number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
 	 * @param {Number} [ignoreActions=false] If true, actions will not be executed due to this change in position.
-	 * @return {Boolean} Returns `true` if the tween is complete.
 	 */
 	p.advance = function(delta, ignoreActions) {
-		var scale = this.useTicks ? 1 : this.timeScale;
-		return this.setPosition(this.rawPosition+delta*scale, !ignoreActions);
+		this.setPosition(this.rawPosition+delta*this.timeScale, !ignoreActions);
 	};
 	
 	/**
 	 * Advances the tween to a specified position.
 	 * @method setPosition
 	 * @param {Number} position The raw position to seek to in milliseconds (or ticks if useTicks is true).
-	 * @param {Number} [runActions=false] If true, all actions between the previous and new position will be run (except when useTicks is true, in which case only the actions on the new position will be run).
-	 * @return {Boolean} Returns `true` if the tween is complete.
+	 * @param {Boolean} [runActions=false] If true, immediately run actions that would be triggered by this change.
+	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
 	 */
-	p.setPosition = function(position, runActions) {
+	p.setPosition = function(position, runActions, jump) {
+		this._rawPos = position;
 		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop;
 		
 		if (d === 0) {
 			if (prevPos !== 0) {
 				this._prevPos = this.rawPosition = this.position = 0;
-				this._setPosition(0, true);
+				this._setPosition(0, true, true);
 			}
 			return true;
 		}
@@ -300,26 +301,27 @@ this.createjs = this.createjs||{};
 		var end = (loop > loopCount && loopCount !== -1);
 		if (end) { position = (t=d)*(loop=loopCount)+d; }
 		
-		if (position === prevPos) { return end; } // no need to update
+		if (position === this.rawPosition) { this._prevPos = position; return end; } // no need to update
 		
 		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
 		if (rev) { t = d-t; }
 		
 		// set this in advance in case an action modifies position:
-		this._prevPos = this.rawPosition;
+		this._jump = jump;
+		this._end = end;
+		this._prevPos = jump ? position : this.rawPosition;
 		this.position = t;
 		this.rawPosition = position;
 		
-		var blockActions = this._setPosition(t, end);
+		this._updatePosition();
 		
 		if (end) { this.setPaused(true); }
 		
-		if (runActions && !blockActions) { this._runActions(); }
+		if (runActions) { this._runActions() }
 		this.dispatchEvent("change");
 		
 		if (end) { this.dispatchEvent("complete"); }
 	};
-	
 	
 	/**
 	 * Returns a sorted list of the labels defined on this tween.
@@ -452,13 +454,13 @@ this.createjs = this.createjs||{};
 
 
 // private methods:
+	
+
 	/**
-	 * @method _setPosition
-	 * @param {Number} t
-	 * @param {Boolean} end
+	 * @method _updatePosition
 	 * @protected
 	 */
-	p._setPosition = function(t, end) {
+	p._updatePosition = function() {
 		// abstract.
 	};
 	
@@ -468,7 +470,7 @@ this.createjs = this.createjs||{};
 	 **/
 	p._goto = function(positionOrLabel) {
 		var pos = this.resolve(positionOrLabel);
-		if (pos != null) { this.setPosition(pos); }
+		if (pos != null) { this.setPosition(pos, true, true); }
 	};
 	
 	/**

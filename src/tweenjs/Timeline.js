@@ -198,9 +198,10 @@ this.createjs = this.createjs||{};
 // private methods:
 	
 	// Docced in AbstractTween
-	p._setPosition = function(t, end) {
+	p._updatePosition = function() {
+		var t = this.position, jump = this._jump;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i].setPosition(t, false); // actions will run after all the tweens update.
+			this._tweens[i].setPosition(t, false, jump); // actions will run after all the tweens update.
 		}
 	};
 	

@@ -626,15 +626,14 @@ this.createjs = this.createjs||{};
 	};
 	
 	// Docced in AbstractTween
-	p._setPosition = function(t, end) {
-		// handle tweens:
-		var step = this._stepHead.next, d=this.duration;
+	p._updatePosition = function() {
+		var step = this._stepHead.next, t=this.position, d=this.duration, end=this._end;
 		if (this.target && step) {
 			// find our new step index:
 			var stepNext = step.next;
 			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
 			var ratio = end ? t/d : (this._stepPosition = t-step.t)/step.d; // TODO: revisit this.
-			this._updateTargetProps(step,ratio,end);
+			this._updateTargetProps(step,ratio,this._end);
 		}
 	};
 	
@@ -681,20 +680,24 @@ this.createjs = this.createjs||{};
 	
 	// Docced in AbstractTween
 	p._runActions = function() {
-		// runs actions between _prevPos & position. Separated for use by MovieClip.
+		// runs actions between _prevPos & position. Separated to support action deferral.
 		if (!this._actionHead) { return; }
 		var d=this.duration, reversed=this.reversed, bounce=this.bounce, loopCount=this.loop;
 		
 		var pos0=this._prevPos, pos1=this.rawPosition;
-		if (pos0 === pos1) { return; }
+		if (pos0 === pos1 && !this._jump) { return; }
 		var loop0=pos0/d|0, loop1=pos1/d| 0, loop=loop0;
 		var t0=pos0%d, t1=pos1%d;
-		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }
 		
-		if (this._useTicks) {
-			// only run the actions we landed on.
-			return this._runActionsRange(t1, t1, false);
+		console.log(pos0, pos1);
+		
+		// catch jumping to the end, since it messes the normal logic up:
+		if (this._jump && t1===0 && loop1) {
+			if (this._rawPosition > pos1) { return; } // passed the end, don't run any actions.
+			else { return this._runActionsRange(d, d, false); }
 		}
+		
+		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }
 		
 		do {
 			var rev = !reversed !== !(bounce && loop%2);
@@ -704,7 +707,9 @@ this.createjs = this.createjs||{};
 				start = d-start;
 				end = d-end;
 			}
-			this._runActionsRange(start, end, loop !== loop0 && !bounce);
+			// TODO: this can get messed up when the timeline is reversed or advance is negative
+			//console.log(pos0, pos1, rev, start, end);
+			if (this._runActionsRange(start, end, loop !== loop0 && !bounce)) { return true; }
 		} while (++loop <= loop1);
 	};
 
@@ -720,10 +725,13 @@ this.createjs = this.createjs||{};
 		var action = rev ? this._actionTail : this._actionHead;
 		var ePos = endPos, sPos = startPos;
 		if (rev) { ePos=startPos; sPos=endPos; }
+		var t = this.position;
 		while (action) {
 			var pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
+				//console.log(pos, "start", sPos, startPos, "end", ePos, endPos);
 				action.funct.apply(action.scope, action.params);
+				if (t !== this.position) { return true; }
 			}
 			action = rev ? action.prev : action.next;
 		}
