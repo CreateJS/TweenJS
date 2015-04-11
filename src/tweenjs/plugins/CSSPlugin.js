@@ -91,11 +91,15 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	CSSPlugin.init = function(tween, prop, value) {
-		if (tween.pluginData.CSS_disable || !(tween.target instanceof HTMLElement)) { return; }
+		var data = tween.pluginData;
+		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
 		
 		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
 		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
-		tween._addPlugin(CSSPlugin);
+		if (!data.CSS_installed) {
+			tween._addPlugin(CSSPlugin);
+			data.CSS_installed = true;
+		}
 		var str = style[prop];
 		if (!str) { return 0; } // no style set.
 		var i = str.length-sfx0.length;

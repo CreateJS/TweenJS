@@ -72,7 +72,10 @@ this.createjs = this.createjs||{};
 	 **/
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
-		if (!(data && data.Relative_disabled)) { tween._addPlugin(s); }
+		if (!data.Relative_installed && !data.Relative_disabled) {
+			tween._addPlugin(s);
+			data.Relative_installed = true;
+		}
 	};
 	
 	/**

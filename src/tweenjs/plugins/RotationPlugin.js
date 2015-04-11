@@ -88,7 +88,10 @@ this.createjs = this.createjs||{};
 	 **/
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
-		if (s.props[prop] && !(data && data.Rotation_disabled)) { tween._addPlugin(s); }
+		if (s.props[prop] && !data.Rotation_installed && !data.Rotation_disabled) {
+			tween._addPlugin(s);
+			data.Rotation_installed = true;
+		}
 	};
 	
 	/**
