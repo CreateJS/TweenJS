@@ -236,10 +236,11 @@ this.createjs = this.createjs||{};
 			this.bounce = !!props.bounce;
 			this.timeScale = props.timeScale||1;
 			props.onChange && this.addEventListener("change", props.onChange);
+			props.onComplete && this.addEventListener("complete", props.onComplete);
 		}
 		if (!props || !props.paused) { this.setPaused(false); }
 		
-		// while setPosition is shared, it needs to happen after all props are set
+		// while `position` is shared, it needs to happen after all props are set
 	};
 
 	var p = createjs.extend(AbstractTween, createjs.EventDispatcher);
@@ -249,9 +250,14 @@ this.createjs = this.createjs||{};
 
 // events:
 	/**
-	 * Called whenever the tween's position changes.
+	 * Dispatched whenever the tween's position changes.
 	 * @event change
-	 * @since 0.4.0
+	 **/
+	 
+	/**
+	 * Dispatcherd when the tween reaches its end and has paused itself. This does not fire until all loops are complete;
+	 * tweens that loop continuously will never fire a complete event.
+	 * @event complete
 	 **/
 	
 
@@ -311,7 +317,7 @@ this.createjs = this.createjs||{};
 		if (runActions && !blockActions) { this._runActions(); }
 		this.dispatchEvent("change");
 		
-		return end;
+		if (end) { this.dispatchEvent("complete"); }
 	};
 	
 	
