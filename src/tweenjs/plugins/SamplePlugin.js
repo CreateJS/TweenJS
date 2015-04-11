@@ -93,18 +93,22 @@ this.createjs = this.createjs||{};
 		console.log("init: ", prop, value);
 		
 		// its good practice to let users opt out (or in some cases, maybe in) via pluginData:
-		// be aware that pluginData is null by default, so make sure to check for it:
 		var data = tween.pluginData;
-		if (data && data.Sample_disabled) { return value; } // make sure to pass through value.
+		if (data.Sample_disabled) { return value; } // make sure to pass through value.
 		
 		// filter which properties you want to work on by using "prop":
 		if (prop !== "x" && prop !== "y") { return value; } // make sure to pass through value.
 		
 		// you can then add this plugin to the tween:
-		// most plugins can just be a single shared plugin class:
-		tween._addPlugin(SamplePlugin);
-		// but you can also add an instance, if you wanted to store data on the plugin:
-		// tween.addPlugin(new SamplePlugin());
+		// Tween._addPlugin will screen for duplicate plugins, but its more efficient to set and check a flag:
+		if (!data.Sample_installed) {
+			data.Sample_installed = true; // don't install again if we init on the same tween twice.
+			
+			// most plugins can just be a single shared plugin class:
+			tween._addPlugin(SamplePlugin);
+			// but you can also add an instance, if you wanted to store data on the plugin:
+			// tween.addPlugin(new SamplePlugin());
+		}
 		
 		// note that it's also possible to create a plugin that doesn't add itself, but hooks into the "change" event instead.
 		
@@ -156,17 +160,17 @@ this.createjs = this.createjs||{};
 		// you can grab the start value from previous step:
 		var startValue = step.prev.props[prop];
 		
-		// you could even modify this step's end value:
-		// step.props[prop] = Math.round(value);
+		// you can modify this step's end value:
+		// step.props[prop] = Math.max(0, Math.min(100, Math.PI));
+		
+		// if this was an instance plugin, you could store step specific data using step.index:
+		// this.steps[step.index] = {arbitraryData:foo};
 		
 		// or specify other properties that you'd like to include in the tween:
 		// make sure you use the existing injectProps if it exists:
 		// injectProps = injectProps||{}; // preserve other tween's injections
 		// injectProps.foo = 27;
 		// return injectProps;
-		
-		// if this was an instance plugin, you could store step specific data using step.index:
-		// this.steps[step.index] = {arbitraryData:foo};
 	};
 
 	/**
@@ -207,8 +211,10 @@ this.createjs = this.createjs||{};
 		// tell the tween to not set the value on the target:
 		// return Tween.IGNORE;
 		
-		// return the unmodified calculated tween value (use the default tweening behaviour):
-		return value;
+		// you can return a modified value to be set on the target:
+		return Math.round(value);
+		
+		// or don't return anything to use the default value.
 	};
 
 
