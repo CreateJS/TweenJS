@@ -128,8 +128,11 @@ this.createjs = this.createjs||{};
 		this._tweens.push(tween);
 		tween._parent = this;
 		tween.setPaused(true);
-		if (tween.duration > this.duration) { this.duration = tween.duration; }
-		if (this.position >= 0) { tween.setPosition(this._prevPos); }
+		var d = tween.duration;
+		if (tween.loop > 0) { d *= tween.loop+1; }
+		if (d > this.duration) { this.duration = d; }
+		
+		if (this._prevPos >= 0) { tween.setPosition(this._prevPos); }
 		return tween;
 	};
 
@@ -169,7 +172,9 @@ this.createjs = this.createjs||{};
 		this.duration = 0;
 		for (var i=0,l=this._tweens.length; i<l; i++) {
 			var tween = this._tweens[i];
-			if (tween.duration > this.duration) { this.duration = tween.duration; }
+			var d = tween.duration;
+			if (tween.loop > 0) { d *= tween.loop+1; }
+			if (d > this.duration) { this.duration = d; }
 		}
 	};
 
