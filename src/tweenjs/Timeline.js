@@ -42,25 +42,41 @@ this.createjs = this.createjs||{};
 	/**
 	 * The Timeline class synchronizes multiple tweens and allows them to be controlled as a group. Please note that if a
 	 * timeline is looping, the tweens on it may appear to loop even if the "loop" property of the tween is false.
+	 * 
+	 * NOTE: Timeline currently also accepts a param list in the form: `tweens, labels, props`. This is for backwards
+	 * compatibility only and will be removed in the future. Include tweens and labels as properties on the props object.
 	 * @class Timeline
-	 * @param {Array} tweens An array of Tweens to add to this timeline. See {{#crossLink "Timeline/addTween"}}{{/crossLink}}
-	 * for more info.
-	 * @param {Object} labels An object defining labels for using {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
-	 * See {{#crossLink "Timeline/setLabels"}}{{/crossLink}}
-	 * for details.
-	 * @param {Object} props The configuration properties to apply to this tween instance (ex. `{loop:true}`). All properties
-	 * default to false. Supported props are:<UL>
-	 *    <LI> loop: sets the loop property on this tween.</LI>
-	 *    <LI> useTicks: uses ticks for all durations instead of milliseconds.</LI>
-	 *    <LI> ignoreGlobalPause: sets the ignoreGlobalPause property on this tween.</LI>
-	 *    <LI> paused: indicates whether to start the tween paused.</LI>
-	 *    <LI> position: indicates the initial position for this timeline.</LI>
-	 *    <LI> onChange: specifies a listener to add for the {{#crossLink "Timeline/change:event"}}{{/crossLink}} event.</LI>
+	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:-1, paused:true}`).
+	 * Supported props are listed below. These props are set on the corresponding instance properties except where
+	 * specified.<UL>
+	 *    <LI> `useTicks`</LI>
+	 *    <LI> `ignoreGlobalPause`</LI>
+	 *    <LI> `loop`</LI>
+	 *    <LI> `reversed`</LI>
+	 *    <LI> `bounce`</LI>
+	 *    <LI> `timeScale`</LI>
+	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `tweens`: an array of tweens to add to the timeline.</LI>
+	 *    <LI> `labels`: a collection of labels to add using `setLabels`</LI>
+	 *    <LI> `override`: if true, removes all existing tweens for the target</LI>
+	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
+	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
 	 * </UL>
 	 * @extends EventDispatcher
 	 * @constructor
 	 **/
-	function Timeline(tweens, labels, props) {
+	function Timeline(props) {
+		// TODO: deprecated:
+		var tweens, labels;
+		if (props instanceof Array || (props == null && arguments.length > 1)) {
+			tweens = props;
+			labels = arguments[1];
+			props = arguments[2];
+		} else if (props) {
+			tweens = props.tweens;
+			labels = props.labels;
+		}
+		
 		this.AbstractTween_constructor(props);
 
 	// public properties:
@@ -74,11 +90,11 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 **/
 		this._tweens = [];
-
+		
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
-		if (props&&props.position!=null) { this.setPosition(props.position); }
 		
+		if (props&&props.position!=null) { this.setPosition(props.position); }
 	};
 	
 	var p = createjs.extend(Timeline, createjs.AbstractTween);
@@ -88,11 +104,7 @@ this.createjs = this.createjs||{};
 
 	
 // events:
-	/**
-	 * Called whenever the timeline's position changes.
-	 * @event change
-	 * @since 0.5.0
-	 **/
+	// docced in AbstractTween.
 
 
 // public methods:
