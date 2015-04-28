@@ -126,7 +126,7 @@ this.createjs = this.createjs||{};
 		this.position = 0;
 		
 		/**
-		 * The raw tween position. This value will be between `0` and `loops * duration` while the tween is active.
+		 * The raw tween position. This will be -1 before the tween starts.
 		 * @property rawPosition
 		 * @type {Number}
 		 * @default -1
@@ -177,20 +177,11 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._paused = true;
-	
-		/**
-		 * Previous position.
-		 * @property _prevPos
-		 * @type {Number}
-		 * @default -1
-		 * @protected
-		 */
-		this._prevPos = -1;
 		
 		// TODO: doc.
-		this._end = false;
 		this._jump = false;
-		this._rawPos = -1; // completely unmodified position value.
+		this._prevPos = new TweenPos(this);
+		this._pos = new TweenPos(this);
 		
 		/**
 		 * @property _next
@@ -277,51 +268,39 @@ this.createjs = this.createjs||{};
 	/**
 	 * Advances the tween to a specified position.
 	 * @method setPosition
-	 * @param {Number} position The raw position to seek to in milliseconds (or ticks if useTicks is true).
+	 * @param {Number} rawPosition The raw position to seek to in milliseconds (or ticks if useTicks is true).
 	 * @param {Boolean} [runActions=false] If true, immediately run actions that would be triggered by this change.
 	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
 	 */
-	p.setPosition = function(position, runActions, jump) {
-		this._rawPos = position;
-		var d=this.duration, prevPos=this._prevPos, loopCount=this.loop;
-		
-		if (d === 0) {
-			if (prevPos !== 0) {
-				this._prevPos = this.rawPosition = this.position = 0;
+	p.setPosition = function(rawPosition, runActions, jump) {
+		if (this.duration === 0) {
+			if (this.rawPosition !== 0) {
+				this.rawPosition = this.position = 0;
 				this._setPosition(0, true, true);
 			}
 			return true;
 		}
 		
-		// normalize position:
-		if (position < 0) { position = 0; }
-		var loop = position/d|0;
-		var t = position%d;
-		
-		var end = (loop > loopCount && loopCount !== -1);
-		if (end) { position = (t=d)*(loop=loopCount)+d; }
-		
-		if (position === this.rawPosition) { this._prevPos = position; return end; } // no need to update
-		
-		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
-		if (rev) { t = d-t; }
+		var pos = this._calculatePos(rawPosition, this._prevPos);
+		var prevPos = this._prevPos = this._pos;
+		this._pos = pos;
+		if (prevPos.clampedPos === pos.clampedPos) { this.rawPosition = rawPosition; return; } // no need to update
 		
 		// set this in advance in case an action modifies position:
 		this._jump = jump;
-		this._end = end;
-		this._prevPos = jump ? position : this.rawPosition;
-		this.position = t;
-		this.rawPosition = position;
+		this.position = pos.position;
+		this.rawPosition = rawPosition;
 		
 		this._updatePosition();
 		
-		if (end) { this.setPaused(true); }
+		if (pos.end) { this.setPaused(true); }
 		
 		if (runActions) { this._runActions() }
 		this.dispatchEvent("change");
 		
-		if (end) { this.dispatchEvent("complete"); }
+		if (pos.end) { this.dispatchEvent("complete"); }
 	};
+	
 	
 	/**
 	 * Returns a sorted list of the labels defined on this tween.
@@ -477,9 +456,56 @@ this.createjs = this.createjs||{};
 	 * @method _runActions
 	 * @protected
 	 */
-	p._runActions = function() {
+	p._runActions = function(startPos, endPos, includeStart) {
+		return;
+		
+		// runs actions between _prevPos & position. Separated to support action deferral.
+		if (!this._tweens && !this._actionHead) { return; } // TODO: this is ugly.
+		var d=this.duration, reversed=this.reversed, bounce=this.bounce, loopCount=this.loop;
+		
+		// optimize to reuse objects? Maybe static instances on Tween?
+		var pos0 = startPos != null ? this._calculatePos(startPos) : this._prevPos;
+		var pos1 = endPos != null ? this._calculatePos(endPos) : this._pos;
+		
+		if (pos0.clampedPos === pos1.clampedPos && !this._jump) { return; }
+		var loop0=pos0/d|0, loop1=pos1/d| 0, loop=loop0;
+		var t0=pos0%d, t1=pos1%d;
+		
+		//if (startPos != null) { console.log(d, " ", startPos, endPos, " ", pos0, pos1); }
+		
+		// catch jumping to the end, since it messes the normal logic up:
+		if (this._jump && t1===0 && loop1) {
+			if (this._rawPosition > pos1) { return; } // passed the end, don't run any actions.
+			else { return this._runActionsRange(d, d, false); }
+		}
+		
+		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }
+		
+		do {
+			var rev = !reversed !== !(bounce && loop%2);
+			var start = (loop === loop0) ? t0 : 0;
+			var end = (loop === loop1) ? t1 : d;
+			if (rev) {
+				start = d-start;
+				end = d-end;
+			}
+			// TODO: this can get messed up when the timeline is reversed or advance is negative
+			var inclStart = (loop === loop0 && includeStart) || (loop !== loop0 && !bounce);
+			if (this._runActionsRange(start, end, inclStart)) { return true; }
+		} while (++loop <= loop1);
+	};
+	
+	/**
+	 * @method _runActionsRange
+	 * @param {Number} startPos
+	 * @param {Number} endPos
+	 * @param {Boolean} includeStart
+	 * @protected
+	 */
+	p._runActionsRange = function(startPos, endPos, includeStart) {
 		// abstract.
 	};
+	
 
 	/**
 	 * @method _cloneProps
@@ -491,6 +517,45 @@ this.createjs = this.createjs||{};
 		for (var n in props) { o[n] = props[n]; }
 		return o;
 	};
+	
+	p._calculatePos = function(rawPos, o, parentReverse) {
+		if (!o) { o = new TweenPos(this); }
+		
+		var clampedPos = rawPos < 0 ? 0 : rawPos;
+		var d=this.duration, loopCount = this.loop;
+		var loop =  clampedPos/d|0;
+		var t = clampedPos%d;
+				
+		var end = (loop > loopCount && loopCount !== -1);
+		if (end) { clampedPos = (t=d)*(loop=loopCount)+d; }
+				
+		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
+		rev = rev === !parentReverse;
+		if (rev) { t = d-t; }
+		
+		return o.setValues(rawPos, clampedPos, t, loop, end, rev);
+	};
 
 	createjs.AbstractTween = createjs.promote(AbstractTween, "EventDispatcher");
+	
+	
+	function TweenPos(tween, position) {
+		this.tween = tween;
+		this.setValues(-1, 0, 0, 0, false, false);
+	}
+	
+	var p = TweenPos.prototype;
+	p.setValues = function(rawPos, clampedPos, position, loop, end, reverse) {
+		this.rawPos = rawPos;
+		this.end = end;
+		this.clampedPos = clampedPos;
+		this.position = position;
+		this.loop = loop;
+		this.reverse = reverse;
+		return this;
+	};
+	
+	p.copy = function(o) {
+		this.setValues(o.rawPos, o.clampedPos, o.position, o.loop, o.end, o.reverse);
+	};
 }());

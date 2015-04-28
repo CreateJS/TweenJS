@@ -205,11 +205,10 @@ this.createjs = this.createjs||{};
 		}
 	};
 	
-	// Docced in AbstractTween
-	p._runActions = function() {
+	p._runActionsRange = function(startPos, endPos, includeStart) {
 		var t = this.position;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i]._runActions();
+			this._tweens[i]._runActions(startPos, endPos, includeStart);
 			if (t !== this.position) { return true; } // an action changed this timeline's position.
 		}
 	};
