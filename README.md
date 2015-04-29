@@ -52,7 +52,9 @@ createjs.Tween.get(target,null,true); // this will remove any existing tweens on
 ## Support and Resources
 * Find examples and more information at the [TweenJS web site](http://tweenjs.com/)
 * Read the [documentation](http://createjs.com/Docs/TweenJS/)
-* You can also ask questions and interact with other users at our [Community](http://community.createjs.com) site.
+* Discuss, share projects, and interact with other users on [reddit](http://www.reddit.com/r/createjs/).
+* Ask technical questions on [Stack Overflow](http://stackoverflow.com/questions/tagged/tweenjs).
+* File verified bugs or formal feature requests using Issues on [GitHub](https://github.com/createjs/TweenJS/issues).
 * Have a look at the included [examples](https://github.com/CreateJS/TweenJS/tree/master/examples) and [API documentation](http://createjs.com/Docs/TweenJS/) for more in-depth information.
 
 It was built by [gskinner.com](http://www.gskinner.com), and is released for free under the MIT license, which means you can use it for almost any purpose (including commercial projects). We appreciate credit where possible, but it is not a requirement.
