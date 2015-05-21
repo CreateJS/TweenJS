@@ -1,8 +1,8 @@
 {
 	"name": "TweenJS",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"description": "TweenJS Docs",
-	"url": "http://www.createjs.com/#!/TweenJS",
+	"url": "http://www.createjs.com/tweenjs",
 	"logo": "assets/docs-icon-TweenJS.png",
 	"repository": "git@github.com:CreateJS/TweenJS.git",
 	"devDependencies": {
