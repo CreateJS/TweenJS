@@ -1,12 +1,11 @@
 Version NEXT [not yet released]
 ****************************************************************************************************
-CRITICAL (may break existing content):
 
-*****
-OTHER:
+
+Version 0.6.1 [May 21, 2015]
+****************************************************************************************************
 - Fixed an issue with Tween.removeAllTweens and tweens with no target
 - Fixed an issue that could cause tweens to be ticked multiple times per tick
-
 
 
 Version 0.6.0 [December 12, 2014]
