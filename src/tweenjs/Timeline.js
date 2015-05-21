@@ -339,8 +339,7 @@ this.createjs = this.createjs||{};
 	 * is `false`).
 	 **/
 	p.setPosition = function(value, actionsMode) {
-		if (value < 0) { value = 0; }
-		var t = this.loop ? value%this.duration : value;
+		var t = this._calcPosition(value);
 		var end = !this.loop && value >= this.duration;
 		if (t == this._prevPos) { return end; }
 		this._prevPosition = value;
@@ -420,13 +419,25 @@ this.createjs = this.createjs||{};
 // private methods:
 	/**
 	 * @method _goto
+	 * @param {String | Number} positionOrLabel
 	 * @protected
 	 **/
 	p._goto = function(positionOrLabel) {
 		var pos = this.resolve(positionOrLabel);
 		if (pos != null) { this.setPosition(pos); }
 	};
-
+	
+	/**
+	 * @method _calcPosition
+	 * @param {Number} value
+	 * @return {Number}
+	 * @protected
+	 **/
+	p._calcPosition = function(value) {
+		if (value < 0) { return 0; }
+		if (value < this.duration) { return value; }
+		return this.loop ? value%this.duration : this.duration;
+	};
 
 	createjs.Timeline = createjs.promote(Timeline, "EventDispatcher");
 
