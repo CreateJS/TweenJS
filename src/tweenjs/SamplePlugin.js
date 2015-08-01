@@ -90,7 +90,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * Called by TweenJS when a new step is added to a tween that includes a property the plugin is registered for (ie.
 	 * a new "to" action is added to a tween).
-	 * @method init
+	 * @method step
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property being tweened.
 	 * @param {any} startValue The value of the property at the beginning of the step. This will
