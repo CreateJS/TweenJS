@@ -59,7 +59,8 @@
  *	    }
  *
  * <h4>Browser Support</h4>
- * TweenJS will work in all browsers.
+ * TweenJS will work in modern browsers. To use TweenJS with IE8 and earlier, use an older version of PreloadJS
+ * (version 0.4.1 and earlier).
  *
  * @module TweenJS
  * @main TweenJS
