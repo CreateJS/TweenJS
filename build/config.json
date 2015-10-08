@@ -12,5 +12,5 @@
 		"../src/tweenjs/version.js"
 	],
 
-	"docs_out_path":"./output/TweenJSDocs/"
+  "docs_out_path": "../../createjs-com_version2/docs/tweenjs/"
 }
