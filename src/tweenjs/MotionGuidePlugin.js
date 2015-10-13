@@ -286,7 +286,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 */
 	MotionGuidePlugin.calc = function(data, ratio, target) {
-		if(data._segments == undefined){ MotionGuidePlugin.validate(data); }
+		if(data._segments == undefined){ throw("Missing critical pre-calculated information, please file a bug"); }
 		if(target == undefined){ target = {x:0, y:0, rotation:0}; }
 		var seg = data._segments;
 		var path = data.path;
