@@ -18,7 +18,7 @@
 	var prevPoint, dataProvider, rect = new createjs.Rectangle(20,20,700,360);
 	var bar, container, currentClip;
 	var selectedFunction, selectedItem, selectedIndex = 0;
-	var resetRuninng = false, startTimeout;
+	var resetRunning = false, startTimeout;
 	var clips = [];
 	var activeTween;
 
@@ -138,7 +138,7 @@
 		selectedItem.className = "selected";
 		selectedFunction = dataProvider[selectedIndex].type;
 
-		resetRuninng = true;
+		resetRunning = true;
 		createjs.Tween.get(bar, {override: true}).to({x: rect.x}, 500).call(resetComplete);
 		return false;
 	}
@@ -147,12 +147,16 @@
 		currentClip = stage.addChild(new createjs.Shape());
 		clips.push(currentClip);
 		prevPoint.setValues(rect.x, rect.y);
-		activeTween = createjs.Tween.get(bar, {override: true}).to({x: rect.x+rect.width}, 1500, easeType);
+		activeTween = createjs.Tween.get(bar, {override: true}).to({x: rect.x+rect.width}, 1500, easeType).call(tweenComplete);
+	}
+
+	function tweenComplete () {
+		currentClip = null;
 	}
 
 	function resetComplete() {
 		bar.x = rect.x;
-		resetRuninng = false;
+		resetRunning = false;
 		currentClip = null;
 		prevPoint.setValues(rect.x, rect.y);
 
@@ -160,7 +164,7 @@
 	}
 
 	function tick(event) {
-		if (!resetRuninng && currentClip != null) {
+		if (!resetRunning && currentClip != null) {
 			var hue = (selectedIndex / dataProvider.length) * 360;
 			var g = currentClip.graphics
 					.setStrokeStyle(1, "round", "round")
@@ -177,7 +181,7 @@
 					.endFill();
 
 			stage.update(event);
-		} else if (resetRuninng) {
+		} else if (resetRunning) {
 			stage.update(event);
 		}
 	}
