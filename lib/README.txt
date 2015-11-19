@@ -1,9 +1,19 @@
-This directory contains a compressed version of the TweenJS library.
+# lib directory
+This directory contains a compressed version of the TweenJS library, including the most recent tagged release and the
+in-progress NEXT release.
 
-It also includes a minified version of EaselJS, and is included for the Ticker class, which TweenJS uses by default. If you don't wish to use EaselJS, you can  implement your own ticking mechanism, or download the Ticker class on its own from http://github.com/createjs/easeljs/
+Both combined and minified versions of the library are included. The former being useful for debugging, and the latter
+for deployment.
 
-It is recommended that you use this version in almost all cases, unless you need to modify the original code. It is much smaller, results in less http requests, and you don't have to worry about the order in which you include the js files.
+You can also link to the libraries on the [CreateJS CDN](http://code.createjs.com/), to benefit from faster load times
+and shared caching across sites.
 
-tween.js is a single file that contains compacted versions of all of the TweenJS classes (comments and white space stripped).
 
-You can also gzip the file to further reduce its size (by about 75%). Many servers do this automatically.
+# libraries
+**tweenjs-VERSION.min.js** contains minified versions of all of the TweenJS classes (comments and white space stripped).
+**tweenjs-VERSION.combined.js** contains all the TweenJS classes, including whitespace and comments.
+
+
+# license
+The libraries are ©2010 gskinner.com, inc., and made available under the highly permissive MIT open source software
+license. See the source file header for the full license text.
