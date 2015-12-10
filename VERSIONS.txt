@@ -6,8 +6,7 @@ Version 0.6.2 [November 26, 2015]
 ****************************************************************************************************
 - fixed MotionGuidePlugin handling of empty data
 - solved memory leak in SparkTable demo
-- bug fixes
-- documentation updates
+- documentation and example updates
 
 
 Version 0.6.1 [May 21, 2015]
