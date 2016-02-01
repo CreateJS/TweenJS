@@ -8,7 +8,11 @@ tweening of both numeric object properties & CSS style properties.
 The API is simple but very powerful, making it easy to create complex tweens by chaining commands.
 
 ```javascript
-var tween = createjs.Tween.get(myTarget).to({x:300},400).set({label:"hello!"}).wait(500).to({alpha:0,visible:false},1000).call(onComplete);
+var tween = createjs.Tween.get(myTarget)
+    .to({x:300},400)
+    .set({label:"hello!"})
+    .wait(500).to({alpha:0,visible:false},1000)
+    .call(onComplete);
 ```
 
 The example above will create a new tween instance that:
@@ -28,8 +32,6 @@ Actions do not have a duration, and are executed between steps. They are defined
 "pause" methods. They are guaranteed to execute in the correct order, but not at the precise moment in time that is
 indicated in the sequence. This can lead to indeterminate results, especially when tweens are interacting via the play
 and pause actions.
-
-This library is currently alpha. It has been tested (though not extensively), and is likely to change somewhat as it matures.
 
 Tweens support a number of configuration properties, which are specified as the second param when creating a new tween:
 
@@ -51,15 +53,16 @@ createjs.Tween.get(target,null,true); // this will remove any existing tweens on
 
 ## Support and Resources
 * Find examples and more information at the [TweenJS web site](http://tweenjs.com/)
-* Read the [documentation](http://createjs.com/Docs/TweenJS/)
+* Read the [documentation](http://createjs.com/docs/tweenjs/)
 * Discuss, share projects, and interact with other users on [reddit](http://www.reddit.com/r/createjs/).
 * Ask technical questions on [Stack Overflow](http://stackoverflow.com/questions/tagged/tweenjs).
 * File verified bugs or formal feature requests using Issues on [GitHub](https://github.com/createjs/TweenJS/issues).
-* Have a look at the included [examples](https://github.com/CreateJS/TweenJS/tree/master/examples) and [API documentation](http://createjs.com/Docs/TweenJS/) for more in-depth information.
+* Have a look at the included [examples](https://github.com/CreateJS/TweenJS/tree/master/examples) and 
+[API documentation](http://createjs.com/docs/tweenjs/) for more in-depth information.
 
-It was built by [gskinner.com](http://www.gskinner.com), and is released for free under the MIT license, which means you can use it for almost any purpose (including commercial projects). We appreciate credit where possible, but it is not a requirement.
-
-TweenJS is currently in alpha. We will be making significant improvements to the library, samples, and documentation over the coming weeks. Please be aware that this may necessitate changes to the existing API.
+It was built by [gskinner.com](http://www.gskinner.com), and is released for free under the MIT license, which means you 
+can use it for almost any purpose (including commercial projects). We appreciate credit where possible, but it is not a 
+requirement.
 
 ## Classes
 
@@ -70,7 +73,9 @@ Returns a new Tween instance.
 The Timeline class synchronizes multiple tweens and allows them to be controlled as a group.
 
 **Ease**
-The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
+The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param 
+easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
 
 ## Thanks
-Special thanks to [Robert Penner](http://flashblog.robertpenner.com/) for his easing equations, which form the basis for the Ease class.
+Special thanks to [Robert Penner](http://flashblog.robertpenner.com/) for his easing equations, which form the basis for 
+the Ease class.
