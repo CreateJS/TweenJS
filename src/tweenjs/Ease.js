@@ -79,7 +79,7 @@ this.createjs = this.createjs||{};
 	Ease.none = Ease.linear;
 
 	/**
-	 * Mimics the simple -100 to 100 easing in Flash Pro.
+	 * Mimics the simple -100 to 100 easing in Adobe Flash/Animate.
 	 * @method get
 	 * @param {Number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
 	 * @static
