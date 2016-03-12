@@ -595,6 +595,31 @@ this.createjs = this.createjs||{};
 	};
 
 	/**
+	 * Queues a tween from the target properties to the current values. Set duration to 0 to jump to these value.
+	 * Numeric properties will be tweened from their current value in the tween to the target value. Non-numeric
+	 * properties will be set at the end of the specified duration.
+	 * @example
+	 *	createjs.Tween.get(target).from({alpha:0}, 1000);
+	 * @method from
+	 * @param {Object} props An object specifying property target values for this tween (Ex. <code>{x:300}</code> would tween the x
+	 *      property of the target to 300).
+	 * @param {Number} duration Optional. The duration of the wait in milliseconds (or in ticks if <code>useTicks</code> is true).
+	 *      Defaults to 0.
+	 * @param {Function} ease Optional. The easing function to use for this tween. Defaults to a linear ease.
+	 * @return {Tween} This tween instance (for chaining calls).
+	 */
+	p.from = function(props, duration, ease) {
+		var p;
+        	var val;
+        	for (p in props) {
+        		val = props[p]
+			props[p] = this._target[p];
+			this._target[p] = val;
+		}
+		return this.to(props, duration, ease);
+	};
+
+	/**
 	 * Queues an action to call the specified function.
 	 * <h4>Example</h4>
 	 *
