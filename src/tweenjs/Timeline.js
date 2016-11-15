@@ -94,6 +94,9 @@ this.createjs = this.createjs||{};
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		
+		// TODO: this is to bypass the check in _runActions. Likely a cleaner way to handle this.
+		this._actionHead = true;
+		
 		if (props&&props.position!=null) { this.setPosition(props.position); }
 	};
 	
@@ -132,7 +135,7 @@ this.createjs = this.createjs||{};
 		if (tween.loop > 0) { d *= tween.loop+1; }
 		if (d > this.duration) { this.duration = d; }
 		
-		if (this._prevPos >= 0) { tween.setPosition(this._prevPos); }
+		if (this._prevRawPos >= 0) { tween.setPosition(this._prevRawPos); }
 		return tween;
 	};
 
@@ -205,10 +208,12 @@ this.createjs = this.createjs||{};
 		}
 	};
 	
-	p._runActionsRange = function(startPos, endPos, includeStart) {
+	// Docced in AbstractTween
+	p._runActionsRange = function(startPos, endPos, jump, includeStart) {
+		console.log("	range", startPos, endPos, jump, includeStart);
 		var t = this.position;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i]._runActions(startPos, endPos, includeStart);
+			this._tweens[i]._runActions(startPos, endPos, jump, includeStart);
 			if (t !== this.position) { return true; } // an action changed this timeline's position.
 		}
 	};

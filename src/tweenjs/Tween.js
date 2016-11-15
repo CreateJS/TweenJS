@@ -190,15 +190,6 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._actionTail = null;
-	
-		/**
-		 * The position within the current step. Used by MovieClip.
-		 * @property _stepPosition
-		 * @type {Number}
-		 * @default 0
-		 * @protected
-		 */
-		this._stepPosition = 0; // TODO: move to AbstractTween?
 		
 		/**
 		 * Plugins added to this tween instance.
@@ -627,13 +618,13 @@ this.createjs = this.createjs||{};
 	
 	// Docced in AbstractTween
 	p._updatePosition = function() {
-		var step = this._stepHead.next, t=this.position, d=this.duration, end=this._pos.end;
+		var step = this._stepHead.next, t=this.position, d=this.duration, end=this._end;
 		if (this.target && step) {
 			// find our new step index:
 			var stepNext = step.next;
 			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
-			var ratio = end ? t/d : (this._stepPosition = t-step.t)/step.d; // TODO: revisit this.
-			this._updateTargetProps(step,ratio,end);
+			var ratio = end ? t/d : (t-step.t)/step.d; // TODO: revisit this.
+			this._updateTargetProps(step,ratio,this._end);
 		}
 	};
 	
@@ -673,11 +664,21 @@ this.createjs = this.createjs||{};
 			}
 			
 			if (v !== Tween.IGNORE) { this.target[n] = v; }
+			
 		}
-	};
 
-	// docced in AbstractTween
-	p._runActionsRange = function(startPos, endPos, includeStart) {
+	};
+	
+
+	/**
+	 * @method _runActionsRange
+	 * @param {Number} startPos
+	 * @param {Number} endPos
+	 * @param {Boolean} includeStart
+	 * @protected
+	 */
+	p._runActionsRange = function(startPos, endPos, jump, includeStart) {
+		console.log("	range", startPos, endPos, jump, includeStart);
 		var rev = startPos > endPos;
 		var action = rev ? this._actionTail : this._actionHead;
 		var ePos = endPos, sPos = startPos;
@@ -686,6 +687,7 @@ this.createjs = this.createjs||{};
 		while (action) {
 			var pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
+				//console.log(pos, "start", sPos, startPos, "end", ePos, endPos);
 				action.funct.apply(action.scope, action.params);
 				if (t !== this.position) { return true; }
 			}
