@@ -267,8 +267,9 @@ this.createjs = this.createjs||{};
 	 * @param {Number} position The raw position to seek to in milliseconds (or ticks if useTicks is true).
 	 * @param {Boolean} [runActions=false] If true, immediately run actions that would be triggered by this change.
 	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
+	 * @param {Function} [callback] Primarily for use with MovieClip, this callback is called after properties are updated, but before actions are run.
 	 */
-	p.setPosition = function(position, runActions, jump) {
+	p.setPosition = function(position, runActions, jump, callback) {
 		var d=this.duration, loopCount=this.loop, prevRawPos = this.rawPosition;
 		var loop, t, end;
 		
@@ -301,7 +302,7 @@ this.createjs = this.createjs||{};
 		this._updatePosition(jump, end);
 		if (end) { this.setPaused(true); }
 		
-		// TODO: add a callback or event call here for MovieClip to tie into. Or maybe put it into _updatePosition on Timeline?
+		callback&&callback();
 		
 		if (runActions) { this._runActions(prevRawPos, position, jump, !jump && prevRawPos === -1); }
 		
