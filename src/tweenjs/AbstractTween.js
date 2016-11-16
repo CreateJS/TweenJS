@@ -488,7 +488,6 @@ this.createjs = this.createjs||{};
 		// catch positions that are past the end:
 		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }
 		if (loop0 > loopCount && loopCount !== -1) { t0=d; loop0=loopCount; }
-		var loop = loop0;
 		
 		// jump to end:
 		if (jump && loop1 > loopCount && t1 === 0) { t1 = d; }
@@ -500,18 +499,21 @@ this.createjs = this.createjs||{};
 		// handle jumps:
 		if (jump) { return this._runActionsRange(t1, t1, jump, includeStart); }
 		
-		var dir = (startRawPos <= endRawPos);
+		var dir = (startRawPos <= endRawPos), loop = loop0;
 		do {
 			var rev = !reversed !== !(bounce && loop % 2);
 
 			var start = (loop === loop0) ? t0 : dir ? 0 : d;
 			var end = (loop === loop1) ? t1 : dir ? d : 0;
-
+			
 			if (rev) {
 				start = d - start;
 				end = d - end;
 			}
-			if (this._runActionsRange(start, end, jump, includeStart || (loop !== loop0 && !bounce))) { return true; }
+			
+			if (bounce && loop !== loop0 && start === end) { /* bounced onto the same time/frame, don't re-execute end actions */ }
+			else if (this._runActionsRange(start, end, jump, includeStart || (loop !== loop0 && !bounce))) { return true; }
+				
 			includeStart = false;
 		} while ((dir && ++loop <= loop1) || (!dir && --loop >= loop1));
 	};
