@@ -310,7 +310,7 @@ this.createjs = this.createjs||{};
 		while (tween) {
 			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
 			var next = tween._next; // in case it completes and wipes its _next property
-			tween.advance(tween._useTicks?1:delta);
+			tween.advance(tween.useTicks?1:delta);
 			tween = next;
 		}
 	};

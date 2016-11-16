@@ -135,7 +135,8 @@ this.createjs = this.createjs||{};
 		this.rawPosition = -1;
 	
 		/**
-		 * Uses ticks for all durations instead of milliseconds. This also changes the behaviour of actions (such as `call`):
+		 * Uses ticks for all durations instead of milliseconds. This also changes the behaviour of some actions (such as `call`).
+		 * Changing this value on a running tween could have unexpected results.
 		 * @property useTicks
 		 * @type {Boolean}
 		 * @default false
