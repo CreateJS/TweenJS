@@ -94,9 +94,6 @@ this.createjs = this.createjs||{};
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		
-		// TODO: this is to bypass the check in _runActions. Likely a cleaner way to handle this.
-		this._actionHead = true;
-		
 		if (props&&props.position!=null) { this.setPosition(props.position); }
 	};
 	

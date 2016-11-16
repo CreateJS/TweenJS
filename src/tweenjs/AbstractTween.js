@@ -126,7 +126,7 @@ this.createjs = this.createjs||{};
 		this.position = 0;
 		
 		/**
-		 * The raw tween position. This value will be between `0` and `loops * duration` while the tween is active.
+		 * The raw tween position. This value will be between `0` and `loops * duration` while the tween is active, or -1 before it activates.
 		 * @property rawPosition
 		 * @type {Number}
 		 * @default -1
@@ -228,7 +228,7 @@ this.createjs = this.createjs||{};
 		}
 		if (!props || !props.paused) { this.setPaused(false); }
 		
-		// while `position` is shared, it needs to happen after all props are set
+		// while `position` is shared, it needs to happen after ALL props are set, so it's handled in Tween & Timeline
 	};
 
 	var p = createjs.extend(AbstractTween, createjs.EventDispatcher);
@@ -298,12 +298,13 @@ this.createjs = this.createjs||{};
 		this.rawPosition = position;
 		
 		this._updatePosition(jump, end);
-		
 		if (end) { this.setPaused(true); }
 		
-		if (runActions) { this._runActions(prevRawPos, position, jump, !jump && prevRawPos === -1); }
-		this.dispatchEvent("change");
+		// TODO: add a callback or event call here for MovieClip to tie into. Or maybe put it into _updatePosition on Timeline?
 		
+		if (runActions) { this._runActions(prevRawPos, position, jump, !jump && prevRawPos === -1); }
+		
+		this.dispatchEvent("change");
 		if (end) { this.dispatchEvent("complete"); }
 	};
 	
@@ -462,14 +463,14 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._runActions = function(startRawPos, endRawPos, jump, includeStart) {
+		// runs actions between startPos & endPos. Separated to support action deferral.
 		
 		console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
 		
-		// runs actions between startPos & endPos. Separated to support action deferral.
-		if (!this._actionHead) { return; } // TODO: look for a better way to handle (ex. override in Tween)
+		// TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
+		if (!this._actionHead && !this._tweens) { return; } 
 		
 		var d=this.duration, reversed=this.reversed, bounce=this.bounce, loopCount=this.loop;
-		var pos0=startRawPos, pos1=endRawPos; // TODO: redundant vars. Remove?
 		var loop0, loop1, t0, t1;
 		
 		if (d === 0) {
@@ -477,12 +478,11 @@ this.createjs = this.createjs||{};
 			loop0 = loop1 = t0 = t1 = 0;
 			reversed = bounce = false;
 		} else {
-			loop0=pos0/d|0
-			loop1=pos1/d|0;
-			t0=pos0%d
-			t1=pos1%d;
+			loop0=startRawPos/d|0;
+			loop1=endRawPos/d|0;
+			t0=startRawPos%d;
+			t1=endRawPos%d;
 		}
-		
 		
 		// catch positions that are past the end:
 		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }
@@ -493,7 +493,7 @@ this.createjs = this.createjs||{};
 		if (jump && loop1 > loopCount && t1 === 0) { t1 = d; }
 		
 		// no actions if the position is identical:
-		// TODO: this should also catch _jumping_ to the same position.
+		// TODO: this should also catch jumping to the same position.
 		if (loop0 === loop1 && t0 === t1 && !jump) { return; }
 		
 		// handle jumps:
