@@ -214,7 +214,8 @@ this.createjs = this.createjs||{};
 			if (props.override) { Tween.removeTweens(target); }
 		}
 		if (!this.pluginData) { this.pluginData = {}; }
-		if (props&&props.position!=null) { this.setPosition(props.position); }
+		
+		this._init(props);
 	};
 
 	var p = createjs.extend(Tween, createjs.AbstractTween);
@@ -350,7 +351,7 @@ this.createjs = this.createjs||{};
 		var tween = Tween._tweenHead;
 		while (tween) {
 			var next = tween._next;
-			if (tween.target === target) { Tween._register(tween, false); }
+			if (tween.target === target) { Tween._register(tween, true); }
 			tween = next;
 		}
 		target.tweenjs_count = 0;

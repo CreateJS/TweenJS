@@ -191,7 +191,6 @@ this.createjs = this.createjs||{};
 			props.onChange && this.addEventListener("change", props.onChange);
 			props.onComplete && this.addEventListener("complete", props.onComplete);
 		}
-		if (!props || !props.paused) { this.setPaused(false); }
 		
 		// while `position` is shared, it needs to happen after ALL props are set, so it's handled in Tween & Timeline
 	};
@@ -405,7 +404,15 @@ this.createjs = this.createjs||{};
 
 
 // private methods:
-	
+	/**
+	 * Shared logic that executes at the end of the subclass constructor.
+	 * @method _init
+	 * @protected
+	 */
+	p._init = function(props) {
+		if (!props || !props.paused) { this.setPaused(false); }
+		if (props&&props.position!=null) { this.setPosition(props.position); }
+	};
 
 	/**
 	 * @method _updatePosition
@@ -431,7 +438,7 @@ this.createjs = this.createjs||{};
 	p._runActions = function(startRawPos, endRawPos, jump, includeStart) {
 		// runs actions between startPos & endPos. Separated to support action deferral.
 		
-		console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
+		//console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
 		
 		// TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
 		if (!this._actionHead && !this._tweens) { return; } 
@@ -473,8 +480,6 @@ this.createjs = this.createjs||{};
 
 			var start = (loop === loop0) ? t0 : dir ? 0 : d;
 			var end = (loop === loop1) ? t1 : dir ? d : 0;
-			console.log(loop0, loop1, loop);
-			console.log(t0, t1, start, end);
 			
 			if (rev) {
 				start = d - start;

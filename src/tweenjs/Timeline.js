@@ -89,7 +89,7 @@ this.createjs = this.createjs||{};
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
 		
-		if (props&&props.position!=null) { this.setPosition(props.position); }
+		this._init(props);
 	};
 	
 	var p = createjs.extend(Timeline, createjs.AbstractTween);
