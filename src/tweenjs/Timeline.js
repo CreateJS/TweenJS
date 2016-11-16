@@ -46,7 +46,7 @@ this.createjs = this.createjs||{};
 	 * NOTE: Timeline currently also accepts a param list in the form: `tweens, labels, props`. This is for backwards
 	 * compatibility only and will be removed in the future. Include tweens and labels as properties on the props object.
 	 * @class Timeline
-	 * @param {Object} [props] The configuration properties to apply to this tween instance (ex. `{loop:-1, paused:true}`).
+	 * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
 	 * Supported props are listed below. These props are set on the corresponding instance properties except where
 	 * specified.<UL>
 	 *    <LI> `useTicks`</LI>
@@ -56,18 +56,17 @@ this.createjs = this.createjs||{};
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
-	 *    <LI> `tweens`: an array of tweens to add to the timeline.</LI>
-	 *    <LI> `labels`: a collection of labels to add using `setLabels`</LI>
-	 *    <LI> `override`: if true, removes all existing tweens for the target</LI>
+	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
 	 * </UL>
-	 * @extends EventDispatcher
+	 * @extends AbstractTween
 	 * @constructor
 	 **/
 	function Timeline(props) {
-		// TODO: deprecated:
 		var tweens, labels;
+		// handle old params (tweens, labels, props):
+		// TODO: deprecated.
 		if (props instanceof Array || (props == null && arguments.length > 1)) {
 			tweens = props;
 			labels = arguments[1];
@@ -79,11 +78,7 @@ this.createjs = this.createjs||{};
 		
 		this.AbstractTween_constructor(props);
 
-	// public properties:
-
-
 	// private properties:
-
 		/**
 		 * @property _tweens
 		 * @type Array[Tween]
@@ -201,7 +196,7 @@ this.createjs = this.createjs||{};
 	p._updatePosition = function(jump, end) {
 		var t = this.position;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i].setPosition(t, false, jump); // actions will run after all the tweens update.
+			this._tweens[i].setPosition(t, true, jump); // actions will run after all the tweens update.
 		}
 	};
 	
