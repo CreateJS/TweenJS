@@ -314,9 +314,9 @@ this.createjs = this.createjs||{};
 	Tween.tick = function(delta, paused) {
 		var tween = Tween._tweenHead;
 		while (tween) {
-			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { continue; }
 			var next = tween._next; // in case it completes and wipes its _next property
-			tween.advance(tween.useTicks?1:delta);
+			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { /* paused */ }
+			else { tween.advance(tween.useTicks?1:delta); }
 			tween = next;
 		}
 	};
@@ -684,7 +684,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._runActionsRange = function(startPos, endPos, jump, includeStart) {
-		console.log("	range", startPos, endPos, jump, includeStart);
+		//console.log("	range", startPos, endPos, jump, includeStart);
 		var rev = startPos > endPos;
 		var action = rev ? this._actionTail : this._actionHead;
 		var ePos = endPos, sPos = startPos;

@@ -202,7 +202,7 @@ this.createjs = this.createjs||{};
 	
 	// Docced in AbstractTween
 	p._runActionsRange = function(startPos, endPos, jump, includeStart) {
-		console.log("	range", startPos, endPos, jump, includeStart);
+		//console.log("	range", startPos, endPos, jump, includeStart);
 		var t = this.position;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			this._tweens[i]._runActions(startPos, endPos, jump, includeStart);
