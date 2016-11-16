@@ -177,20 +177,6 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 */
 		this._paused = true;
-	
-		/**
-		 * Previous raw position.
-		 * @property _prevRawPos
-		 * @type {Number}
-		 * @default -1
-		 * @protected
-		 */
-		this._prevRawPos = -1;
-		
-		// TODO: doc.
-		this._end = false;
-		this._jump = false;
-		this._rawPos = -1; // completely unmodified position value.
 		
 		/**
 		 * @property _next
@@ -282,42 +268,40 @@ this.createjs = this.createjs||{};
 	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
 	 */
 	p.setPosition = function(position, runActions, jump) {
-		var d=this.duration, prevRawPos=this._prevRawPos, loopCount=this.loop;
-		
-		if (d === 0) {
-			if (prevRawPos !== 0) {
-				this._prevRawPos = this.rawPosition = this.position = 0;
-				this.setPosition(0, runActions, true);
-			}
-			return true;
-		}
+		var d=this.duration, loopCount=this.loop, prevRawPos = this.rawPosition;
+		var loop, t, end;
 		
 		// normalize position:
 		if (position < 0) { position = 0; }
-		var loop = position/d|0;
-		var t = position%d;
 		
-		var end = (loop > loopCount && loopCount !== -1);
-		if (end) { position = (t=d)*(loop=loopCount)+d; }
+		if (d === 0) {
+			// deal with 0 length tweens.
+			end = true;
+			if (prevRawPos !== -1) { return end; } // we can avoid doing anything else if we're already at 0.
+			t = 0;
+		} else {
+			loop = position/d|0;
+			t = position%d;
+			
+			end = (loop > loopCount && loopCount !== -1);
+			if (end) { position = (t=d)*(loop=loopCount)+d; }
+			
+			var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
+			if (rev) { t = d-t; }
+		}
 		
-		if (position === this.rawPosition) { this._prevRawPos = position; return end; } // no need to update
+		if (position === this.rawPosition) { return end; } // no need to update
 		
-		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
-		if (rev) { t = d-t; }
 		
 		// set this in advance in case an action modifies position:
-		this._jump = jump;
-		this._end = end;
-		this._prevRawPos = jump ? position : this.rawPosition;
 		this.position = t;
-		var prevRawPos = this.rawPosition;
 		this.rawPosition = position;
 		
-		this._updatePosition();
+		this._updatePosition(jump, end);
 		
 		if (end) { this.setPaused(true); }
 		
-		if (runActions) { this._runActions(prevRawPos, position, jump, this._prevRawPos === -1); }
+		if (runActions) { this._runActions(prevRawPos, position, jump, !jump && prevRawPos === -1); }
 		this.dispatchEvent("change");
 		
 		if (end) { this.dispatchEvent("complete"); }
@@ -460,7 +444,7 @@ this.createjs = this.createjs||{};
 	 * @method _updatePosition
 	 * @protected
 	 */
-	p._updatePosition = function() {
+	p._updatePosition = function(jump, end) {
 		// abstract.
 	};
 	
@@ -485,10 +469,20 @@ this.createjs = this.createjs||{};
 		if (!this._actionHead) { return; } // TODO: look for a better way to handle (ex. override in Tween)
 		
 		var d=this.duration, reversed=this.reversed, bounce=this.bounce, loopCount=this.loop;
-		
 		var pos0=startRawPos, pos1=endRawPos; // TODO: redundant vars. Remove?
-		var loop0=pos0/d|0, loop1=pos1/d|0;
-		var t0=pos0%d, t1=pos1%d;
+		var loop0, loop1, t0, t1;
+		
+		if (d === 0) {
+			// deal with 0 length tweens:
+			loop0 = loop1 = t0 = t1 = 0;
+			reversed = bounce = false;
+		} else {
+			loop0=pos0/d|0
+			loop1=pos1/d|0;
+			t0=pos0%d
+			t1=pos1%d;
+		}
+		
 		
 		// catch positions that are past the end:
 		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }

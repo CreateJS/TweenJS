@@ -135,7 +135,7 @@ this.createjs = this.createjs||{};
 		if (tween.loop > 0) { d *= tween.loop+1; }
 		if (d > this.duration) { this.duration = d; }
 		
-		if (this._prevRawPos >= 0) { tween.setPosition(this._prevRawPos); }
+		if (this.rawPosition >= 0) { tween.setPosition(this.rawPosition); }
 		return tween;
 	};
 
@@ -201,8 +201,8 @@ this.createjs = this.createjs||{};
 // private methods:
 	
 	// Docced in AbstractTween
-	p._updatePosition = function() {
-		var t = this.position, jump = this._jump;
+	p._updatePosition = function(jump, end) {
+		var t = this.position;
 		for (var i=0, l=this._tweens.length; i<l; i++) {
 			this._tweens[i].setPosition(t, false, jump); // actions will run after all the tweens update.
 		}

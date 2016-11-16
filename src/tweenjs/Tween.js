@@ -617,14 +617,14 @@ this.createjs = this.createjs||{};
 	};
 	
 	// Docced in AbstractTween
-	p._updatePosition = function() {
-		var step = this._stepHead.next, t=this.position, d=this.duration, end=this._end;
+	p._updatePosition = function(jump, end) {
+		var step = this._stepHead.next, t=this.position, d=this.duration;
 		if (this.target && step) {
 			// find our new step index:
 			var stepNext = step.next;
 			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
 			var ratio = end ? t/d : (t-step.t)/step.d; // TODO: revisit this.
-			this._updateTargetProps(step,ratio,this._end);
+			this._updateTargetProps(step, ratio, end);
 		}
 	};
 	
