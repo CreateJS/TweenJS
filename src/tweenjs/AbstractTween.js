@@ -291,7 +291,7 @@ this.createjs = this.createjs||{};
 			if (rev) { t = d-t; }
 		}
 		
-		if (position === this.rawPosition) { return end; } // no need to update
+		if (position === prevRawPos) { return end; } // no need to update
 		
 		
 		// set this in advance in case an action modifies position:
@@ -493,8 +493,11 @@ this.createjs = this.createjs||{};
 		if (jump && loop1 > loopCount && t1 === 0) { t1 = d; }
 		
 		// no actions if the position is identical:
-		// TODO: this should also catch jumping to the same position.
+		// TODO: this should also catch jumping to the same position. Seems to work, but needs testing.
 		if (loop0 === loop1 && t0 === t1 && !jump) { return; }
+		
+		// correct the -1 value for first advance, important with useTicks:
+		if (loop0 === -1) { loop0 = t0 = 0; }
 		
 		// handle jumps:
 		if (jump) { return this._runActionsRange(t1, t1, jump, includeStart); }
@@ -505,6 +508,8 @@ this.createjs = this.createjs||{};
 
 			var start = (loop === loop0) ? t0 : dir ? 0 : d;
 			var end = (loop === loop1) ? t1 : dir ? d : 0;
+			console.log(loop0, loop1, loop);
+			console.log(t0, t1, start, end);
 			
 			if (rev) {
 				start = d - start;
