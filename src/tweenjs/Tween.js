@@ -483,7 +483,7 @@ this.createjs = this.createjs||{};
 	 * @chainable
 	 */
 	p.to = function(props, duration, ease) {
-		if (duration == null || duration < 0) { duration = 0; } // catches null too.
+		if (duration == null || duration < 0) { duration = 0; }
 		var step = this._addStep(duration, null, ease);
 		this._appendProps(props, step);
 		return this;
@@ -744,9 +744,11 @@ this.createjs = this.createjs||{};
 			value = props[n];
 
 			// propagate old value to previous steps:
-			var o = oldStep;
-			while ((o = o.prev) && o.props[n] === undefined) {
-				o.props[n] = oldProps[n];
+			var o, prev=oldStep;
+			while ((o = prev) && (prev = o.prev)) {
+				if (prev.props === o.props) { continue; } // wait step, ignore
+				if (prev.props[n] !== undefined) { break; } // already has a value, we're done.
+				prev.props[n] = oldProps[n];
 			}
 
 			if (plugins) {
@@ -785,7 +787,7 @@ this.createjs = this.createjs||{};
 	p._addStep = function(duration, props, ease, passive) {
 		var step = new TweenStep(this._stepTail, this.duration, duration, props, ease, passive||false);
 		this.duration += duration;
-		return this._stepTail = this._stepTail.next = step;
+		return this._stepTail = (this._stepTail.next = step);
 	};
 
 	/**
