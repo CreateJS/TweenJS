@@ -234,7 +234,7 @@ this.createjs = this.createjs||{};
 	 */
 	p.setPosition = function(position, ignoreActions, jump, callback) {
 		var d=this.duration, loopCount=this.loop, prevRawPos = this.rawPosition;
-		var loop, t, end;
+		var loop=0, t=0, end=false;
 		
 		// normalize position:
 		if (position < 0) { position = 0; }
@@ -243,20 +243,17 @@ this.createjs = this.createjs||{};
 			// deal with 0 length tweens.
 			end = true;
 			if (prevRawPos !== -1) { return end; } // we can avoid doing anything else if we're already at 0.
-			t = 0;
 		} else {
 			loop = position/d|0;
-			t = position%d;
+			t = position-loop*d;
 			
 			end = (loop > loopCount && loopCount !== -1);
 			if (end) { position = (t=d)*(loop=loopCount)+d; }
+			if (position === prevRawPos) { return end; } // no need to update
 			
 			var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
 			if (rev) { t = d-t; }
 		}
-		
-		if (position === prevRawPos) { return end; } // no need to update
-		
 		
 		// set this in advance in case an action modifies position:
 		this.position = t;
@@ -453,26 +450,20 @@ this.createjs = this.createjs||{};
 		} else {
 			loop0=startRawPos/d|0;
 			loop1=endRawPos/d|0;
-			t0=startRawPos%d;
-			t1=endRawPos%d;
+			t0=startRawPos-loop0*d;
+			t1=endRawPos-loop1*d;
 		}
 		
 		// catch positions that are past the end:
-		if (loop1 > loopCount && loopCount !== -1) { t1=d; loop1=loopCount; }
-		if (loop0 > loopCount && loopCount !== -1) { t0=d; loop0=loopCount; }
+		if (loopCount !== -1) {
+			if (loop1 > loopCount) { t1=d; loop1=loopCount; }
+			if (loop0 > loopCount) { t0=d; loop0=loopCount; }
+		}
 		
-		// jump to end:
-		if (jump && loop1 > loopCount && t1 === 0) { t1 = d; }
-		
-		// no actions if the position is identical:
-		// TODO: this should also catch jumping to the same position. Seems to work, but needs testing.
-		if (loop0 === loop1 && t0 === t1 && !jump) { return; }
-		
-		// correct the -1 value for first advance, important with useTicks:
-		if (loop0 === -1) { loop0 = t0 = 0; }
-		
-		// handle jumps:
-		if (jump) { return this._runActionsRange(t1, t1, jump, includeStart); }
+		// special cases:
+		if (jump) { return this._runActionsRange(t1, t1, jump, includeStart); } // jump.
+		else if (loop0 === loop1 && t0 === t1 && !jump) { return; } // no actions if the position is identical.
+		else if (loop0 === -1) { loop0 = t0 = 0; } // correct the -1 value for first advance, important with useTicks.
 		
 		var dir = (startRawPos <= endRawPos), loop = loop0;
 		do {

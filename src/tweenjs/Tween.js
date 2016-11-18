@@ -645,33 +645,29 @@ this.createjs = this.createjs||{};
 	p._updateTargetProps = function(step, ratio, end) {
 		if (this.passive = !!step.passive) { return; } // don't update props.
 		
-		var p0,p1,v,v0,v1;
-		p0 = step.prev.props;
-		p1 = step.props;
-		if (step.ease) { ratio = step.ease(ratio,0,1,1); }
+		var v=0,v0=0,v1=0, ease; // TODO: not 100% sure if type hinting helps?
+		var p0 = step.prev.props;
+		var p1 = step.props;
+		if (ease = step.ease) { ratio = ease(ratio,0,1,1); }
 		
 		var plugins = this._plugins;
 		for (var n in p0) {
-			v0 = p0[n];
+			v = v0 = p0[n];
 			v1 = p1[n];
-			if (ratio === 1) { v= v1; } // at end
-			else if (v0 === v1 || ratio === 0 || (typeof(v0) !== "number")) {
-				// no interpolation - at start, values didn't change, or the value is non-numeric.
-				v = v0;
-			} else {
+			
+			// values are different & it is numeric then interpolate:
+			if (v0 !== v1 && (typeof(v0) === "number")) {
 				v = v0+(v1-v0)*ratio;
 			}
 			
 			if (plugins) {
 				for (var i=0,l=plugins.length;i<l;i++) {
 					var value = plugins[i].tween(this, step, n, v, ratio, end);
-					if (v === Tween.IGNORE) { break; }
+					if (v === Tween.IGNORE) { return; }
 					if (value !== undefined) { v = value; }
 				}
 			}
-			
-			if (v !== Tween.IGNORE) { this.target[n] = v; }
-			
+			this.target[n] = v;
 		}
 
 	};
