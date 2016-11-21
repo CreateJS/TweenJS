@@ -192,7 +192,7 @@ this.createjs = this.createjs||{};
 			props.onComplete && this.addEventListener("complete", props.onComplete);
 		}
 		
-		// while `position` is shared, it needs to happen after ALL props are set, so it's handled in Tween & Timeline
+		// while `position` is shared, it needs to happen after ALL props are set, so it's handled in _init()
 	};
 
 	var p = createjs.extend(AbstractTween, createjs.EventDispatcher);
@@ -207,7 +207,7 @@ this.createjs = this.createjs||{};
 	 **/
 	 
 	/**
-	 * Dispatcherd when the tween reaches its end and has paused itself. This does not fire until all loops are complete;
+	 * Dispatched when the tween reaches its end and has paused itself. This does not fire until all loops are complete;
 	 * tweens that loop continuously will never fire a complete event.
 	 * @event complete
 	 **/
@@ -227,29 +227,29 @@ this.createjs = this.createjs||{};
 	/**
 	 * Advances the tween to a specified position.
 	 * @method setPosition
-	 * @param {Number} position The raw position to seek to in milliseconds (or ticks if useTicks is true).
+	 * @param {Number} rawPosition The raw position to seek to in milliseconds (or ticks if useTicks is true).
 	 * @param {Boolean} [ignoreActions=false] If true, do not run any actions that would be triggered by this operation.
 	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
 	 * @param {Function} [callback] Primarily for use with MovieClip, this callback is called after properties are updated, but before actions are run.
 	 */
-	p.setPosition = function(position, ignoreActions, jump, callback) {
+	p.setPosition = function(rawPosition, ignoreActions, jump, callback) {
 		var d=this.duration, loopCount=this.loop, prevRawPos = this.rawPosition;
 		var loop=0, t=0, end=false;
 		
 		// normalize position:
-		if (position < 0) { position = 0; }
+		if (rawPosition < 0) { rawPosition = 0; }
 		
 		if (d === 0) {
 			// deal with 0 length tweens.
 			end = true;
 			if (prevRawPos !== -1) { return end; } // we can avoid doing anything else if we're already at 0.
 		} else {
-			loop = position/d|0;
-			t = position-loop*d;
+			loop = rawPosition/d|0;
+			t = rawPosition-loop*d;
 			
-			end = (loop > loopCount && loopCount !== -1);
-			if (end) { position = (t=d)*(loop=loopCount)+d; }
-			if (position === prevRawPos) { return end; } // no need to update
+			end = (loopCount !== -1 && rawPosition >= loopCount*d+d);
+			if (end) { rawPosition = (t=d)*(loop=loopCount)+d; }
+			if (rawPosition === prevRawPos) { return end; } // no need to update
 			
 			var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
 			if (rev) { t = d-t; }
@@ -257,17 +257,36 @@ this.createjs = this.createjs||{};
 		
 		// set this in advance in case an action modifies position:
 		this.position = t;
-		this.rawPosition = position;
+		this.rawPosition = rawPosition;
 		
 		this._updatePosition(jump, end);
 		if (end) { this.setPaused(true); }
 		
 		callback&&callback();
 		
-		if (!ignoreActions) { this._runActions(prevRawPos, position, jump, !jump && prevRawPos === -1); }
+		if (!ignoreActions) { this._runActions(prevRawPos, rawPosition, jump, !jump && prevRawPos === -1); }
 		
 		this.dispatchEvent("change");
 		if (end) { this.dispatchEvent("complete"); }
+	};
+	
+	/**
+	 * Calculates a normalized position based on a raw position. For example, given a tween with a duration of 3000ms set to loop:
+	 * 	console.log(myTween.calculatePosition(3700); // 700
+	 * @method calculatePosition
+	 * @param {Number} rawPosition A raw position.
+	 */
+	p.calculatePosition = function(rawPosition) {
+		// largely duplicated from setPosition, but necessary to avoid having to instantiate generic objects to pass values (end, loop, position) back.
+		var d=this.duration, loopCount=this.loop, loop=0, t=0;
+		
+		if (d===0) { return 0; }
+		if (loopCount !== -1 && rawPosition >= loopCount*d+d) { t = d; loop = loopCount } // end
+		else if (rawPosition < 0) { t = 0; }
+		else { loop = rawPosition/d|0; t = rawPosition-loop*d;  }
+		
+		var rev = !this.reversed !== !(this.bounce && loop%2); // current loop is reversed
+		return rev ? d-t : t;
 	};
 	
 	/**
@@ -408,7 +427,7 @@ this.createjs = this.createjs||{};
 	 */
 	p._init = function(props) {
 		if (!props || !props.paused) { this.setPaused(false); }
-		if (props&&props.position!=null) { this.setPosition(props.position); }
+		if (props&&(props.position!=null)) { this.setPosition(props.position); }
 	};
 
 	/**
@@ -437,6 +456,7 @@ this.createjs = this.createjs||{};
 		
 		//console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
 		
+		// if we don't have any actions, and we're not a Timeline, then return:
 		// TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
 		if (!this._actionHead && !this._tweens) { return; } 
 		

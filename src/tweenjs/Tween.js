@@ -143,8 +143,7 @@ this.createjs = this.createjs||{};
 		this.pluginData = null;
 	
 		/**
-		 * The target of this tween. This is the object on which the tweened properties will be changed. Changing
-		 * this property after the tween is created is not supported, and may have unexpected results.
+		 * The target of this tween. This is the object on which the tweened properties will be changed.
 		 * @property target
 		 * @type {Object}
 		 * @readonly
@@ -645,7 +644,7 @@ this.createjs = this.createjs||{};
 	p._updateTargetProps = function(step, ratio, end) {
 		if (this.passive = !!step.passive) { return; } // don't update props.
 		
-		var v=0,v0=0,v1=0, ease; // TODO: not 100% sure if type hinting helps?
+		var v, v0, v1, ease;
 		var p0 = step.prev.props;
 		var p1 = step.props;
 		if (ease = step.ease) { ratio = ease(ratio,0,1,1); }
@@ -742,7 +741,7 @@ this.createjs = this.createjs||{};
 			// propagate old value to previous steps:
 			var o, prev=oldStep;
 			while ((o = prev) && (prev = o.prev)) {
-				if (prev.props === o.props) { continue; } // wait step, ignore
+				if (prev.props === o.props) { continue; } // wait step
 				if (prev.props[n] !== undefined) { break; } // already has a value, we're done.
 				prev.props[n] = oldProps[n];
 			}
