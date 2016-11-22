@@ -262,7 +262,7 @@ this.createjs = this.createjs||{};
 		this._updatePosition(jump, end);
 		if (end) { this.setPaused(true); }
 		
-		callback&&callback();
+		callback&&callback(this);
 		
 		if (!ignoreActions) { this._runActions(prevRawPos, rawPosition, jump, !jump && prevRawPos === -1); }
 		

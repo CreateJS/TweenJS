@@ -177,6 +177,15 @@ this.createjs = this.createjs||{};
 		this._stepTail = this._stepHead;
 		
 		/**
+		 * The position within the current step. Used by MovieClip.
+		 * @property _stepPosition
+		 * @type {Number}
+		 * @default 0
+		 * @protected
+		 */
+		this._stepPosition = 0;
+		
+		/**
 		 * @property _actionHead
 		 * @type {TweenAction}
 		 * @protected
@@ -632,6 +641,7 @@ this.createjs = this.createjs||{};
 			var ratio = end ? t/d : (t-step.t)/step.d; // TODO: revisit this.
 			this._updateTargetProps(step, ratio, end);
 		}
+		this._stepPosition = step ? t-step.t : 0;
 	};
 	
 	/**
