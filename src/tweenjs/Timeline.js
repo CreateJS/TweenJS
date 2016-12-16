@@ -165,6 +165,7 @@ this.createjs = this.createjs||{};
 		if (props) {
 			this._useTicks = props.useTicks;
 			this.loop = props.loop;
+			this.onChange = props.onChange;
 			this.ignoreGlobalPause = props.ignoreGlobalPause;
 			props.onChange&&this.addEventListener("change", props.onChange);
 		}
