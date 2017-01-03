@@ -1,0 +1,51 @@
+{
+  "name": "tweenjs",
+  "version": "1.0.0",
+  "description": "Description",
+  "keywords": [
+    "html5",
+    "canvas",
+    "tween"
+    "tweenjs",
+    "createjs",
+    "gskinner",
+    "flash",
+    "animate",
+    "animation"
+  ],
+  "homepage": "http://www.createjs.com/tweenjs",
+  "url": "https://www.npmjs.com/package/tweenjs",
+  "bugs": "https://github.com:CreateJS/TweenJS/issues",
+  "license": "MIT",
+  "contributors": [
+    "Grant Skinner <grant@gskinner.com> (https://github.com/gskinner)",
+    "Lanny McNie <lanny@gskinner.com> (https://github.com/lannymcnie)",
+    "Wes Gorgichuk <wes@gskinner.com> (https://github.com/wdamien)"
+  ],
+  "main": "dist/tweenjs.cjs.js",
+  "jsnext:main": "dist/tweenjs.es6.js",
+  "logo": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com:CreateJS/TweenJS"
+  },
+  "scripts": {
+    "travis": "cd node_modules/createjs && npm run travis",
+    "lint": "cd node_modules/createjs && npm run lint",
+    "test": "cd node_modules/createjs && npm run test",
+    "test:headless": "cd node_modules/createjs && npm run test:headless",
+    "dev": "cd node_modules/createjs && npm run dev",
+    "build": "cd node_modules/createjs && npm run build",
+    "build:next": "cd node_modules/createjs && npm run build:next",
+    "docs": "cd node_modules/createjs && npm run docs"
+  },
+  "dependencies": {
+    "createjs": "0.0.1"
+  },
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.8.0",
+    "babel-preset-es2015": "^6.14.0",
+    "createjs": "0.0.1"
+  },
+  "engine": "node >= 4.2.2"
+}

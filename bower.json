@@ -17,17 +17,16 @@
   ],
   "license": "MIT",
   "ignore": [
-    "**/.*",
-    "node_modules",
     "_assets",
-    "bower_components",
-    "build",
-    "docs",
-    "examples",
-    "icon.png",
-    "LICENSE.txt",
-    "README.md",
-    "src",
-    "VERSIONS.txt"
+		"node_modules",
+		"docs",
+		"examples",
+		"extras",
+		"icon.png",
+		"README_SECURITY_ERROR.txt",
+		"yuidoc.json",
+		"tests",
+		"tutorials",
+		"CHANGELOG"
   ]
 }

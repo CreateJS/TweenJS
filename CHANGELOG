@@ -1,0 +1,132 @@
+Version NEXT [not yet released]
+****************************************************************************************************
+CRITICAL (may break existing content):
+
+THIS BRANCH IS A WORK IN PROGRESS.
+NOT EVERYTHING IS WORKING YET AND IT IS NOT COMPATIBLE WITH MOVIECLIP YET
+DOCUMENTATION IS NOT UP TO DATE
+
+- Plugin model has changed significantly. See SamplePlugin for information. (STILL IN FLUX)
+- Second param of Tween.setPosition() is now runActions boolean
+- Removed Tween.NONE, Tween.LOOP, and Tween.REVERSE constants
+- pluginData is now a property in the props param, instead of its own param
+- Removed Tween.installPlugin, in favour of Plugin.install()
+- Removed Tween.tick (instance) in favour of Tween.advance
+- Tween actions in a Timeline now run after all the tween properties are updated
+
+*****
+DEPRECATED (will break in the future):
+- Timeline constructor now expects a single param `props`, which now supports `tweens` and `labels` properties
+
+
+*****
+OTHER:
+- Very significant performance improvements to Tween and CSSPlugin
+- Fixed an issue with Tween.removeAllTweens and tweens with no target
+- Fixed an issue that could cause tweens to be ticked multiple times per tick
+- Tween and Timeline now have more similar/consistent interfaces
+- Added Tween.reversed and Tween.bounce properties (also on Timeline)
+- Tween.loop now supports setting a numeric loop count value (also on Timeline)
+- Added Tween.rawPosition and Tween.useTicks read-only properties (also on Timeline)
+- Timeline now correctly removes tweens from other timelines when adding them
+- Tween and Timeline now extend AbstractTween
+- Added .label() to Tween
+- Tweens now support getLabels(), addLabel(), setLabels(), gotoAndPlay(), gotoAndStop(), and resolve()
+- Added Tween.timeScale & Timeline.timeScale
+
+
+
+Version 0.6.0 [December 12, 2014]
+****************************************************************************************************
+CRITICAL (may break existing content):
+- Added Ticker into the "createjs" package to remove reliance on EaselJS.
+- re-architected the class and inheritance model
+	- initialize methods removed, use MySuperClass_constructor instead
+	- helper methods: extend & promote (see the "Utility Methods" docs)
+	- property definitions are now instance level, and in the constructor (performance gains)
+	- the .constructor is now set correctly on all classes (thanks kaesve)
+
+*****
+OTHER:
+- Added bower support, including grunt task for updating the bower.json
+- Fixed issue with setPaused() stacking up tween ticks
+- Added .gitignore to subfolders under /docs (thanks mcfarljw)
+- Improved EventDispatcher's handling of redispatched event objects
+- Fixed "none" Ease
+
+
+Version 0.5.1 [December 12, 2013]
+****************************************************************************************************
+- Updates to EventDispatcher for latest combined build
+
+
+Version 0.5.0 [September 25, 2013]
+****************************************************************************************************
+CRITICAL (may break existing content):
+- removed all onEvent handlers (ex. onClick, onTick, onAnimationEnd, etc)
+
+*****
+- implemented createjs Utils
+- implemented "use strict" mode
+- added "passive" param to Tween.wait()
+- updates to MotionGuidePlugin
+- Documentation
+	* Added note in the documentation on the dependency on EaselJS Ticker.
+	* Added note on CSSPlugin not being included in minified versions
+	* Formatted JSDoc comment blocks
+	* Added note in code on static initialization of Ticker
+- Swapped indexOf usages for inline for loops (for IE8 support)
+- Updated Ticker usage to use EventDispatcher instead. Added handleEvent to propagate tick event
+- Added TweenOnlyDemo to show TweenJS usage without EaselJS
+- Fixed incorrectly doc'd Timeline documented put all Timeline APIs into Tween instead.
+- fixed an issue with EventDispatcher when adding the same listener to an event twice
+- fixed hasActiveTweens to return a Boolean consistently
+- added Timeline.getLabels() & getCurrentLabel()
+- Tween waits to add itself as a listener on Ticker until the first tween is started
+- Updated the build process to use NodeJS & Grunt.js. Please refer to the readme in the build folder.
+
+
+Version 0.4.1 [May 10, 2013]
+****************************************************************************************************
+- Fixed tween reference in a game loop of Timeline.
+- Added additional examples and documentation to Tween
+- Updated examples to propagate the tick event to the stage
+- Documented optional parameters in Tween.get()
+- Updated to latest EventDispatcher
+- Added Tween.removeAllTweens method
+
+
+Version 0.4.0 [Feb 12, 2013]
+****************************************************************************************************
+- added EaselJS EventDispatcher capabilities to TweenJS
+- updated build process to use NodeJS
+- added tween_version.js, which generates a TweenJS object at run time that contains build information
+- updated documentation descriptions, examples, and style
+- added MotionGuidePlugin to support Toolkit for CreateJS
+
+
+Version 0.3.0 [Aug 27, 2012]
+****************************************************************************************************
+- moved all class definitions into a configurable "createjs" namespace
+- fix for a race condition that can arise when one tween causes others to be removed
+- added Tween.hasActiveTweens(target)
+- fixed issue with minified version of code being dependent on Ticker
+- fixed issue with unpausing tweens after adding & removing from a Timeline
+- added .onChange() to Tween & Timeline
+- added .position to Tween & Timeline
+- added Tween.target
+
+
+Version 0.2.0 [Apr 13, 2012]
+****************************************************************************************************
+- implemented a plugin model, and moved CSS support to CSSPlugin
+- Timeline now forces its useTicks setting on child tweens
+- can set paused & position in config props
+- fix for negative positions in tweens
+- added Timeline.resolve()
+- minor bug fixes and doc updates
+
+
+Version 0.1.0 [Nov 28, 2011]
+****************************************************************************************************
+Initial release.

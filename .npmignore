@@ -1,0 +1,13 @@
+_assets/
+docs/
+examples/
+extras/
+tests/
+tutorials/
+
+bower.json
+yuidoc.json
+CONTRIBUTING.md
+icon.png
+VERSIONS.txt
+README_SECURITY_ERROR.txt
