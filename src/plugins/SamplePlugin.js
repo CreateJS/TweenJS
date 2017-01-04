@@ -26,122 +26,111 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import Tween from "../Tween";
+
 /**
+ * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
+ * how to build TweenJS plugins. Please look at the code for inline comments.
+ *
+ * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
+ * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
+ * @class SamplePlugin
  * @module TweenJS
+ * @static
  */
+export default class SamplePlugin {
 
-// namespace:
-this.createjs = this.createjs||{};
-
-(function() {
-	"use strict";
-
+// constructor:
 	/**
-	 * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
-	 * how to build TweenJS plugins. Please look at the code for inline comments.
-	 *
-	 * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
-	 * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
-	 * @class SamplePlugin
 	 * @constructor
-	 **/
-	function SamplePlugin() {
-		throw("SamplePlugin cannot be instantiated.")
-	};
+	 */
+	constructor () {
+		throw "SamplePlugin is static and cannot be instantiated.";
+	}
 
-// static interface:
-	/**
-	 * Used by TweenJS to determine when to call this plugin. Plugins with higher priority have their methods called
-	 * before plugins with lower priority. The priority value can be any positive or negative number.
-	 * @property priority
-	 * @type {Number}
-	 * @default 0
-	 * @static
-	 **/
-	SamplePlugin.priority = 0;
-
+// static methods:
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
-	 **/
-	SamplePlugin.install = function() {
-		createjs.Tween._installPlugin(SamplePlugin);
-	};
+	 */
+	static install () {
+		Tween._installPlugin(SamplePlugin);
+	}
 
 	/**
 	 * Called by TweenJS when a new property initializes on a tween. Generally, the call
 	 * to `Plugin.init` will be immediately followed by a call to `Plugin.step`.
-	 * 
+	 *
 	 * For example:
-	 * 
+	 *
 	 * 	Tween.get(foo)
 	 * 		.to({x:10}) // init called with prop = "x", value = 0
 	 * 		.to({x:20}) // init is NOT called
 	 * 		.to({y:200}) // init called with prop = "y", value = 100
-	 * 
+	 *
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.
 	 * @param {any} value If another plugin has returned a starting value, it will be passed in. Otherwise value will be undefined.
-	 * @return {any} The starting tween value for the property. In most cases, you would simply return the value parameter, 
+	 * @return {any} The starting tween value for the property. In most cases, you would simply return the value parameter,
 	 * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this tween
 	 * from being added to the tween.
 	 * @static
-	 **/
-	SamplePlugin.init = function(tween, prop, value) {
+	 */
+	static init (tween, prop, value) {
 		console.log("init: ", prop, value);
-		
+
 		// its good practice to let users opt out (or in some cases, maybe in) via pluginData:
-		var data = tween.pluginData;
+		let data = tween.pluginData;
 		if (data.Sample_disabled) { return value; } // make sure to pass through value.
-		
+
 		// filter which properties you want to work on by using "prop":
 		if (prop !== "x" && prop !== "y") { return value; } // make sure to pass through value.
-		
+
 		// you can then add this plugin to the tween:
 		// Tween._addPlugin will screen for duplicate plugins, but its more efficient to set and check a flag:
 		if (!data.Sample_installed) {
 			data.Sample_installed = true; // don't install again if we init on the same tween twice.
-			
+
 			// most plugins can just be a single shared plugin class:
 			tween._addPlugin(SamplePlugin);
 			// but you can also add an instance, if you wanted to store data on the plugin:
 			// tween.addPlugin(new SamplePlugin());
 		}
-		
+
 		// note that it's also possible to create a plugin that doesn't add itself, but hooks into the "change" event instead.
-		
+
 		// you can grab the current value on the target using:
-		var targetValue = tween.target[prop];
-		
+		let targetValue = tween.target[prop];
+
 		// this would get the current starting value for the property, using value from previous plugins if specified, or the target value if not:
 		// this is a bit of a pain, but it prevents accessing target values that aren't needed, which can be very expensive (ex. width on a HTMLElement, when we actually want to grab it from style)
-		var defaultValue = (value === undefined) ? targetValue : value;
-		
+		let defaultValue = (value === undefined) ? targetValue : value;
+
 		// this would round the starting value of "x" properties:
 		if (prop === "x") { return Math.round(defaultValue); }
-		
+
 		// this would tell the tween to not include the "y" property:
 		// if (prop === "y") { return Tween.IGNORE }
-		
+
 		// you can also use pluginData to attach arbitrary data to the tween for later use:
 		if (!data) { data = tween.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
 		data._Sample_value = 200; // namespacing your values will help prevent conflicts
-		
+
 		// if you don't want to make changes, then makes sure to pass other plugins changes through:
 		return value;
-	};
+	}
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
 	 * For example:
-	 * 
+	 *
 	 * 	Tween.get(foo)
 	 * 		.to({x:10}) // step called with prop = "x"
 	 * 		.to({y:100}) // step called with prop = "y"
 	 * 		.to({x:20, y:200}) // step is called twice
-	 * 
+	 *
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
@@ -150,22 +139,22 @@ this.createjs = this.createjs||{};
 	 * @param {Object} injectProps If a previous plugin returned an injectProps object, it will be passed here.
 	 * @return {Object} If you'd like to inject new properties into the tween, you can return a generic object with name value pairs. You should add to the existing injectProps object if it exists.
 	 * @static
-	 **/
-	SamplePlugin.step = function(tween, step, prop, value, injectProps) {
+	 */
+	static step (tween, step, prop, value, injectProps) {
 		console.log("step: ", step, prop, injectProps);
-		
+
 		// filter which properties you want to work on by using "prop":
 		if (prop !== "x") { return; }
-		
+
 		// you can grab the start value from previous step:
-		var startValue = step.prev.props[prop];
-		
+		let startValue = step.prev.props[prop];
+
 		// you can modify this step's end value:
 		// step.props[prop] = Math.max(0, Math.min(100, Math.PI));
-		
+
 		// if this was an instance plugin, you could store step specific data using step.index:
 		// this.steps[step.index] = {arbitraryData:foo};
-		
+
 		// or specify other properties that you'd like to include in the tween:
 		// make sure you use the existing injectProps if it exists:
 		// injectProps = injectProps||{}; // preserve other tween's injections
@@ -186,38 +175,46 @@ this.createjs = this.createjs||{};
 	 * @param {Boolean} end Indicates that the tween has reached the end.
 	 * @return {any} Return the value that should be assigned to the target property.
 	 * @static
-	 **/
-	SamplePlugin.tween = function(tween, step, prop, value, ratio, end) {
+	 */
+	static tween (tween, step, prop, value, ratio, end) {
 		// ratio is the eased ratio
 		console.log("tween", step, prop, value, ratio, end);
-		
+
 		// filter which properties you want to work on by using "prop":
 		if (prop !== "x") { return value; } // make sure you ALWAYS pass through value!
-		
+
 		// you can grab the end value for the step via its props object:
-		var endValue = step.props[prop];
-		
+		let endValue = step.props[prop];
+
 		// similarly, you can grab the start value from previous step:
-		var startValue = step.prev.props[prop];
-		
+		let startValue = step.prev.props[prop];
+
 		// you could calculate the unmodified tweened value using the ratio:
 		// this will be the same as "value" unless a previous plugin returned a modified value
-		var unmodifiedValue = startValue + (endValue - startValue) * ratio;
+		let unmodifiedValue = startValue + (endValue - startValue) * ratio;
 		if (value !== unmodifiedValue) { /* a previous plugin modified the value */ }
-		
+
 		// check if the tween is currently in a "wait" by comparing the props objects of this and the previous step:
-		var inWait = (step.props === step.prev.props);
-		
+		let inWait = (step.props === step.prev.props);
+
 		// tell the tween to not set the value on the target:
 		// return Tween.IGNORE;
-		
+
 		// you can return a modified value to be set on the target:
 		return Math.round(value);
-		
+
 		// or don't return anything to use the default value.
-	};
+	}
 
+}
 
-	createjs.SamplePlugin = SamplePlugin;
-
-}());
+// static properties:
+/**
+ * Used by TweenJS to determine when to call this plugin. Plugins with higher priority have their methods called
+ * before plugins with lower priority. The priority value can be any positive or negative number.
+ * @property priority
+ * @type {Number}
+ * @default 0
+ * @static
+ */
+SamplePlugin.priority = 0;

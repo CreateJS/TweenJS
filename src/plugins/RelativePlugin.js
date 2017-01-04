@@ -26,92 +26,95 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-this.createjs = this.createjs||{};
+import Tween from "../Tween";
 
-(function() {
-	"use strict";
+/**
+ * The RelativePlugin for TweenJS enables relative numeric values for tweens. Install using:
+ *
+ * 	RotationPlugin.install();
+ *
+ * Once installed, you can pass in relative numeric property values as strings beginning with "+" or "-". For example,
+ * the following tween would tween the x position of `foo` from its initial value of `200` to `50` (200-150), then to
+ * `125` (50+75).
+ *
+ * 	foo.x = 200;
+ * 	Tween.get(foo).to({x:"-150"}, 500).to({x:"+75"}, 500);
+ *
+ * @class RelativePlugin
+ * @module TweenJS
+ * @static
+ */
+export default class RelativePlugin {
 
-	/**
-	 * The RelativePlugin for TweenJS enables relative numeric values for tweens. Install using:
-	 * 
-	 * 	RotationPlugin.install();
-	 * 
-	 * Once installed, you can pass in relative numeric property values as strings beginning with "+" or "-". For example,
-	 * the following tween would tween the x position of `foo` from its initial value of `200` to `50` (200-150), then to
-	 * `125` (50+75).
-	 * 
-	 * 	foo.x = 200;
-	 * 	Tween.get(foo).to({x:"-150"}, 500).to({x:"+75"}, 500);
-	 * 
-	 * @class RelativePlugin
-	 * @static
-	 **/
-	function RelativePlugin() {
-		throw("RelativePlugin plugin cannot be instantiated.")
+// constructor:
+  /**
+   * @constructor
+   */
+	constructor () {
+		throw "RelativePlugin is static and cannot be instantiated.";
 	}
-	var s = RelativePlugin;
 
-	/**
-	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
-	 * @static
-	 **/
-	s.install = function() {
-		createjs.Tween._installPlugin(RelativePlugin);
-	};
-	
-	/**
-	 * Called by TweenJS when a new property initializes on a tween.
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method init
-	 * @param {Tween} tween
-	 * @param {String} prop
-	 * @param {any} value
-	 * @return {any}
-	 * @static
-	 **/
-	s.init = function(tween, prop, value) {
-		var data = tween.pluginData;
-		if (!data.Relative_installed && !data.Relative_disabled) {
-			tween._addPlugin(s);
-			data.Relative_installed = true;
-		}
-	};
-	
-	/**
-	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method init
-	 * @param {Tween} tween
-	 * @param {TweenStep} step
-	 * @param {String} prop
-	 * @param {String} value
-	 * @return {any}
-	 * @static
-	 **/
-	s.step = function(tween, step, prop, value) {
-		if (typeof value !== "string") { return; }
-		var prev = step.prev.props[prop], char0 = value[0], val;
-		if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = +value)) { return; }
-		return prev + val;
-	};
+// static methods:
+  /**
+   * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
+   * @method install
+   * @static
+   */
+  install () {
+    Tween._installPlugin(RelativePlugin);
+  }
 
-	/**
-	 * Called before a property is updated by the tween.
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method tween
-	 * @param {Tween} tween
-	 * @param {TweenStep} step
-	 * @param {String} prop
-	 * @param {any} value
-	 * @param {Number} ratio
-	 * @param {Boolean} end
-	 * @return {any}
-	 * @static
-	 **/
-	s.tween = function(tween, step, prop, value, ratio, end) {
-		// nothing
-	};
+  /**
+   * Called by TweenJS when a new property initializes on a tween.
+   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+   * @method init
+   * @param {Tween} tween
+   * @param {String} prop
+   * @param {any} value
+   * @return {any}
+   * @static
+   */
+  init (tween, prop, value) {
+    let data = tween.pluginData;
+    if (!data.Relative_installed && !data.Relative_disabled) {
+      tween._addPlugin(s);
+      data.Relative_installed = true;
+    }
+  }
 
-	createjs.RelativePlugin = s;
-}());
+  /**
+   * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+   * @method init
+   * @param {Tween} tween
+   * @param {TweenStep} step
+   * @param {String} prop
+   * @param {String} value
+   * @return {any}
+   * @static
+   */
+  step (tween, step, prop, value) {
+    if (typeof value !== "string") { return; }
+    let prev = step.prev.props[prop], char0 = value[0], val;
+    if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = +value)) { return; }
+    return prev + val;
+  }
+
+  /**
+   * Called before a property is updated by the tween.
+   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+   * @method tween
+   * @param {Tween} tween
+   * @param {TweenStep} step
+   * @param {String} prop
+   * @param {any} value
+   * @param {Number} ratio
+   * @param {Boolean} end
+   * @return {any}
+   * @static
+   */
+  tween (tween, step, prop, value, ratio, end) {
+    // nothing
+  }
+
+}

@@ -26,111 +26,108 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
+import Tween from "../Tween";
+
 /**
-* @module TweenJS
-*/
+ * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
+ * TweenJS has loaded:
+ *
+ *      createjs.CSSPlugin.install();
+ *
+ * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
+ * the top, left, bottom, right, width, height have a "px" suffix appended.
+ *
+ * Please note that the CSS Plugin is not included in the TweenJS minified file.
+ * @class CSSPlugin
+ * @module TweenJS
+ * @static
+ */
+export default class CSSPlugin {
 
-// namespace:
-this.createjs = this.createjs||{};
-
-(function() {
-	"use strict";
-
+// constructor:
 	/**
-	 * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
-	 * TweenJS has loaded:
-	 *
-	 *      createjs.CSSPlugin.install();
-	 *
-	 * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
-	 * the top, left, bottom, right, width, height have a "px" suffix appended.
-	 *
-	 * Please note that the CSS Plugin is not included in the TweenJS minified file.
-	 * @class CSSPlugin
 	 * @constructor
-	 **/
-	function CSSPlugin() {
-		throw("CSSPlugin cannot be instantiated.")
+	 */
+	constructor () {
+		throw "CSSPlugin is static and cannot be instanitated.";
 	}
-// TODO: update docs.
-
-// static properties
-	/**
-	 * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
-	 * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
-	 * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
-	 * the "top" CSS property, it should use the "px" suffix (ex. target.style.top = "20.5px"). This only applies
-	 * to tweens with the "css" config property set to true.
-	 * @property cssSuffixMap
-	 * @type Object
-	 * @static
-	 **/
-	CSSPlugin.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
-
-	/**
-	 * @property priority
-	 * @protected
-	 * @static
-	 **/
-	CSSPlugin.priority = -100; // very low priority, should run last
-
 
 // static methods
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
-	 **/
-	CSSPlugin.install = function() {
-		createjs.Tween._installPlugin(CSSPlugin);
-	};
+	 */
+	install () {
+		Tween._installPlugin(CSSPlugin);
+	}
 
 	/**
 	 * @method init
 	 * @protected
 	 * @static
-	 **/
-	CSSPlugin.init = function(tween, prop, value) {
-		var data = tween.pluginData;
+	 */
+	init (tween, prop, value) {
+		let data = tween.pluginData;
 		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
-		
-		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
+
+		let sfx0, sfx1, style, map = CSSPlugin.cssSuffixMap;
 		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
 		if (!data.CSS_installed) {
 			tween._addPlugin(CSSPlugin);
 			data.CSS_installed = true;
 		}
-		var str = style[prop];
+		let str = style[prop];
 		if (!str) { return 0; } // no style set.
-		var i = str.length-sfx0.length;
+		let i = str.length - sfx0.length;
 		if ((sfx1 = str.substr(i)) != sfx0) {
-			throw("CSSPlugin Error: Suffixes do not match. ("+sfx0+":"+sfx1+")");
+			throw `CSSPlugin Error: Suffixes do not match. (${sfx0}:${sfx1})`;
 		} else {
 			return parseInt(str);
 		}
-	};
+	}
 
 	/**
 	 * @method step
 	 * @protected
 	 * @static
-	 **/
-	CSSPlugin.step = function(tween, step, prop, value, injectProps) {
+	 */
+	step (tween, step, prop, value, injectProps) {
 		// unused
-	};
+	}
 
 	/**
 	 * @method tween
 	 * @protected
 	 * @static
-	 **/
-	CSSPlugin.tween = function(tween, step, prop, value, ratio, end) {
-		var style,map = CSSPlugin.cssSuffixMap, sfx=map[prop];
+	 */
+	tween (tween, step, prop, value, ratio, end) {
+		let style, map = CSSPlugin.cssSuffixMap, sfx = map[prop];
 		if (sfx === undefined || !(style = tween.target.style)) { return; }
-		style[prop] = (value|0)+sfx;
-		return createjs.Tween.IGNORE;
-	};
+		style[prop] = (value | 0) + sfx;
+		return Tween.IGNORE;
+	}
 
-	createjs.CSSPlugin = CSSPlugin;
+}
 
-}());
+// TODO: update docs.
+
+// static properties
+/**
+ * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
+ * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
+ * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
+ * the "top" CSS property, it should use the "px" suffix (ex. target.style.top = "20.5px"). This only applies
+ * to tweens with the "css" config property set to true.
+ * @property cssSuffixMap
+ * @type Object
+ * @static
+ */
+CSSPlugin.cssSuffixMap = { top: "px", left: "px", bottom: "px", right: "px", width: "px", height: "px", opacity: ""};
+
+/**
+ * @property priority
+ * @protected
+ * @static
+ */
+CSSPlugin.priority = -100; // very low priority, should run last

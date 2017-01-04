@@ -49,11 +49,12 @@
 export { default as EventDispatcher } from "createjs/src/events/EventDispatcher";
 export { default as Event } from "createjs/src/events/Event";
 export { default as Ticker } from "createjs/src/utils/Ticker";
-// display
+// core
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Tween } from "./Tween";
-export { default as TimeLine } from "./Timeline";
+export { default as Timeline } from "./Timeline";
 export { default as Ease } from "./Ease";
+// plugins
 export { default as CSSPlugin } from "./plugins/CSSPlugin";
 export { default as MotionGuidePlugin } from "./plugins/MotionGuidePlugin";
 export { default as RelativePlugin } from "./plugins/RelativePlugin";
