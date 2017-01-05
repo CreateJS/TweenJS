@@ -1,20 +1,11 @@
-.DS_Store
-build/output/
-build/tmp/
-*TMP*
+docs/**
+!docs/*.zip
 node_modules/
+*TMP*
 .idea/
 *.sublime-project
 *.sublime-workspace
-config.local.json
-docs/**/
-npm-debug.log
-
-#-----------------------------
-# INVALID FILES
-# (for cross OS compatibility)
-#-----------------------------
 *[\<\>\:\"\/\\\|\?\*]*
-main.css
-*.codekit
-*.sass-cache
+npm-debug.log
+.DS_Store
+*.lock
