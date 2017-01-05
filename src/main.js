@@ -41,7 +41,7 @@
  * README: Export Order
  *
  * Due to some classes having circular import bindings (whether at the top of the import chain or deeper in),
- * some exports here are in reverse order (such as Container being exported before DisplayObject).
+ * some exports here are in reverse order (such as Tween being exported before AbstractTween).
  * This is explained here: https://github.com/rollup/rollup/issues/845#issuecomment-240277194
  */
 
@@ -50,8 +50,8 @@ export { default as EventDispatcher } from "createjs/src/events/EventDispatcher"
 export { default as Event } from "createjs/src/events/Event";
 export { default as Ticker } from "createjs/src/utils/Ticker";
 // core
-export { default as AbstractTween } from "./AbstractTween";
 export { default as Tween } from "./Tween";
+export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";
 export { default as Ease } from "./Ease";
 // plugins
