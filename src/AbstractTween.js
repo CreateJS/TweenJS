@@ -328,9 +328,9 @@ export default class AbstractTween extends EventDispatcher {
 	 * @return {String} The name of the current label or null if there is no label
 	 */
 	getCurrentLabel (pos) {
-		let labels = this.labels;
+		let labels = this.labels, i, l;
 		if (pos == null) { pos = this.position; }
-		for (let i = 0, l = labels.length; i < l; i++) { if (pos < labels[i].position) { break; } }
+		for (i = 0, l = labels.length; i < l; i++) { if (pos < labels[i].position) { break; } }
 		return i === 0 ? null : labels[i - 1].label;
 	}
 
