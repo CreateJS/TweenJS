@@ -1,7 +1,7 @@
 {
   "name": "tweenjs",
-  "version": "1.0.0",
-  "description": "Description",
+  "version": "2.0.0",
+  "description": "A simple but powerful tweening / animation library for Javascript. Part of the CreateJS suite of libraries.",
   "keywords": [
     "html5",
     "canvas",
@@ -40,12 +40,12 @@
     "docs": "cd node_modules/createjs && npm run docs"
   },
   "dependencies": {
-    "createjs": "0.0.1"
+    "createjs": "2.0.0"
   },
   "devDependencies": {
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-preset-es2015": "^6.14.0",
-    "createjs": "0.0.1"
+    "createjs": "2.0.0"
   },
   "engine": "node >= 4.2.2"
 }

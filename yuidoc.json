@@ -1,9 +1,9 @@
 {
-  "name": "EaselJS",
-  "version": "1.0.0",
-  "description": "The Easel JavaScript library provides a full, hierarchical display list, a core interaction model, and helper classes to make working with the HTML5 Canvas element much easier. Part of the CreateJS suite of libraries.",
-  "url": "http://createjs.com/easeljs",
-  "logo": "assets/docs-icon-EaselJS.png",
+  "name": "TweenJS",
+  "version": "2.0.0",
+  "description": "A simple but powerful tweening / animation library for Javascript. Part of the CreateJS suite of libraries.",
+  "url": "http://createjs.com/tweenjs",
+  "logo": "assets/docs-icon-TweenJS.png",
   "options": {
     "outdir": "docs",
     "helpers": ["node_modules/createjs/buildAssets/path.js"],
