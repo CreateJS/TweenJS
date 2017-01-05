@@ -8,6 +8,7 @@ node_modules/
 *.sublime-workspace
 config.local.json
 docs/**/
+npm-debug.log
 
 #-----------------------------
 # INVALID FILES

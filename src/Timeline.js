@@ -86,50 +86,53 @@ export default class Timeline extends AbstractTween {
 	 * @param {Tween} ...tween The tween(s) to add. Accepts multiple arguments.
 	 * @return {Tween} The first tween that was passed in.
 	 */
-	addTween (...tweens) {
-		let l = tweens.length;
+	addTween (...args) {
+		let l = args.length;
+		if (l === 1) {
+			let tween = args[0];
+			this._tweens.push(tween);
+			tween._parent = this;
+			tween.setPaused(true);
+			let d = tween.duration;
+			if (tween.loop > 0) { d *= tween.loop + 1; }
+			if (d > this.duration) { this.duration = d; }
+			if (this.rawPosition >= 0) { tween.setPosition(this.rawPosition); }
+			return tween;
+		}
 		if (l > 1) {
-			for (let i = 0; i < l; i++) { this.addTween(tweens[i]); }
-			return tweens[l - 1];
-		} else if (l === 0) { return null; }
-
-		let tween = tweens[0];
-		this._tweens.push(tween);
-		tween._parent = this;
-		tween.setPaused(true);
-		let d = tween.duration;
-		if (tween.loop > 0) { d *= tween.loop + 1; }
-		if (d > this.duration) { this.duration = d; }
-
-		if (this.rawPosition >= 0) { tween.setPosition(this.rawPosition); }
-		return tween;
+			for (let i = 0; i < l; i++) { this.addTween(args[i]); }
+			return args[l - 1];
+		}
+		return null;
 	}
 
 	/**
 	 * Removes one or more tweens from this timeline.
 	 * @method removeTween
-	 * @param {Tween} ...tween The tween(s) to remove. Accepts multiple arguments.
+	 * @param {Tween} ...args The tween(s) to remove. Accepts multiple arguments.
 	 * @return Boolean Returns `true` if all of the tweens were successfully removed.
 	 */
-	removeTween (...tweens) {
-		let l = tweens.length;
+	removeTween (...args) {
+		let l = args.length;
+		if (l === 1) {
+			let tweens = this._tweens;
+			let i = tweens.length;
+			while (i--) {
+				if (tweens[i] === tween) {
+					tweens.splice(i, 1);
+					tween._parent = null;
+					if (tween.duration >= this.duration) { this.updateDuration(); }
+					return true;
+				}
+			}
+			return false;
+		}
 		if (l > 1) {
 			let good = true;
-			for (let i = 0; i < l; i++) { good = good && this.removeTween(tweens[i]); }
+			for (let i = 0; i < l; i++) { good = good && this.removeTween(args[i]); }
 			return good;
-		} else if (l === 0) { return true; }
-
-		let tweens = this._tweens;
-		let i = tweens.length;
-		while (i--) {
-			if (tweens[i] === tween) {
-				tweens.splice(i, 1);
-				tween._parent = null;
-				if (tween.duration >= this.duration) { this.updateDuration(); }
-				return true;
-			}
 		}
-		return false;
+		return true;
 	}
 
 	/**
