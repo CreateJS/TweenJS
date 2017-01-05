@@ -27,6 +27,7 @@
 */
 
 import AbstractTween from "./AbstractTween";
+import Ease from "./Ease";
 import Ticker from "createjs/src/utils/Ticker";
 
 /**
@@ -392,12 +393,12 @@ export default class Tween extends AbstractTween {
 	 * @param {Object} props An object specifying property target values for this tween (Ex. `{x:300}` would tween the x
 	 * property of the target to 300).
 	 * @param {Number} [duration=0] The duration of the tween in milliseconds (or in ticks if `useTicks` is true).
-	 * @param {Function} [ease="linear"] The easing function to use for this tween. See the {{#crossLink "Ease"}}{{/crossLink}}
+	 * @param {Function} [ease=Ease.linear] The easing function to use for this tween. See the {{#crossLink "Ease"}}{{/crossLink}}
 	 * class for a list of built-in ease functions.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
 	 */
-	to (props, duration = 0, ease = "linear") {
+	to (props, duration = 0, ease = Ease.linear) {
 		if (duration < 0) { duration = 0; }
 		let step = this._addStep(duration, null, ease);
 		this._appendProps(props, step);
@@ -551,7 +552,7 @@ export default class Tween extends AbstractTween {
 		let v, v0, v1, ease;
 		let p0 = step.prev.props;
 		let p1 = step.props;
-		if (ease = step.ease) { ratio = ease(ratio,0,1,1); }
+		if (ease = step.ease) { ratio = ease(ratio, 0, 1, 1); }
 
 		let plugins = this._plugins;
 		for (let n in p0) {
