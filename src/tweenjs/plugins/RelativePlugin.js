@@ -50,6 +50,8 @@ this.createjs = this.createjs||{};
 		throw("RelativePlugin plugin cannot be instantiated.")
 	}
 	var s = RelativePlugin;
+	
+	s.id = "Relative";
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
@@ -71,11 +73,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	s.init = function(tween, prop, value) {
-		var data = tween.pluginData;
-		if (!data.Relative_installed && !data.Relative_disabled) {
-			tween._addPlugin(s);
-			data.Relative_installed = true;
-		}
+		if (!tween.pluginData.Relative_disabled) { tween._addPlugin(s); }
 	};
 	
 	/**
@@ -89,11 +87,16 @@ this.createjs = this.createjs||{};
 	 * @return {any}
 	 * @static
 	 **/
-	s.step = function(tween, step, prop, value) {
-		if (typeof value !== "string") { return; }
-		var prev = step.prev.props[prop], char0 = value[0], val;
-		if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = +value)) { return; }
-		return prev + val;
+	s.step = function(tween, step, props) {
+		// in this method we check if any prop is a string value starting with "+" or "-", and adjust the value accordingly.
+		for (var n in props) {
+			var value = props[n];
+			if (typeof value !== "string") { continue; }
+			var prev = step.prev.props[n], char0 = value[0];
+			console.log(value, prev, char0);
+			if (!(char0 === "+" || char0 === "-") || isNaN(value = +value+prev)) { continue; }
+			step.props[n] = value;
+		}
 	};
 
 	/**
@@ -109,7 +112,7 @@ this.createjs = this.createjs||{};
 	 * @return {any}
 	 * @static
 	 **/
-	s.tween = function(tween, step, prop, value, ratio, end) {
+	s.change = function(tween, step, prop, value, ratio, end) {
 		// nothing
 	};
 
