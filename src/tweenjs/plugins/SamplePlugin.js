@@ -37,10 +37,12 @@ this.createjs = this.createjs||{};
 	"use strict";
 
 	/**
-	 * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
-	 * how to build TweenJS plugins. Please look at the code for inline comments.
+	 * A sample TweenJS plugin. This plugin is purely for demonstration, and contains documentation and helpful tips on
+	 * building plugins.
+	 * 
+	 * It sets the y position of the target based on a sinusoidal function of its x position.
 	 *
-	 * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
+	 * A TweenJS plugin is simply an object that exposes two properties (id, priority), and three methods (init, step, and change).
 	 * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
 	 * @class SamplePlugin
 	 * @constructor
@@ -59,6 +61,17 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	SamplePlugin.priority = 0;
+	
+	/**
+	 * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+	 * @property id
+	 * @type {String}
+	 * @static
+	 **/
+	SamplePlugin.id = "Sample";
+	
+	// if you're going to be installing instances of this plugin, you should ensure they have the same id as the class:
+	SamplePlugin.prototype.id = SamplePlugin.id;
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
@@ -66,6 +79,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	SamplePlugin.install = function() {
+		// TODO: should we just do installPlugin vs Plugin.install? That's what our other libs do.
 		createjs.Tween._installPlugin(SamplePlugin);
 	};
 
@@ -75,9 +89,11 @@ this.createjs = this.createjs||{};
 	 * 
 	 * For example:
 	 * 
+	 * 	foo.x = 0;
+	 * 	foo.y = 100;
 	 * 	Tween.get(foo)
 	 * 		.to({x:10}) // init called with prop = "x", value = 0
-	 * 		.to({x:20}) // init is NOT called
+	 * 		.to({x:20}) // init is NOT called, since x was already inited
 	 * 		.to({y:200}) // init called with prop = "y", value = 100
 	 * 
 	 * @method init
@@ -85,7 +101,7 @@ this.createjs = this.createjs||{};
 	 * @param {String} prop The name of the property that is being initialized.
 	 * @param {any} value If another plugin has returned a starting value, it will be passed in. Otherwise value will be undefined.
 	 * @return {any} The starting tween value for the property. In most cases, you would simply return the value parameter, 
-	 * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this tween
+	 * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this prop
 	 * from being added to the tween.
 	 * @static
 	 **/
@@ -94,105 +110,115 @@ this.createjs = this.createjs||{};
 		
 		// its good practice to let users opt out (or in some cases, maybe in) via pluginData:
 		var data = tween.pluginData;
-		if (data.Sample_disabled) { return value; } // make sure to pass through value.
+		if (data.Sample_disabled) { return; }
+		
+		// this tells the tween to not manage the "y" property:
+		if (prop === "y") { return createjs.Tween.IGNORE; }
 		
 		// filter which properties you want to work on by using "prop":
-		if (prop !== "x" && prop !== "y") { return value; } // make sure to pass through value.
+		// in this case, we only want to operate on the x property:
+		if (prop !== "x") { return; } // make sure to pass through value.
 		
-		// you can then add this plugin to the tween:
-		// Tween._addPlugin will screen for duplicate plugins, but its more efficient to set and check a flag:
-		if (!data.Sample_installed) {
-			data.Sample_installed = true; // don't install again if we init on the same tween twice.
-			
-			// most plugins can just be a single shared plugin class:
-			tween._addPlugin(SamplePlugin);
-			// but you can also add an instance, if you wanted to store data on the plugin:
-			// tween.addPlugin(new SamplePlugin());
-		}
+		// we know we want to operate on this tween, so we add the plugin to it:
+		// most plugins can just be a single shared plugin class:
+		tween._addPlugin(SamplePlugin);
+		
+		// you can also use pluginData to attach arbitrary data to the tween for later use:
+		// we want to adjust y relative to it's initial value, so let's save that off in pluginData:
+		tween.pluginData.Sample_y = tween.target.y;
+		
+		
+		// NOTE: none of the code below actually does anything in this scenario, it's just to illustrate concepts:
+		
+		// but you can also add an instance, if you wanted to store data on the plugin:
+		// if you do this, ensure that there is an `id` property on the instance that matches the one on the class.
+		// tween.addPlugin(new SamplePlugin());
 		
 		// note that it's also possible to create a plugin that doesn't add itself, but hooks into the "change" event instead.
 		
 		// you can grab the current value on the target using:
 		var targetValue = tween.target[prop];
 		
-		// this would get the current starting value for the property, using value from previous plugins if specified, or the target value if not:
+		// this gets the current starting value for the property, using value from previous plugins if specified, or the target value if not:
 		// this is a bit of a pain, but it prevents accessing target values that aren't needed, which can be very expensive (ex. width on a HTMLElement, when we actually want to grab it from style)
 		var defaultValue = (value === undefined) ? targetValue : value;
 		
-		// this would round the starting value of "x" properties:
-		if (prop === "x") { return Math.round(defaultValue); }
-		
-		// this would tell the tween to not include the "y" property:
-		// if (prop === "y") { return Tween.IGNORE }
-		
-		// you can also use pluginData to attach arbitrary data to the tween for later use:
-		if (!data) { data = tween.pluginData = {}; } // to reduce GC churn, pluginData is null by default.
-		data._Sample_value = 200; // namespacing your values will help prevent conflicts
-		
-		// if you don't want to make changes, then makes sure to pass other plugins changes through:
-		return value;
+		// this passes out a new initial value for the x property:
+		// if (prop === "x") { return Math.round(defaultValue); }
 	};
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 * 
 	 * For example:
-	 * 
 	 * 	Tween.get(foo)
-	 * 		.to({x:10}) // step called with prop = "x"
-	 * 		.to({y:100}) // step called with prop = "y"
-	 * 		.to({x:20, y:200}) // step is called twice
+	 * 		.to({x:10}) // step called
+	 * 		.wait(100) // step is NOT called
+	 * 		.to({x:20, y:200}) // step called
 	 * 
-	 * @method init
+	 * @method step
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
-	 * @param {String} prop The name of the property being tweened.
-	 * @param {String} value The value of the property for this step.
-	 * @param {Object} injectProps If a previous plugin returned an injectProps object, it will be passed here.
-	 * @return {Object} If you'd like to inject new properties into the tween, you can return a generic object with name value pairs. You should add to the existing injectProps object if it exists.
+	 * @param {Object} props The props object that was passed in for this step.
 	 * @static
 	 **/
-	SamplePlugin.step = function(tween, step, prop, value, injectProps) {
-		console.log("step: ", step, prop, injectProps);
+	SamplePlugin.step = function(tween, step, props) {
+		// the function of this plugin doesn't require us to react or modify new steps, so we'll just log it out for reference:
+		console.log("step: ", step, props);
 		
-		// filter which properties you want to work on by using "prop":
-		if (prop !== "x") { return; }
 		
-		// you can grab the start value from previous step:
-		var startValue = step.prev.props[prop];
+		// NOTE: none of the code below actually does anything in this scenario, it's just to illustrate concepts:
+		
+		// props is the collection of properties that were changed in this step.
+		// you can use this to decide whether to do anything:
+		if (props.x === undefined) { return; } // no change to x
+		
+		// because other plugins may modify the end value for this step, you should access it
+		// via the step object, not the props object:
+		var endValue = step.props.x;
+		
+		// you can grab the start value from the previous step:
+		var startValue = step.prev.props.x;
 		
 		// you can modify this step's end value:
-		// step.props[prop] = Math.max(0, Math.min(100, Math.PI));
+		// step.props.x = Math.max(0, Math.min(100, step.props.x));
 		
-		// if this was an instance plugin, you could store step specific data using step.index:
+		// if this was a plugin instance, you could store step specific data using step.index:
 		// this.steps[step.index] = {arbitraryData:foo};
 		
 		// or specify other properties that you'd like to include in the tween:
-		// make sure you use the existing injectProps if it exists:
-		// injectProps = injectProps||{}; // preserve other tween's injections
-		// injectProps.foo = 27;
-		// return injectProps;
+		// tween._injectProp("y", 200);
 	};
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * @method tween
+	 * @method change
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {String} prop The name of the property being tweened.
 	 * @param {any} value The current tweened value of the property, as calculated by TweenJS. Previous plugins may have modified this value.
-	 * @param {Number} ratio A value indicating the eased progress through the current step. This
-	 * number is generally between 0 and 1, though some eases will generate values outside
-	 * this range.
-	 * @param {Boolean} end Indicates that the tween has reached the end.
+	 * @param {Number} ratio A value indicating the eased progress through the current step. This number is generally between 0 and 1,
+	 * though some eases will generate values outside this range.
+	 * @param {Boolean} end Indicates that the tween has reached the end and is about to deregister itself.
 	 * @return {any} Return the value that should be assigned to the target property.
 	 * @static
 	 **/
-	SamplePlugin.tween = function(tween, step, prop, value, ratio, end) {
-		// ratio is the eased ratio
-		console.log("tween", step, prop, value, ratio, end);
+	SamplePlugin.change = function(tween, step, prop, value, ratio, end) {
+		// console.log("change", step, prop, value, ratio, end);
+		
+		// we want to manage the y property ourselves, so we can tell the tween to not update it:
+		// Note that this is redundant here, because we told the tween to completely ignore y in `init`.
+		if (prop === "y") { return createjs.Tween.IGNORE; }
 		
 		// filter which properties you want to work on by using "prop":
-		if (prop !== "x") { return value; } // make sure you ALWAYS pass through value!
+		if (prop !== "x") { return; }
+		
+		// set the y value on the target as a function of the x value:
+		// use the pluginData value we saved earlier to make it relative to the starting y:
+		tween.target.y = Math.sin(value/160*Math.PI)*50+tween.pluginData.Sample_y;
+		
+		
+		// NOTE: none of the code below actually does anything in this scenario, it's just to illustrate concepts:
 		
 		// you can grab the end value for the step via its props object:
 		var endValue = step.props[prop];
@@ -208,11 +234,9 @@ this.createjs = this.createjs||{};
 		// check if the tween is currently in a "wait" by comparing the props objects of this and the previous step:
 		var inWait = (step.props === step.prev.props);
 		
-		// tell the tween to not set the value on the target:
-		// return Tween.IGNORE;
 		
 		// you can return a modified value to be set on the target:
-		return Math.round(value);
+		// return Math.round(value);
 		
 		// or don't return anything to use the default value.
 	};
