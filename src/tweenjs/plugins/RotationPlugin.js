@@ -53,7 +53,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	function RotationPlugin() {
-		throw("SmartRotation plugin cannot be instantiated.")
+		throw("Rotation plugin cannot be instantiated.")
 	}
 	var s = RotationPlugin;
 	
@@ -66,6 +66,8 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	s.props = {rotation:1, rotationX:1, rotationY:1, rotationZ:1};
+	
+	s.id = "Rotation";
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
@@ -87,10 +89,10 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	s.init = function(tween, prop, value) {
-		var data = tween.pluginData;
-		if (s.props[prop] && !data.Rotation_installed && !data.Rotation_disabled) {
+		if (s.props[prop] && !tween.pluginData.Rotation_disabled) {
+			var data = tween.pluginData, end = data.Rotation_end || (data.Rotation_end = {});
+			end[prop] = value === undefined ? tween.target[prop] : value;
 			tween._addPlugin(s);
-			data.Rotation_installed = true;
 		}
 	};
 	
@@ -105,19 +107,27 @@ this.createjs = this.createjs||{};
 	 * @return {any}
 	 * @static
 	 **/
-	s.step = function(tween, step, prop, value) {
-		if (!s.props[prop]) { return; }
-		tween.pluginData.Rotation_end = value;
-		var dir;
-		if ((dir = step.props.rotationDir) === 0) { return; }
-		
-		dir = dir||0;
-		var start = step.prev.props[prop];
-		var delta = (value-start)%360;
-		
-		if ((dir === 0 && delta > 180) || (dir===-1 && delta > 0)) { delta -= 360; }
-		else if ((dir === 0 && delta < -180) || (dir ===1 && delta < 0)) { delta += 360; }
-		return start+delta;
+	s.step = function(tween, step, props) {
+		for (var n in s.props) {
+			if (props[n] === undefined) { continue; }
+			
+			var dir = step.props.rotationDir, value = props[n];
+			var data = tween.pluginData, end = data.Rotation_end;
+			var start = step.prev.props[n];
+			
+			if (dir === 0) {
+				step.props[n] = value-end[n]+start;
+			} else {
+				dir = dir || 0;
+				var delta = (value - start) % 360;
+
+				if ((dir === 0 && delta > 180) || (dir === -1 && delta > 0)) { delta -= 360; }
+				else if ((dir === 0 && delta < -180) || (dir === 1 && delta < 0)) { delta += 360; }
+
+				step.props[n] = start + delta;
+			}
+			end[n] = value;
+		}
 	};
 
 	/**
@@ -133,9 +143,9 @@ this.createjs = this.createjs||{};
 	 * @return {any}
 	 * @static
 	 **/
-	s.tween = function(tween, step, prop, value, ratio, end) {
+	s.change = function(tween, step, prop, value, ratio, end) {
 		if (prop === "rotationDir") { return createjs.Tween.IGNORE; }
-		if (end && s.props[prop]) { return tween.pluginData.Rotation_end; }
+		if (end && s.props[prop]) { return tween.pluginData.Rotation_end; } // so it ends on the actual value.
 	};
 
 	createjs.RotationPlugin = s;
