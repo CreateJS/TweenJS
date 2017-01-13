@@ -26,6 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+ * @module TweenJS
+ */
+
 this.createjs = this.createjs||{};
 
 (function() {

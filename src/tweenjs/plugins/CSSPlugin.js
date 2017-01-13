@@ -30,7 +30,6 @@
 * @module TweenJS
 */
 
-// namespace:
 this.createjs = this.createjs||{};
 
 (function() {
@@ -40,7 +39,7 @@ this.createjs = this.createjs||{};
 	 * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
 	 * TweenJS has loaded:
 	 *
-	 *      createjs.CSSPlugin.install();
+	 * 	createjs.CSSPlugin.install();
 	 *
 	 * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
 	 * the top, left, bottom, right, width, height have a "px" suffix appended.
@@ -52,7 +51,7 @@ this.createjs = this.createjs||{};
 	function CSSPlugin() {
 		throw("CSSPlugin cannot be instantiated.")
 	}
-// TODO: update docs.
+	var s = CSSPlugin;
 
 // static properties
 	/**
@@ -60,10 +59,26 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.priority = -100; // very low priority, should run last
+	s.priority = -100; // very low priority, should run last
 	
-	CSSPlugin.ID = "CSS";
-	CSSPlugin.re = /^(-?\d+(?:.\d+)?)([a-z%]*)$/m; // extracts the numeric value and suffix
+	
+	/**
+	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+	 * @property ID
+	 * @type {String}
+	 * @static
+	 * @readonly
+	 **/
+	s.ID = "CSS";
+	
+	/**
+	 * READ-ONLY. RegExp pattern that matches a 3 or 6 digit RGB string with a preceding #.
+	 * @property RE
+	 * @type {RegExp}
+	 * @static
+	 * @readonly
+	 */
+	s.RE = /^(-?\d+(?:.\d+)?)([a-z%]*)$/m; // extracts the numeric value and suffix
 
 
 // static methods
@@ -72,16 +87,21 @@ this.createjs = this.createjs||{};
 	 * @method install
 	 * @static
 	 **/
-	CSSPlugin.install = function() {
+	s.install = function() {
 		createjs.Tween._installPlugin(CSSPlugin);
 	};
 
 	/**
+	 * Called by TweenJS when a new property initializes on a tween.
+	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
 	 * @method init
-	 * @protected
+	 * @param {Tween} tween
+	 * @param {String} prop
+	 * @param {any} value
+	 * @return {any}
 	 * @static
 	 **/
-	CSSPlugin.init = function(tween, prop, value) {
+	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
 		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
 		var style = tween.target.style, initVal = style[prop];
@@ -91,7 +111,7 @@ this.createjs = this.createjs||{};
 		
 		// TODO: add special handlers for "transform" and the like.
 		
-		var result = CSSPlugin.re.exec(initVal), cssData = data.CSS || (data.CSS = {});
+		var result = s.RE.exec(initVal), cssData = data.CSS || (data.CSS = {});
 		if (result === null) {
 			// a string we can't handle numerically, so add it to the CSSData without a suffix.
 			cssData[prop] = "";
@@ -102,25 +122,38 @@ this.createjs = this.createjs||{};
 		}
 	};
 
+	
 	/**
-	 * @method step
-	 * @protected
+	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+	 * @method init
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {Object} props
 	 * @static
 	 **/
-	CSSPlugin.step = function(tween, step, props) { /* unused */ };
+	s.step = function(tween, step, props) { /* unused */ };
 
 	/**
-	 * @method change
-	 * @protected
+	 * Called before a property is updated by the tween.
+	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+	 * @method tween
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {String} prop
+	 * @param {any} value
+	 * @param {Number} ratio
+	 * @param {Boolean} end
+	 * @return {any}
 	 * @static
 	 **/
-	CSSPlugin.change = function(tween, step, prop, value, ratio, end) {
+	s.change = function(tween, step, prop, value, ratio, end) {
 		var sfx = tween.pluginData.CSS[prop];
 		if (sfx === undefined) { return; }
 		tween.target.style[prop] = value+sfx;
 		return createjs.Tween.IGNORE;
 	};
 
-	createjs.CSSPlugin = CSSPlugin;
+	createjs.CSSPlugin = s;
 
 }());

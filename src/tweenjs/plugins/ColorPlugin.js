@@ -25,8 +25,16 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-(function (scope) {
 
+/**
+ * @module TweenJS
+ */
+ 
+this.createjs = this.createjs||{};
+
+(function() {
+	"use strict";
+	
 	/**
 	 * The ColorPlugin enables tweening of almost any CSS color values. This includes 3 or 6 digit hex colors (`#00FF00`),
 	 * rgb, rgba, hsl, and hsla colors (but not named colors, such as `red`).
@@ -61,7 +69,7 @@
 	
 	/**
 	 * READ-ONLY. RegExp pattern that matches a 3 or 6 digit RGB string with a preceding #.
-	 * @property FULL_HEX
+	 * @property HEX_RE
 	 * @type {RegExp}
 	 * @static
 	 * @readonly
@@ -250,6 +258,5 @@
 		return p;
 	}
 
-	scope.ColorPlugin = s;
-
-})(createjs);
+	createjs.ColorPlugin = s;
+}());
