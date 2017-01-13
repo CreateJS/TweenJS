@@ -99,10 +99,10 @@ this.createjs = this.createjs||{};
 	 * @method init
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.
-	 * @param {any} value If another plugin has returned a starting value, it will be passed in. Otherwise value will be undefined.
-	 * @return {any} The starting tween value for the property. In most cases, you would simply return the value parameter, 
+	 * @param {any} value If another plugin has modified the starting value, it will be passed in. Otherwise value will be undefined.
+	 * @return {any} The modified starting tween value for the property. In most cases, you would simply wouldn't return anything, 
 	 * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this prop
-	 * from being added to the tween.
+	 * from being added to the tween at all.
 	 * @static
 	 **/
 	SamplePlugin.init = function(tween, prop, value) {
