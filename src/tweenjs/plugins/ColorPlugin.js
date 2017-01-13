@@ -26,13 +26,12 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 (function (scope) {
+
 	/**
-	 * @module TweenJS
-	 */
-	/**
-	 * The ColorPlugin tweens color strings by splitting channels, and tweening channels individually. It supports most
-	 * color formats that CSS supports, and is intended to tween both basic EaselJS Graphics color values, as well as
-	 * a generic "color" property. Additional values may be added.
+	 * The ColorPlugin enables tweening of almost any CSS color values. This includes 3 or 6 digit hex colors (`#00FF00`),
+	 * rgb, rgba, hsl, and hsla colors (but not named colors, such as `red`).
+	 * 
+	 * It can operate in either `rgb` or `hsl` mode. It will convert all colors into that mode, and output them accordingly.
 	 * @class ColorPlugin
 	 * @constructor
 	 */
@@ -40,45 +39,76 @@
 		throw("ColorPlugin cannot be instantiated.");
 	}
 	var s = ColorPlugin;
-
+	
+	
+	/**
+	 * READ-ONLY. RegExp pattern that detects CSS color values.
+	 * @property COLOR_RE
+	 * @type {RegExp}
+	 * @static
+	 * @readonly
+	 */
 	s.COLOR_RE = /^#[0-9a-fA-F]{3}|^hsla?\(|^rgba?\(/
 	
 	/**
-	 * The RegExp pattern that matches rgb color strings, with groups for each value.
-	 * Note there is no rgba support
-	 * @property RGB_COLOR
+	 * READ-ONLY. RegExp pattern that matches rgb or hsl color strings, with groups for each value.
+	 * @property RGB_HSL_RE
 	 * @type {RegExp}
 	 * @static
-	 * @protected
+	 * @readonly
 	 */
 	s.RGB_HSL_RE = /^(?:rgb|hsl)a?\((\d{1,3})%?, ?(\d{1,3})%?, ?(\d{1,3})%?(?:, ?([0-9.]+))?\)$/;
 	
 	/**
-	 * The RegExp pattern that matches a 3 or 6 digit RGB string with a preceding #.
+	 * READ-ONLY. RegExp pattern that matches a 3 or 6 digit RGB string with a preceding #.
 	 * @property FULL_HEX
 	 * @type {RegExp}
 	 * @static
-	 * @protected
+	 * @readonly
 	 */
 	s.HEX_RE = /^#((?:[a-f0-9]{3}){1,2})$/i;
 
 	/**
-	 * The color tween mode. Supported values are "rgb" and "hsl".
-	 * @property mode
+	 * @property _mode
 	 * @type {string}
 	 * @static
 	 * @default rgb
+	 * @protected
 	 */
 	s._mode = "rgb";
 	
+	/**
+	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+	 * @property ID
+	 * @type {String}
+	 * @static
+	 * @readonly
+	 **/
 	s.ID = "Color";
 
-	s.install = function (mode) {
+	/**
+	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
+	 * @method install
+	 * @param {String} mode A string equalling either "rgb" or "hsl" indicating what color mode should be used for calculations
+	 * and output. You can input any color type regardless of the mode setting.
+	 * @static
+	 **/
+	s.install = function(mode) {
 		s._mode = mode || s._mode;
 		createjs.Tween._installPlugin(s);
 	};
 	
-	s.init = function (tween, prop, value) {
+	/**
+	 * Called by TweenJS when a new property initializes on a tween.
+	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+	 * @method init
+	 * @param {Tween} tween
+	 * @param {String} prop
+	 * @param {any} value
+	 * @return {any}
+	 * @static
+	 **/
+	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
 		value = value === undefined ? tween.target[prop] : value;
 		if (!data.Color_disabled && s.COLOR_RE.exec(value)) {
@@ -89,6 +119,15 @@
 		}
 	};
 	
+	/**
+	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+	 * @method init
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {Object} props
+	 * @static
+	 **/
 	s.step = function(tween, step, props) {
 		var n, colorData = tween.pluginData.Color;
 		for (n in props) {
@@ -97,7 +136,20 @@
 		}
 	};
 
-	s.change = function (tween, step, prop, value, ratio, end) {
+	/**
+	 * Called before a property is updated by the tween.
+	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+	 * @method tween
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {String} prop
+	 * @param {any} value
+	 * @param {Number} ratio
+	 * @param {Boolean} end
+	 * @return {any}
+	 * @static
+	 **/
+	s.change = function(tween, step, prop, value, ratio, end) {
 		if (!tween.pluginData.Color[prop]) { return; }
 		var o0=step.prev.props[prop], o1 = step.props[prop];
 		
@@ -111,6 +163,8 @@
 		}
 	};
 	
+	
+// private helper methods:
 	function getColorObj(value, mode) {
 		if (value[0] === "#") { return parseHex(value, mode); }
 		else { return parseRgbOrHsl(value, mode); }
@@ -196,6 +250,6 @@
 		return p;
 	}
 
-	scope.ColorPlugin = ColorPlugin;
+	scope.ColorPlugin = s;
 
 })(createjs);
