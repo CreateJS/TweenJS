@@ -33,8 +33,6 @@
 		createjs.Tween.get(circle, {loop: -1, bounce:true}).to({x:stage.canvas.width-100}, 4000, createjs.Ease.quadInOut) // jump to the new scale properties (default duration of 0)
 
 		createjs.Ticker.timingMode = createjs.Ticker.RAF;
-		// in order for the stage to continue to redraw when the Ticker is paused we need to add it with
-		// the second ("pauseable") param set to false.
 		createjs.Ticker.addEventListener("tick", stage);
 	}
 </script>
@@ -43,7 +41,7 @@
 <body onload="init();">
 
 <header class="TweenJS">
-	<h1>TweenJS SamplePlugin Example</h1>
+	<h1>SamplePlugin Example</h1>
 
 	<p>This example shows the SamplePlugin in use. The SamplePlugin simply sets `y` as a sinusoidal function of `x`.</p>
 </header>
