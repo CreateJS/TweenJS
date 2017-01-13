@@ -41,6 +41,8 @@ this.createjs = this.createjs||{};
 	 * building plugins.
 	 * 
 	 * It sets the y position of the target based on a sinusoidal function of its x position.
+	 * 
+	 * NOTE: The code for this class is heavily commented. Please look at it if you'd like to write a plugin.
 	 *
 	 * A TweenJS plugin is simply an object that exposes two properties (id, priority), and three methods (init, step, and change).
 	 * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
@@ -50,6 +52,7 @@ this.createjs = this.createjs||{};
 	function SamplePlugin() {
 		throw("SamplePlugin cannot be instantiated.");
 	};
+	var s = SamplePlugin;
 
 // static interface:
 	/**
@@ -60,25 +63,26 @@ this.createjs = this.createjs||{};
 	 * @default 0
 	 * @static
 	 **/
-	SamplePlugin.priority = 0;
+	s.priority = 0;
 	
 	/**
-	 * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
-	 * @property id
+	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+	 * @property ID
 	 * @type {String}
 	 * @static
+	 * @readonly
 	 **/
-	SamplePlugin.id = "Sample";
+	s.ID = "Sample";
 	
 	// if you're going to be installing instances of this plugin, you should ensure they have the same id as the class:
-	SamplePlugin.prototype.id = SamplePlugin.id;
+	// s.prototype.ID = s.ID;
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
 	 **/
-	SamplePlugin.install = function() {
+	s.install = function() {
 		// TODO: should we just do installPlugin vs Plugin.install? That's what our other libs do.
 		createjs.Tween._installPlugin(SamplePlugin);
 	};
@@ -105,7 +109,7 @@ this.createjs = this.createjs||{};
 	 * from being added to the tween at all.
 	 * @static
 	 **/
-	SamplePlugin.init = function(tween, prop, value) {
+	s.init = function(tween, prop, value) {
 		console.log("init: ", prop, value);
 		
 		// its good practice to let users opt out (or in some cases, maybe in) via pluginData:
@@ -159,10 +163,10 @@ this.createjs = this.createjs||{};
 	 * @method step
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
-	 * @param {Object} props The props object that was passed in for this step.
+	 * @param {Object} props The props object that was passed to `to()`.
 	 * @static
 	 **/
-	SamplePlugin.step = function(tween, step, props) {
+	s.step = function(tween, step, props) {
 		// the function of this plugin doesn't require us to react or modify new steps, so we'll just log it out for reference:
 		console.log("step: ", step, props);
 		
@@ -203,7 +207,7 @@ this.createjs = this.createjs||{};
 	 * @return {any} Return the value that should be assigned to the target property.
 	 * @static
 	 **/
-	SamplePlugin.change = function(tween, step, prop, value, ratio, end) {
+	s.change = function(tween, step, prop, value, ratio, end) {
 		// console.log("change", step, prop, value, ratio, end);
 		
 		// we want to manage the y property ourselves, so we can tell the tween to not update it:
@@ -242,6 +246,6 @@ this.createjs = this.createjs||{};
 	};
 
 
-	createjs.SamplePlugin = SamplePlugin;
+	createjs.SamplePlugin = s;
 
 }());

@@ -51,7 +51,7 @@ this.createjs = this.createjs||{};
 	}
 	var s = RelativePlugin;
 	
-	s.id = "Relative";
+	s.ID = "Relative";
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.

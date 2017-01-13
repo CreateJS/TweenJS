@@ -626,7 +626,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._addPlugin = function(plugin) {
-		var ids = this._pluginIds || (this._pluginIds = {}), id = plugin.id;
+		var ids = this._pluginIds || (this._pluginIds = {}), id = plugin.ID;
 		if (!id || ids[id]) { return; } // already added
 		
 		ids[id] = true;

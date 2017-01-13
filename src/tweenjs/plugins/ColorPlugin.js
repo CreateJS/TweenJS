@@ -71,7 +71,7 @@
 	 */
 	s._mode = "rgb";
 	
-	s.id = "Color";
+	s.ID = "Color";
 
 	s.install = function (mode) {
 		s._mode = mode || s._mode;

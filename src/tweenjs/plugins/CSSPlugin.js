@@ -62,7 +62,7 @@ this.createjs = this.createjs||{};
 	 **/
 	CSSPlugin.priority = -100; // very low priority, should run last
 	
-	CSSPlugin.id = "CSS";
+	CSSPlugin.ID = "CSS";
 	CSSPlugin.re = /^(-?\d+(?:.\d+)?)([a-z%]*)$/m; // extracts the numeric value and suffix
 
 
