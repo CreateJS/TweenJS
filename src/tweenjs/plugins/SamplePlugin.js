@@ -48,7 +48,7 @@ this.createjs = this.createjs||{};
 	 * @constructor
 	 **/
 	function SamplePlugin() {
-		throw("SamplePlugin cannot be instantiated.")
+		throw("SamplePlugin cannot be instantiated.");
 	};
 
 // static interface:
