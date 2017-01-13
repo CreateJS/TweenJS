@@ -12,7 +12,7 @@
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
-	<script type="text/javascript" src="../src/tweenjs/CSSPlugin.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/plugins/CSSPlugin.js"></script>
 
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
@@ -21,41 +21,48 @@
 	var colorSeed = 0;
 
 	function init() {
-		createjs.CSSPlugin.install(createjs.Tween);
+		createjs.CSSPlugin.install();
 
-		createjs.Ticker.setFPS(20);
-		var count = 600;
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		var count = 200;
 		while (--count >= 0) {
+			// create a new box:
 			var box = document.createElement("div");
-			box.style.width = "6px";
-			box.style.height = "2px";
+			box.style.width = "1%";
+			box.style.height = "4%";
 			box.style.position = "absolute";
 			box.style.borderRadius = "2px";
 			box.style.backgroundColor = "#0F0";
+			box.style.opacity = 0;
 			document.body.appendChild(box);
+			
+			// set up initial rotation & position:
 			var a = (Math.random() * Math.PI * 2 * 16 | 0) / 16;
-			box.style.webkitTransform = "rotate(" + a + "rad)";
-			var d = 30;
-			box.style.left = window.innerWidth / 2 + Math.cos(a - 0.2 - Math.random()) * d + "px";
-			box.style.top = window.innerHeight / 2 + Math.sin(a - 0.2 - Math.random()) * d + "px";
-			d = (Math.min(window.innerWidth, window.innerHeight) - 16) / 2 * (Math.random() * 0.3 + 0.7);
+			box.style.transform = "translate(-50%,-50%) rotate(" + a + "rad)";
+			var d = 50;
+			box.style.left = window.innerWidth / 2 + Math.cos(a) * d + "px";
+			box.style.top = window.innerHeight / 2 + Math.sin(a) * d + "px";
+			
+			// calculate the target position:
+			d = (Math.min(window.innerWidth, window.innerHeight) - 16) /3 * (Math.random() * 0.5 + 0.5);
 			var x = window.innerWidth / 2 + Math.cos(a) * d;
 			var y = window.innerHeight / 2 + Math.sin(a) * d;
-			createjs.Tween.get(box, {loop: true}, true).set({opacity: "0"}, box.style).wait(Math.random() * 1000 + 1 | 0).call(updateColor).to({top: y, left: x, width: 16, height: 4, opacity: 1}, Math.random() * 1500 + 1000, easeIn);
+			
+			// create the tween:
+			// CSSPlugin will use the value suffix it initially finds on the specified style.
+			// So in this case, top/left use "px", width/height use "%" and opacity has no suffix.
+			createjs.Tween.get(box, {loop: -1}, true).wait(Math.random() * 2000| 0).to({opacity:1}).call(updateColor).to({top: y, left: x, width: 10, height: 0, opacity: 0.6}, Math.random() * 500 + 500, createjs.Ease.quadInOut);
 		}
+		
 		// tween the base color that divs will be assigned when they start moving:
-		createjs.Tween.get(this, {loop: true}).to({colorSeed: 360}, 5000);
+		createjs.Tween.get(this, {loop: -1}).to({colorSeed: 360}, 5000);
 	}
 
 	function updateColor(tween) {
 		// grab the tween's target (the style object), and update it's color
-		tween._target.style.backgroundColor = "hsl(" + (Math.random() * 60 + colorSeed | 0) + ",100%,50%)";
+		tween.target.style.backgroundColor = "hsl(" + (Math.random() * 60 + colorSeed | 0) + ",100%,50%)";
 	}
 
-	// very simple easing equation:
-	function easeIn(ratio) {
-		return ratio * ratio;
-	}
 
 </script>
 </head>
@@ -65,9 +72,7 @@
 <header class="TweenJS">
 	<h1>CSS Plugin Example</h1>
 
-	<p>This example shows how a plugin can be used to override values in
-		TweenJS. The CSSPlugin ensures the CSS position and size parameters all
-		receive the "px" suffix required by CSS.</p>
+	<p>Shows the CSSPlugin in action.</p>
 </header>
 
 </body>

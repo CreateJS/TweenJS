@@ -56,23 +56,14 @@ this.createjs = this.createjs||{};
 
 // static properties
 	/**
-	 * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
-	 * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
-	 * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
-	 * the "top" CSS property, it should use the "px" suffix (ex. target.style.top = "20.5px"). This only applies
-	 * to tweens with the "css" config property set to true.
-	 * @property cssSuffixMap
-	 * @type Object
-	 * @static
-	 **/
-	CSSPlugin.cssSuffixMap = {top:"px",left:"px",bottom:"px",right:"px",width:"px",height:"px",opacity:""};
-
-	/**
 	 * @property priority
 	 * @protected
 	 * @static
 	 **/
 	CSSPlugin.priority = -100; // very low priority, should run last
+	
+	CSSPlugin.id = "CSS";
+	CSSPlugin.re = /^(-?\d+(?:.\d+)?)([a-z%]*)$/m; // extracts the numeric value and suffix
 
 
 // static methods
@@ -93,20 +84,21 @@ this.createjs = this.createjs||{};
 	CSSPlugin.init = function(tween, prop, value) {
 		var data = tween.pluginData;
 		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
+		var style = tween.target.style, initVal = style[prop];
+		if (initVal === undefined) { return;  }
 		
-		var sfx0,sfx1,style,map = CSSPlugin.cssSuffixMap;
-		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
-		if (!data.CSS_installed) {
-			tween._addPlugin(CSSPlugin);
-			data.CSS_installed = true;
-		}
-		var str = style[prop];
-		if (!str) { return 0; } // no style set.
-		var i = str.length-sfx0.length;
-		if ((sfx1 = str.substr(i)) != sfx0) {
-			throw("CSSPlugin Error: Suffixes do not match. ("+sfx0+":"+sfx1+")");
+		tween._addPlugin(CSSPlugin);
+		
+		// TODO: add special handlers for "transform" and the like.
+		
+		var result = CSSPlugin.re.exec(initVal), cssData = data.CSS || (data.CSS = {});
+		if (result === null) {
+			// a string we can't handle numerically, so add it to the CSSData without a suffix.
+			cssData[prop] = "";
+			return initVal;
 		} else {
-			return parseInt(str);
+			cssData[prop] = result[2];
+			return parseFloat(result[1]);
 		}
 	};
 
@@ -115,19 +107,17 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.step = function(tween, step, prop, value, injectProps) {
-		// unused
-	};
+	CSSPlugin.step = function(tween, step, props) { /* unused */ };
 
 	/**
-	 * @method tween
+	 * @method change
 	 * @protected
 	 * @static
 	 **/
-	CSSPlugin.tween = function(tween, step, prop, value, ratio, end) {
-		var style,map = CSSPlugin.cssSuffixMap, sfx=map[prop];
-		if (sfx === undefined || !(style = tween.target.style)) { return; }
-		style[prop] = (value|0)+sfx;
+	CSSPlugin.change = function(tween, step, prop, value, ratio, end) {
+		var sfx = tween.pluginData.CSS[prop];
+		if (sfx === undefined) { return; }
+		tween.target.style[prop] = value+sfx;
 		return createjs.Tween.IGNORE;
 	};
 
