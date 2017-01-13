@@ -26,6 +26,10 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
+/**
+* @module TweenJS
+*/
+
 this.createjs = this.createjs||{};
 
 (function() {
@@ -44,13 +48,20 @@ this.createjs = this.createjs||{};
 	 * 	Tween.get(foo).to({x:"-150"}, 500).to({x:"+75"}, 500);
 	 * 
 	 * @class RelativePlugin
-	 * @static
+	 * @constructor
 	 **/
 	function RelativePlugin() {
 		throw("RelativePlugin plugin cannot be instantiated.")
 	}
 	var s = RelativePlugin;
 	
+	/**
+	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+	 * @property ID
+	 * @type {String}
+	 * @static
+	 * @readonly
+	 **/
 	s.ID = "Relative";
 
 	/**
@@ -78,13 +89,11 @@ this.createjs = this.createjs||{};
 	
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
 	 * @method init
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
-	 * @param {String} prop
-	 * @param {String} value
-	 * @return {any}
+	 * @param {Object} props
 	 * @static
 	 **/
 	s.step = function(tween, step, props) {
@@ -93,7 +102,6 @@ this.createjs = this.createjs||{};
 			var value = props[n];
 			if (typeof value !== "string") { continue; }
 			var prev = step.prev.props[n], char0 = value[0];
-			console.log(value, prev, char0);
 			if (!(char0 === "+" || char0 === "-") || isNaN(value = +value+prev)) { continue; }
 			step.props[n] = value;
 		}
@@ -101,7 +109,7 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
 	 * @method tween
 	 * @param {Tween} tween
 	 * @param {TweenStep} step

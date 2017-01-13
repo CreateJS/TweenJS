@@ -61,7 +61,6 @@ this.createjs = this.createjs||{};
 	 **/
 	s.priority = -100; // very low priority, should run last
 	
-	
 	/**
 	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
 	 * @property ID
