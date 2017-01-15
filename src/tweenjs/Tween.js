@@ -519,7 +519,6 @@ this.createjs = this.createjs||{};
 	 * 
 	 * @method addLabel
 	 * @param {String} label The label name.
-	 * @param {Number} position The position this label represents.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
 	 **/
