@@ -2,11 +2,7 @@ Version NEXT [not yet released]
 ****************************************************************************************************
 CRITICAL (may break existing content):
 
-THIS BRANCH IS A WORK IN PROGRESS.
-NOT EVERYTHING IS WORKING YET AND IT IS NOT COMPATIBLE WITH MOVIECLIP YET
-DOCUMENTATION IS NOT UP TO DATE
-
-- Plugin model has changed significantly. See SamplePlugin for information. (STILL IN FLUX)
+- Plugin model has changed significantly. See SamplePlugin for information.
 - Second param of Tween.setPosition() is now runActions boolean
 - Removed Tween.NONE, Tween.LOOP, and Tween.REVERSE constants
 - pluginData is now a property in the props param, instead of its own param
@@ -17,13 +13,11 @@ DOCUMENTATION IS NOT UP TO DATE
 *****
 DEPRECATED (will break in the future):
 - Timeline constructor now expects a single param `props`, which now supports `tweens` and `labels` properties
-
+- to make a tween loop continuously, you should now use loop:-1, instead of loop:true
 
 *****
 OTHER:
 - Very significant performance improvements to Tween and CSSPlugin
-- Fixed an issue with Tween.removeAllTweens and tweens with no target
-- Fixed an issue that could cause tweens to be ticked multiple times per tick
 - Tween and Timeline now have more similar/consistent interfaces
 - Added Tween.reversed and Tween.bounce properties (also on Timeline)
 - Tween.loop now supports setting a numeric loop count value (also on Timeline)
@@ -34,6 +28,18 @@ OTHER:
 - Tweens now support getLabels(), addLabel(), setLabels(), gotoAndPlay(), gotoAndStop(), and resolve()
 - Added Tween.timeScale & Timeline.timeScale
 
+
+Version 0.6.2 [November 26, 2015]
+****************************************************************************************************
+- fixed MotionGuidePlugin handling of empty data
+- solved memory leak in SparkTable demo
+- documentation and example updates
+
+
+Version 0.6.1 [May 21, 2015]
+****************************************************************************************************
+- Fixed an issue with Tween.removeAllTweens and tweens with no target
+- Fixed an issue that could cause tweens to be ticked multiple times per tick
 
 
 Version 0.6.0 [December 12, 2014]
