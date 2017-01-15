@@ -212,6 +212,9 @@ this.createjs = this.createjs||{};
 	 * @event complete
 	 **/
 	
+// getter / setters:
+	
+
 
 // public methods:
 	/**

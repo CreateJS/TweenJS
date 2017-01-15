@@ -572,7 +572,7 @@ this.createjs = this.createjs||{};
 	 *	myTween.to({x:100}, 500).play(otherTween);
 	 *
 	 * @method play
-	 * @param {Tween} tween The tween to play.
+	 * @param {Tween} [tween] The tween to play. Defaults to this tween.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
 	 */
@@ -585,8 +585,16 @@ this.createjs = this.createjs||{};
 	 * 
 	 * 	myTween.pause(otherTween).to({alpha:1}, 1000).play(otherTween);
 	 * 
+	 * Note that this executes at the end of a tween update, so the tween may advance beyond the time the pause
+	 * action was inserted at. For example:
+	 * 
+	 * myTween.to({foo:0}, 1000).pause().to({foo:1}, 1000);
+	 * 
+	 * At 60fps the tween will advance by ~16ms per tick, if the tween above was at 999ms prior to the current tick, it
+	 * will advance to 1015ms (15ms into the second "step") and then pause.
+	 * 
 	 * @method pause
-	 * @param {Tween} tween The tween to pause. If null, it pauses this tween.
+	 * @param {Tween} [tween] The tween to pause. Defaults to this tween.
 	 * @return {Tween} This tween instance (for chaining calls)
 	 * @chainable
 	 */
