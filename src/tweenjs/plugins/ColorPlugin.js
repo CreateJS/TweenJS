@@ -119,9 +119,9 @@ this.createjs = this.createjs||{};
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
 		value = value === undefined ? tween.target[prop] : value;
-		if (!data.Color_disabled && s.COLOR_RE.exec(value)) {
+		if (!data.Color_disabled && typeof value === "string" && s.COLOR_RE.exec(value)) {
 			tween._addPlugin(s);
-			var colorData = data.Color || (data.Color = {})
+			var colorData = data.Color || (data.Color = {});
 			colorData[prop] = true;
 			return getColorObj(value, s._mode);
 		}
