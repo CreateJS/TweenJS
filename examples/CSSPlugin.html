@@ -22,9 +22,8 @@
 
 	function init() {
 		createjs.CSSPlugin.install();
-
-		createjs.Ticker.timingMode = createjs.Ticker.RAF;
-		var count = 200;
+		
+		var count = 300;
 		while (--count >= 0) {
 			// create a new box:
 			var box = document.createElement("div");
@@ -38,24 +37,26 @@
 			
 			// set up initial rotation & position:
 			var a = (Math.random() * Math.PI * 2 * 16 | 0) / 16;
-			box.style.transform = "translate(-50%,-50%) rotate(" + a + "rad)";
-			var d = 50;
-			box.style.left = window.innerWidth / 2 + Math.cos(a) * d + "px";
-			box.style.top = window.innerHeight / 2 + Math.sin(a) * d + "px";
+			box.style.transform = "translate(-50%,-50%) translate(50vw,50vh) rotate(" + a + "rad)";
+			var d = 5;
+			box.style.left = Math.cos(a) * d + "vh";
+			box.style.top = Math.sin(a) * d + "vh";
 			
 			// calculate the target position:
-			d = (Math.min(window.innerWidth, window.innerHeight) - 16) /3 * (Math.random() * 0.5 + 0.5);
-			var x = window.innerWidth / 2 + Math.cos(a) * d;
-			var y = window.innerHeight / 2 + Math.sin(a) * d;
+			d = Math.random()*20+20;
+			var x = Math.cos(a) * d;
+			var y = Math.sin(a) * d;
 			
 			// create the tween:
-			// CSSPlugin will use the value suffix it initially finds on the specified style.
-			// So in this case, top/left use "px", width/height use "%" and opacity has no suffix.
+			// CSSPlugin will use the value suffix it initially finds on the target's style.
+			// So in this case, top/left use "vh", width/height use "%" and opacity has no suffix.
 			createjs.Tween.get(box, {loop: -1}, true).wait(Math.random() * 2000| 0).to({opacity:1}).call(updateColor).to({top: y, left: x, width: 10, height: 0, opacity: 0.6}, Math.random() * 500 + 500, createjs.Ease.quadInOut);
 		}
 		
 		// tween the base color that divs will be assigned when they start moving:
 		createjs.Tween.get(this, {loop: -1}).to({colorSeed: 360}, 5000);
+		
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
 	}
 
 	function updateColor(tween) {
@@ -67,7 +68,7 @@
 </script>
 </head>
 
-<body onload="init();" style="background-color:#111111">
+<body onload="init();" style="background-color:#111111; overflow:hidden">
 
 <header class="TweenJS">
 	<h1>CSS Plugin Example</h1>
