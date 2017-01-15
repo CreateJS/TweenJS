@@ -8,19 +8,18 @@
 	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
 	<script src="../_assets/js/examples.js" type="text/javascript"></script>
 
+	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
 	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
-	<script src="../src/tweenjs/Tween.js"></script>
-	<script src="../src/tweenjs/Ease.js"></script>
-	<script type="text/javascript" src="../src/tweenjs/CSSPlugin.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/plugins/CSSPlugin.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
 <script id="editable">
 	var c=createjs, stage, centerX, centerY, radius, fpsFld;
-	var duration=750, count=2000, displayTime=3000;
+	var duration=750, count=1000, displayTime=3000;
 
 	function init() {
-		createjs.CSSPlugin.install(createjs.Tween);
+		createjs.CSSPlugin.install();
 		fpsFld = document.getElementById("fps");
 		stage = document.body;
 		stage.style.overflow = "hidden";
@@ -37,7 +36,6 @@
 			tween(dot);
 		}
 		
-		c.Ticker.framerate = 60;
 		c.Ticker.timingMode = c.Ticker.RAF;
 		c.Ticker.on("tick",tick);
 	}
@@ -52,11 +50,11 @@
 		dot.style.cssText = "position:absolute; left:" + centerX + "px; top:" + centerY + "px; width: 1px; height: 1px;"
 		
 		var angle = Math.random() * Math.PI * 2;
-		c.Tween.get(dot).wait( Math.random() * duration ).to({
+		c.Tween.get(dot, {loop:-1}).wait( Math.random() * duration ).to({
 				left:Math.cos(angle) * radius + centerX,
 				top:Math.sin(angle) * radius + centerY,
 				width:32, height:32
-			}, duration, c.Ease.cubicIn).call(tween, [dot]);
+			}, duration, c.Ease.cubicIn);
 		
 		return dot;
 	}
