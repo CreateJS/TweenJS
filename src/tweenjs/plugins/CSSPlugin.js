@@ -125,7 +125,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
 	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
-	 * @method init
+	 * @method step
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {Object} props
@@ -136,7 +136,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * Called before a property is updated by the tween.
 	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
-	 * @method tween
+	 * @method change
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {String} prop
