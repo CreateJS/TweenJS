@@ -115,6 +115,7 @@ this.createjs = this.createjs||{};
 	 * @static
 	 **/
 	MotionGuidePlugin.install = function() {
+		throw("MotionGuidePlugin has not been updated to work with the latest TweenJS plugin model yet. Soon!")
 		createjs.Tween.installPlugin(MotionGuidePlugin, ["guide", "x", "y", "rotation"]);
 		return createjs.Tween.IGNORE;
 	};
