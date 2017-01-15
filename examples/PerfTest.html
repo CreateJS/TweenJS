@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TweenJS: Performance Test</title>
+
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
+	<script src="../src/tweenjs/AbstractTween.js"></script>
+	<script src="../src/tweenjs/Tween.js"></script>
+	<script src="../src/tweenjs/Ease.js"></script>
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+
+<script id="editable">
+	var c=createjs, stage, stageW, stageH, fpsFld;
+	var duration=300, count=30000, radius=480, displayTime=3000;
+
+	function init() {
+		fpsFld = document.getElementById("fps");
+		stage = new c.Stage("testCanvas");
+		
+		stageW = stage.canvas.width;
+		stageH = stage.canvas.height;
+		var i = 0, g = new c.Graphics().f("#012").dc(0,0,1);
+		
+		while (i++ < count) {
+			tween(stage.addChild(new c.Shape(g)));
+		}
+		
+		c.Ticker.framerate = 60;
+		c.Ticker.timingMode = c.Ticker.RAF;
+		c.Ticker.on("tick",tick);
+	}
+	
+	function tween(dot) {
+		var angle = Math.random() * Math.PI * 2;
+		dot.x = stageW/2;
+		dot.y = Math.random()*stageH;
+		
+		c.Tween.get(dot, {loop:-1}).wait(Math.random() * duration )
+			.to({x:Math.cos(angle) * radius + stageW/2}, duration, c.Ease.cubicIn);
+	}
+	
+	function tick(evt) {
+		var render = (displayTime -= evt.delta) > 0;
+		if (render) { stage.update(); }
+		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(0)+"fps"+(render ? "" : " RENDERING DISABLED");
+	}
+
+</script>
+</head>
+
+<body onload="init();">
+
+<header class="TweenJS">
+	<h1>Performance Test</h1>
+	<p>This will run a large quantity of single property tweens simultaneously and track framerate. It will update the stage for the first 3 seconds
+	(to confirm functionality), then will stop rendering to isolate tween performance.</p>
+	<p id="fps" style="font-family:monospace; font-weight: bold; opacity:0.5;">-- fps</p>
+</header>
+
+<canvas id="testCanvas" width="960" height="400"></canvas>
+</body>
+</html>

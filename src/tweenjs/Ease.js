@@ -87,7 +87,7 @@ this.createjs = this.createjs||{};
 	 **/
 	Ease.get = function(amount) {
 		if (amount < -1) { amount = -1; }
-		if (amount > 1) { amount = 1; }
+		else if (amount > 1) { amount = 1; }
 		return function(t) {
 			if (amount==0) { return t; }
 			if (amount<0) { return t*(t*-amount+1+amount); }
