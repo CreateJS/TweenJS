@@ -461,7 +461,7 @@ this.createjs = this.createjs||{};
 		
 		// if we don't have any actions, and we're not a Timeline, then return:
 		// TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
-		if (!this._actionHead && !this._tweens) { return; } 
+		if (!this._actionHead && !this.tweens) { return; } 
 		
 		var d=this.duration, reversed=this.reversed, bounce=this.bounce, loopCount=this.loop;
 		var loop0, loop1, t0, t1;

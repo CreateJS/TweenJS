@@ -80,11 +80,13 @@ this.createjs = this.createjs||{};
 
 	// private properties:
 		/**
-		 * @property _tweens
-		 * @type Array[Tween]
-		 * @protected
+		 * The array of tweens in the timeline. It is strongly recommended that you use
+		 * {{#crossLink "Tween/addTween"}}{{/crossLink}} and {{#crossLink "Tween/removeTween"}}{{/crossLink}},
+		 * rather than accessing this directly, but it is  included for advanced uses.
+		 * @property tweens
+		 * @type Array
 		 **/
-		this._tweens = [];
+		this.tweens = [];
 		
 		if (tweens) { this.addTween.apply(this, tweens); }
 		this.setLabels(labels);
@@ -120,7 +122,7 @@ this.createjs = this.createjs||{};
 			return arguments[l-1];
 		} else if (l === 0) { return null; }
 		
-		this._tweens.push(tween);
+		this.tweens.push(tween);
 		tween._parent = this;
 		tween.setPaused(true);
 		var d = tween.duration;
@@ -145,7 +147,7 @@ this.createjs = this.createjs||{};
 			return good;
 		} else if (l === 0) { return true; }
 
-		var tweens = this._tweens;
+		var tweens = this.tweens;
 		var i = tweens.length;
 		while (i--) {
 			if (tweens[i] === tween) {
@@ -165,8 +167,8 @@ this.createjs = this.createjs||{};
 	 **/
 	p.updateDuration = function() {
 		this.duration = 0;
-		for (var i=0,l=this._tweens.length; i<l; i++) {
-			var tween = this._tweens[i];
+		for (var i=0,l=this.tweens.length; i<l; i++) {
+			var tween = this.tweens[i];
 			var d = tween.duration;
 			if (tween.loop > 0) { d *= tween.loop+1; }
 			if (d > this.duration) { this.duration = d; }
@@ -195,8 +197,8 @@ this.createjs = this.createjs||{};
 	// Docced in AbstractTween
 	p._updatePosition = function(jump, end) {
 		var t = this.position;
-		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i].setPosition(t, true, jump); // actions will run after all the tweens update.
+		for (var i=0, l=this.tweens.length; i<l; i++) {
+			this.tweens[i].setPosition(t, true, jump); // actions will run after all the tweens update.
 		}
 	};
 	
@@ -204,8 +206,8 @@ this.createjs = this.createjs||{};
 	p._runActionsRange = function(startPos, endPos, jump, includeStart) {
 		//console.log("	range", startPos, endPos, jump, includeStart);
 		var t = this.position;
-		for (var i=0, l=this._tweens.length; i<l; i++) {
-			this._tweens[i]._runActions(startPos, endPos, jump, includeStart);
+		for (var i=0, l=this.tweens.length; i<l; i++) {
+			this.tweens[i]._runActions(startPos, endPos, jump, includeStart);
 			if (t !== this.position) { return true; } // an action changed this timeline's position.
 		}
 	};
