@@ -202,7 +202,8 @@ this.createjs = this.createjs||{};
 
 // events:
 	/**
-	 * Dispatched whenever the tween's position changes.
+	 * Dispatched whenever the tween's position changes. It occurs after all tweened properties are updated and actions
+	 * are executed.
 	 * @event change
 	 **/
 	 
