@@ -124,7 +124,7 @@ this.createjs = this.createjs||{};
 		
 		this.tweens.push(tween);
 		tween._parent = this;
-		tween.setPaused(true);
+		tween.paused = true;
 		var d = tween.duration;
 		if (tween.loop > 0) { d *= tween.loop+1; }
 		if (d > this.duration) { this.duration = d; }

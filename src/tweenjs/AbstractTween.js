@@ -215,7 +215,69 @@ this.createjs = this.createjs||{};
 	
 // getter / setters:
 	
-
+	/**
+	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
+	 * @method setPaused
+	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
+	 * @return {Tween} This tween instance (for chaining calls)
+	 * @deprecated
+	 * @chainable
+	 */
+	p.setPaused = function(value) {
+		createjs.Tween._register(this, value);
+		return this;
+	};
+	
+	/**
+	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
+	 * @method getPaused
+	 * @deprecated
+	 */
+	p.getPaused = function() { 
+		return this._paused;
+	};
+	
+	/**
+	 * 
+	 * @method getCurrentLabel
+	 * @return {String} The name of the current label or null if there is no label
+	 * @deprecated
+	 **/
+	p.getCurrentLabel = function(pos) {
+		var labels = this.getLabels();
+		if (pos == null) { pos = this.position; }
+		for (var i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
+		return (i===0) ? null : labels[i-1].label;
+	};
+	
+	/**
+	 * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage collection
+	 * if no other references to it exist.
+	 * @property paused
+	 * @type {Boolean}
+	 * @readonly
+	 **/
+	 
+	/**
+	 * Returns the name of the label on or immediately before the current position. For example, given a tween with
+	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
+	 * <UL>
+	 * 		<LI>null if the current position is 2.</LI>
+	 * 		<LI>"first" if the current position is 4.</LI>
+	 * 		<LI>"first" if the current position is 7.</LI>
+	 * 		<LI>"second" if the current position is 15.</LI>
+	 * </UL>
+	 * @property currentLabel
+	 * @type {String}
+	 * @readonly
+	 **/
+	
+	try {
+		Object.defineProperties(p, {
+			paused: { set: p.setPaused, get: p.getPaused },
+			currentLabel: { get: p.getCurrentLabel }
+		});
+	} catch (e) {}
 
 // public methods:
 	/**
@@ -264,7 +326,7 @@ this.createjs = this.createjs||{};
 		this.rawPosition = rawPosition;
 		
 		this._updatePosition(jump, end);
-		if (end) { this.setPaused(true); }
+		if (end) { this.paused = true; }
 		
 		callback&&callback(this);
 		
@@ -338,25 +400,6 @@ this.createjs = this.createjs||{};
 			list.splice(i, 0, {label:label, position:position});
 		}
 	};
-
-	/**
-	 * Returns the name of the label on or immediately before the current position. For example, given a tween with
-	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
-	 * <UL>
-	 * 		<LI>null if the current position is 2.</LI>
-	 * 		<LI>"first" if the current position is 4.</LI>
-	 * 		<LI>"first" if the current position is 7.</LI>
-	 * 		<LI>"second" if the current position is 15.</LI>
-	 * </UL>
-	 * @method getCurrentLabel
-	 * @return {String} The name of the current label or null if there is no label
-	 **/
-	p.getCurrentLabel = function(pos) {
-		var labels = this.getLabels();
-		if (pos == null) { pos = this.position; }
-		for (var i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
-		return (i===0) ? null : labels[i-1].label;
-	};
 	
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
@@ -365,7 +408,7 @@ this.createjs = this.createjs||{};
 	 * or label to jump to.
 	 **/
 	p.gotoAndPlay = function(positionOrLabel) {
-		this.setPaused(false);
+		this.paused = false;
 		this._goto(positionOrLabel);
 	};
 
@@ -376,7 +419,7 @@ this.createjs = this.createjs||{};
 	 * to jump to.
 	 **/
 	p.gotoAndStop = function(positionOrLabel) {
-		this.setPaused(true);
+		this.paused = true;
 		this._goto(positionOrLabel);
 	};
 	
@@ -392,18 +435,6 @@ this.createjs = this.createjs||{};
 		return pos;
 	};
 	
-
-	/**
-	 * Pauses or plays this tween.
-	 * @method setPaused
-	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-	 * @return {Tween} This tween instance (for chaining calls)
-	 * @chainable
-	 */
-	p.setPaused = function(value) {
-		createjs.Tween._register(this, value);
-		return this;
-	};
 
 	/**
 	 * Returns a string representation of this object.
@@ -430,7 +461,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	p._init = function(props) {
-		if (!props || !props.paused) { this.setPaused(false); }
+		if (!props || !props.paused) { this.paused = false; }
 		if (props&&(props.position!=null)) { this.setPosition(props.position); }
 	};
 

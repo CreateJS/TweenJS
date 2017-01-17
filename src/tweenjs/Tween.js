@@ -576,7 +576,7 @@ this.createjs = this.createjs||{};
 	 * @chainable
 	 */
 	p.play = function(tween) {
-		return this.call(this.setPaused, [false], tween||this);
+		return this._addAction(tween||this, this._set, [{paused:false}]);
 	};
 
 	/**
@@ -598,7 +598,7 @@ this.createjs = this.createjs||{};
 	 * @chainable
 	 */
 	p.pause = function(tween) {
-		return this.call(this.setPaused, [true], tween||this);
+		return this._addAction(tween||this, this._set, [{paused:true}]);
 	};
 
 	// tiny api (primarily for tool output):
@@ -713,6 +713,7 @@ this.createjs = this.createjs||{};
 		while (action) {
 			var pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
+				console.log(action);
 				action.funct.apply(action.scope, action.params);
 				if (t !== this.position) { return true; }
 			}
