@@ -41,9 +41,18 @@ this.createjs = this.createjs||{};
 	 *
 	 * 	createjs.CSSPlugin.install();
 	 *
-	 * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
-	 * the top, left, bottom, right, width, height have a "px" suffix appended.
+	 * CSSPlugin works with almost any style property or unit. It identifies CSS values by looking for an initial value
+	 * on the element's `style` object. It also uses this initial value to parse out the units to use with that value.
+	 * 
+	 * In the following example, `top` would be tweened as a style using `em` units using CSSPlugin, but `width` 
+	 * would be not be tweened as a style (because there is no initial inline style value for it).
 	 *
+	 * 	myEl.style.top = "10em";
+	 * 	createjs.Tween.get(myEl).to({top:20, width:100}, 1000);
+	 *
+	 * CSSPlugin can also use computed styles. Please see {{#crossLink "AbstractTween/compute:property"}}{{/crossLink}}
+	 * for more information.
+	 * 
 	 * Please note that the CSS Plugin is not included in the TweenJS minified file.
 	 * @class CSSPlugin
 	 * @constructor
@@ -78,6 +87,33 @@ this.createjs = this.createjs||{};
 	 * @readonly
 	 */
 	s.RE = /^(-?\d+(?:.\d+)?)([a-z%]*)$/m; // extracts the numeric value and suffix
+	
+	/**
+	 * By default, CSSPlugin uses only inline styles on the target element (ie. set via the style attribute, `style` property, or `cssText`)
+	 * to determine which properties should be tweened via CSS, and what units to use.
+	 * 
+	 * Setting `compute` to `true` causes CSSPlugin to use `getComputedStyle` for this purpose. This has the advantage of
+	 * including all styles that effect the target element, however there are some important considerations for its use:<UL>
+	 * 	<LI> `getComputedStyle` is computationally expensive, which could lead to performance issues if you are creating a large
+	 * 	number of tweens at once.
+	 * 	<LI> styles are normalized. For example, a width value specified as a `%` may be computed as `px`, which CSSPlugin will
+	 * 	use for the tween. Different browsers _may_ normalize values differently.
+	 * 	<LI> there are a large number of computed styles, which increases the chance that a property will be identified as a style.
+	 * 	</UL>
+	 * 	
+	 * 	The `compute` setting can be overridden on a per-tween basis by setting `tween.pluginData.CSS_compute`. For example,
+	 * 	to enable computed styles for a new tween, you could use:
+	 * 	
+	 * 		createjs.Tween.get(el, {pluginData:{CSS_compute:true}}).to({top:20}, 1000);
+	 * 	
+	 * 	Given the considerations for `compute`, it is recommended that you keep the default global setting of `false` and override it
+	 * 	in specific cases via `pluginData`.
+	 * @property compute
+	 * @type {Boolean}
+	 * @default false
+	 * @static
+	 */
+	s.compute = false;
 
 
 // static methods
@@ -103,7 +139,7 @@ this.createjs = this.createjs||{};
 	s.init = function(tween, prop, value) {
 		var data = tween.pluginData;
 		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
-		var style = tween.target.style, initVal = style[prop];
+		var initVal = s._getStyle(tween.target, prop, data.CSS_compute);
 		if (initVal === undefined) { return;  }
 		
 		tween._addPlugin(CSSPlugin);
@@ -131,7 +167,7 @@ this.createjs = this.createjs||{};
 	 * @param {Object} props
 	 * @static
 	 **/
-	s.step = function(tween, step, props) { /* unused */ };
+	s.step = function(tween, step, props) { /* unused */ }; // TODO: if we want this to work with ColorPlugin (and others) we need to write the style values back to the tween.
 
 	/**
 	 * Called before a property is updated by the tween.
@@ -151,6 +187,14 @@ this.createjs = this.createjs||{};
 		if (sfx === undefined) { return; }
 		tween.target.style[prop] = value+sfx;
 		return createjs.Tween.IGNORE;
+	};
+	
+	s._getStyle = function(target, prop, compute) {
+		if (compute || (compute == null && s.compute)) {
+			return window.getComputedStyle(target)[prop];
+		} else {
+			return target.style[prop];
+		}
 	};
 
 	createjs.CSSPlugin = s;

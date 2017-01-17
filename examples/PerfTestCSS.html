@@ -14,12 +14,23 @@
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
+<style>
+	.dot {
+		position:absolute; 
+		width: 1px;
+		height: 1px;
+	}
+	
+</style>
+
 <script id="editable">
 	var c=createjs, stage, centerX, centerY, radius, fpsFld;
 	var duration=750, count=1000, displayTime=3000;
 
 	function init() {
 		createjs.CSSPlugin.install();
+		createjs.CSSPlugin.compute = true;
+		
 		fpsFld = document.getElementById("fps");
 		stage = document.body;
 		stage.style.overflow = "hidden";
@@ -29,12 +40,14 @@
 		
 		radius = Math.sqrt(centerX*centerX + centerY*centerY);
 		
+		var t = performance.now();
 		var i = 0;
 		while (i++ < count) {
 			var dot = getDot();
 			stage.appendChild(dot);
 			tween(dot);
 		}
+		console.log("time to create tweens:",performance.now()-t,"ms");
 		
 		c.Ticker.timingMode = c.Ticker.RAF;
 		c.Ticker.on("tick",tick);
@@ -42,12 +55,18 @@
 	
 	function getDot() {
 		var dot = document.createElement("img");
+		dot.className = "dot";
 		dot.src = "../_assets/art/dot.png";
 		return dot;
 	}
 	
 	function tween(dot) {
-		dot.style.cssText = "position:absolute; left:" + centerX + "px; top:" + centerY + "px; width: 1px; height: 1px;"
+		cssText = "left:" + centerX + "px; top:" + centerY + "px;";
+		if (!createjs.CSSPlugin.compute) {
+			// if we're not using computed values, all initial values need to be inline:
+			cssText += " width: 1px; height: 1px";
+		}
+		dot.style.cssText = cssText;
 		
 		var angle = Math.random() * Math.PI * 2;
 		c.Tween.get(dot, {loop:-1}).wait( Math.random() * duration ).to({
@@ -62,7 +81,8 @@
 	function tick(evt) {
 		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(1)+"fps";
 	}
-
+	
+	
 </script>
 </head>
 
