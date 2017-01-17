@@ -478,7 +478,7 @@ this.createjs = this.createjs||{};
 	 * @chainable
 	 **/
 	p.wait = function(duration, passive) {
-		if (duration > 0) { this._addStep(duration, this._stepTail.props, null, passive); }
+		if (duration > 0) { this._addStep(+duration, this._stepTail.props, null, passive); }
 		return this;
 	};
 
@@ -501,7 +501,7 @@ this.createjs = this.createjs||{};
 	 */
 	p.to = function(props, duration, ease) {
 		if (duration == null || duration < 0) { duration = 0; }
-		var step = this._addStep(duration, null, ease);
+		var step = this._addStep(+duration, null, ease);
 		this._appendProps(props, step);
 		return this;
 	};
