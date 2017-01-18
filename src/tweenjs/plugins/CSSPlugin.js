@@ -99,6 +99,7 @@ this.createjs = this.createjs||{};
 	 * 	<LI> styles are normalized. For example, a width value specified as a `%` may be computed as `px`, which CSSPlugin will
 	 * 	use for the tween. Different browsers _may_ normalize values differently.
 	 * 	<LI> there are a large number of computed styles, which increases the chance that a property will be identified as a style.
+	 * 	<LI> does not work with IE8 or below.
 	 * 	</UL>
 	 * 	
 	 * 	The `compute` setting can be overridden on a per-tween basis by setting `tween.pluginData.CSS_compute`. For example,

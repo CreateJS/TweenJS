@@ -32,7 +32,7 @@
  * complex sequences.
  *
  * <h4>Simple Tween</h4>
- * This tween will tween the target's alpha property from 0 to 1 for 1s then call the <code>handleComplete</code> function.
+ * This tween will tween the target's alpha property from 0 to 1 for 1000ms (1 second) then call the <code>handleComplete</code> function.
  *
  *	    target.alpha = 0;
  *	    createjs.Tween.get(target).to({alpha:1}, 1000).call(handleComplete);
@@ -109,7 +109,7 @@ this.createjs = this.createjs||{};
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `paused`</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -306,7 +306,7 @@ this.createjs = this.createjs||{};
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `paused`</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
