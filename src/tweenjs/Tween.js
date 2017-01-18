@@ -654,7 +654,7 @@ this.createjs = this.createjs||{};
 			// find our new step index:
 			var stepNext = step.next;
 			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
-			var ratio = end ? t/d : (t-step.t)/step.d; // TODO: revisit this.
+			var ratio = end ? d === 0 ? 1 : t/d : (t-step.t)/step.d; // TODO: revisit this.
 			this._updateTargetProps(step, ratio, end);
 		}
 		this._stepPosition = step ? t-step.t : 0;
