@@ -68,7 +68,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 * @static
 	 **/
-	s.priority = -100; // very low priority, should run last
+	s.priority = 100; // high priority, should read first and write last
 	
 	/**
 	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
@@ -168,7 +168,7 @@ this.createjs = this.createjs||{};
 	 * @param {Object} props
 	 * @static
 	 **/
-	s.step = function(tween, step, props) { /* unused */ }; // TODO: if we want this to work with ColorPlugin (and others) we need to write the style values back to the tween.
+	s.step = function(tween, step, props) { /* unused */ };
 
 	/**
 	 * Called before a property is updated by the tween.

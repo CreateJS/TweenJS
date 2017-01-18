@@ -739,7 +739,7 @@ this.createjs = this.createjs||{};
 
 			initValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive, so we let the plugin take a first swing at it.
 			if (plugins) {
-				for (i = 0, l = plugins.length; i < l; i++) {
+				for (i = plugins.length-1; i >= 0; i--) {
 					value = plugins[i].init(this, n, initValue);
 					if (value !== undefined) { initValue = value; }
 					if (initValue === Tween.IGNORE) {
@@ -769,7 +769,7 @@ this.createjs = this.createjs||{};
 		}
 		
 		if (stepPlugins !== false && (plugins = this._plugins)) {
-			for (i = 0, l = plugins.length; i < l; i++) {
+			for (i = plugins.length-1; i >= 0; i--) {
 				plugins[i].step(this, step, props);
 			}
 		}
