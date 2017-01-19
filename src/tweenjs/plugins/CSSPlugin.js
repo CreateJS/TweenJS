@@ -106,7 +106,7 @@ this.createjs = this.createjs||{};
 	
 	s.TRANSFORM_VALUE_RE = /(-?[\d.]+)([a-z%]*),?\s*/g; // extracts the numeric value and suffix from comma delimited lists
 	
-	s.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|\*/g; // extracts the components of a transform
+	s.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^|\s)(\*)(?:$|\s)/g; // extracts the components of a transform
 	
 	
 	
@@ -239,7 +239,7 @@ this.createjs = this.createjs||{};
 			// pull out the next "component" of the transform (ex. "translate(10px, 20px)")
 			result = s.TRANSFORM_RE.exec(str);
 			if (!result) { break; }
-			if (result[0] === "*") {
+			if (result[3] === "*") {
 				// reuse previous value:
 				list.push(compare[list.length]);
 				continue;
