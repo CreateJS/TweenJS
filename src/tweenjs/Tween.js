@@ -731,9 +731,11 @@ this.createjs = this.createjs||{};
 		var n, i, l, value, initValue, inject;
 		var oldStep = step.prev, oldProps = oldStep.props;
 		var stepProps = step.props = this._cloneProps(oldProps);
+		var cleanProps = {}; // TODO: is there some way to avoid this additional object?
 
 		for (n in props) {
-			stepProps[n] = props[n];
+			if (!props.hasOwnProperty(n)) { continue; }
+			cleanProps[n] = stepProps[n] = props[n];
 
 			if (initProps[n] !== undefined) { continue; }
 
@@ -744,7 +746,7 @@ this.createjs = this.createjs||{};
 					if (value !== undefined) { initValue = value; }
 					if (initValue === Tween.IGNORE) {
 						delete(stepProps[n]);
-						delete(props[n]);
+						delete(cleanProps[n]);
 						break;
 					}
 				}
@@ -756,7 +758,7 @@ this.createjs = this.createjs||{};
 			}
 		}
 		
-		for (n in props) {
+		for (n in cleanProps) {
 			value = props[n];
 
 			// propagate old value to previous steps:
@@ -770,7 +772,7 @@ this.createjs = this.createjs||{};
 		
 		if (stepPlugins !== false && (plugins = this._plugins)) {
 			for (i = plugins.length-1; i >= 0; i--) {
-				plugins[i].step(this, step, props);
+				plugins[i].step(this, step, cleanProps);
 			}
 		}
 		
