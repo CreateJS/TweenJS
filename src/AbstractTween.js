@@ -198,7 +198,7 @@ export default class AbstractTween extends EventDispatcher {
 	/**
 	 * Returns a list of the labels defined on this tween sorted by position.
 	 * @property labels
-	 * @return {Array[Object]} A sorted array of objects with label and position properties.
+	 * @type {Array[Object]}
 	 */
 	get labels () {
 		let list = this._labelList;
@@ -213,15 +213,45 @@ export default class AbstractTween extends EventDispatcher {
 		return list;
 	}
 
-  /**
-	 * Defines labels for use with gotoAndPlay/Stop. Overwrites any previously set labels.
-	 * @param {Object} labels An object defining labels for using {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}
-	 * in the form `{myLabelName:time}` where time is in milliseconds (or ticks if `useTicks` is `true`).
-	 */
 	set labels (labels) {
 		this._labels = labels;
 		this._labelList = null;
 	}
+
+  /**
+   * Returns the name of the label on or immediately before the current position. For example, given a tween with
+   * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
+   * <UL>
+   *         <LI>null if the current position is 2.</LI>
+   *         <LI>"first" if the current position is 4.</LI>
+   *         <LI>"first" if the current position is 7.</LI>
+   *         <LI>"second" if the current position is 15.</LI>
+   * </UL>
+   * @property currentLabel
+   * @type {String}
+   * @readonly
+   */
+  get currentLabel () {
+    let labels = this.getLabels();
+    let pos = this.position;
+    for (let i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
+    return (i===0) ? null : labels[i-1].label;
+  }
+
+  /**
+   * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage collection
+   * if no other references to it exist.
+   * @property paused
+   * @type {Boolean}
+	 */
+	get paused () {
+		return this._paused;
+	}
+
+  set paused (paused) {
+    Tween._register(this, paused);
+		this._paused = paused;
+  }
 
 // public methods:
 	/**
@@ -270,7 +300,7 @@ export default class AbstractTween extends EventDispatcher {
 		this.rawPosition = rawPosition;
 
 		this._updatePosition(jump, end);
-		if (end) { this.setPaused(true); }
+		if (end) { this.paused = true; }
 
 		callback && callback(this);
 
@@ -316,32 +346,13 @@ export default class AbstractTween extends EventDispatcher {
 	}
 
 	/**
-	 * Returns the name of the label on or immediately before the current position. For example, given a tween with
-	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
-	 * <UL>
-	 * 		<LI>null if the current position is 2.</LI>
-	 * 		<LI>"first" if the current position is 4.</LI>
-	 * 		<LI>"first" if the current position is 7.</LI>
-	 * 		<LI>"second" if the current position is 15.</LI>
-	 * </UL>
-	 * @method getCurrentLabel
-	 * @return {String} The name of the current label or null if there is no label
-	 */
-	getCurrentLabel (pos) {
-		let labels = this.labels, i, l;
-		if (pos == null) { pos = this.position; }
-		for (i = 0, l = labels.length; i < l; i++) { if (pos < labels[i].position) { break; } }
-		return i === 0 ? null : labels[i - 1].label;
-	}
-
-	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
 	 * @method gotoAndPlay
 	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
 	 * or label to jump to.
 	 */
 	gotoAndPlay (positionOrLabel) {
-		this.setPaused(false);
+		this.paused = false;
 		this._goto(positionOrLabel);
 	}
 
@@ -352,7 +363,7 @@ export default class AbstractTween extends EventDispatcher {
 	 * to jump to.
 	 */
 	gotoAndStop (positionOrLabel) {
-		this.setPaused(true);
+		this.paused = true;
 		this._goto(positionOrLabel);
 	}
 
@@ -366,18 +377,6 @@ export default class AbstractTween extends EventDispatcher {
 		let pos = Number(positionOrLabel);
 		if (isNaN(pos)) { pos = this._labels && this._labels[positionOrLabel]; }
 		return pos;
-	}
-
-	/**
-	 * Pauses or plays this tween.
-	 * @method setPaused
-	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-	 * @return {Tween} This tween instance (for chaining calls)
-	 * @chainable
-	 */
-	setPaused (value) {
-		Tween._register(this, value);
-		return this;
 	}
 
 	/**
@@ -404,7 +403,7 @@ export default class AbstractTween extends EventDispatcher {
 	 * @protected
 	 */
 	_init (props) {
-		if (!props || !props.paused) { this.setPaused(false); }
+		if (!props || !props.paused) { this.paused = false; }
 		if (props && props.position != null) { this.setPosition(props.position); }
 	}
 
@@ -426,7 +425,7 @@ export default class AbstractTween extends EventDispatcher {
 	  // console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
 		// if we don't have any actions, and we're not a Timeline, then return:
 		// TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
-		if (!this._actionHead && !this._tweens) { return; }
+		if (!this._actionHead && !this.tweens) { return; }
 
 		let d = this.duration, reversed = this.reversed, bounce = this.bounce, loopCount = this.loop;
 		let loop0, loop1, t0, t1;
@@ -494,7 +493,8 @@ export default class AbstractTween extends EventDispatcher {
 
 // events:
 /**
- * Dispatched whenever the tween's position changes.
+ * Dispatched whenever the tween's position changes. It occurs after all tweened properties are updated and actions
+ * are executed.
  * @event change
  */
 /**

@@ -66,7 +66,7 @@ export default class RotationPlugin {
 	 * @method install
 	 * @static
 	 */
-	install () {
+	static install () {
 		Tween._installPlugin(RotationPlugin);
 	}
 
@@ -80,44 +80,51 @@ export default class RotationPlugin {
 	 * @return {any}
 	 * @static
 	 */
-	init (tween, prop, value) {
-		let data = tween.pluginData;
-		if (s.props[prop] && !data.Rotation_installed && !data.Rotation_disabled) {
-			tween._addPlugin(s);
-			data.Rotation_installed = true;
+	static init (tween, prop, value) {
+		if (RotationPlugin.props[prop] && !tween.pluginData.Rotation_disabled) {
+			let data = tween.pluginData, end = data.Rotation_end || (data.Rotation_end = {});
+			end[prop] = value === undefined ? tween.target[prop] : value;
+			tween._addPlugin(RotationPlugin);
 		}
 	}
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method init
+	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+	 * @method step
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
-	 * @param {String} prop
-	 * @param {String} value
+	 * @param {Object} prop
 	 * @return {any}
 	 * @static
 	 */
-	step (tween, step, prop, value) {
-		if (!s.props[prop]) { return; }
-		tween.pluginData.Rotation_end = value;
-		let dir = step.props.rotationDir;
-		if (dir === 0) { return; }
+	static step (tween, step, props) {
+		for (let n in RotationPlugin.props) {
+			if (props[n] === undefined) { continue; }
 
-		dir = dir || 0;
-		let start = step.prev.props[prop];
-		let delta = (value - start) % 360;
+			let value = props[n];
+			let dir = step.props.rotationDir, data = tween.pluginData;
+			let end = data.Rotation_end, start = step.prev.props[n];
 
-		if ((dir === 0 && delta > 180) || (dir === -1 && delta > 0)) { delta -= 360; }
-		else if ((dir === 0 && delta < -180) || (dir === 1 && delta < 0)) { delta += 360; }
-		return start + delta;
+			if (dir === 0) {
+					step.props[n] = value - end[n] + start;
+			} else {
+					dir = dir || 0;
+					let delta = (value - start) % 360;
+
+					if ((dir === 0 && delta > 180) || (dir === -1 && delta > 0)) { delta -= 360; }
+					else if ((dir === 0 && delta < -180) || (dir === 1 && delta < 0)) { delta += 360; }
+
+					step.props[n] = start + delta;
+			}
+			end[n] = value;
+		}
 	}
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method tween
+	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+	 * @method change
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {String} prop
@@ -127,9 +134,9 @@ export default class RotationPlugin {
 	 * @return {any}
 	 * @static
 	 */
-	tween (tween, step, prop, value, ratio, end) {
+	static change (tween, step, prop, value, ratio, end) {
 		if (prop === "rotationDir") { return Tween.IGNORE; }
-		if (end && s.props[prop]) { return tween.pluginData.Rotation_end; }
+		if (end && s.props[prop]) { return tween.pluginData.Rotation_end; } // so it ends on the actual value
 	}
 
 }
@@ -144,3 +151,12 @@ export default class RotationPlugin {
  * @static
  */
 RotationPlugin.props = { rotation: 1, rotationX: 1, rotationY: 1, rotationZ: 1 };
+
+/**
+ * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+ * @property ID
+ * @type {String}
+ * @static
+ * @readonly
+ */
+RotationPlugin.ID = "Rotation";

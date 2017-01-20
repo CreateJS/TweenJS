@@ -169,6 +169,16 @@ export default class Tween extends AbstractTween {
 		this._plugins = null;
 
 		/**
+		 * Hash for quickly looking up added plugins. Null until a plugin is added.
+		 * @property _plugins
+		 * @type Object
+		 * @default null
+		 * @protected
+		 */
+		this._pluginIds = null;
+
+
+		/**
 		 * Used by plugins to inject new properties.
 		 * @property _injected
 		 * @type {Object}
@@ -270,7 +280,7 @@ export default class Tween extends AbstractTween {
 		let tween = Tween._tweenHead;
 		while (tween) {
 			let next = tween._next;
-			if (tween.target === target) { Tween._register(tween, true); }
+			if (tween.target === target) { tween.paused = true; }
 			tween = next;
 		}
 		target.tweenjs_count = 0;
@@ -337,7 +347,7 @@ export default class Tween extends AbstractTween {
 	static _register (tween, paused) {
 		let target = tween.target;
 		if (!paused && tween._paused) {
-			// TODO: this approach might fail if a dev is using sealed objects in ES5
+			// TODO: this approach might fail if a dev is using sealed objects
 			if (target) { target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count + 1 : 1; }
 			let tail = Tween._tweenTail;
 			if (!tail) { Tween._tweenHead = Tween._tweenTail = tween; }
@@ -357,7 +367,6 @@ export default class Tween extends AbstractTween {
 
 			tween._next = tween._prev = null;
 		}
-		tween._paused = paused;
 	}
 
 // public methods:
@@ -377,7 +386,7 @@ export default class Tween extends AbstractTween {
 	 * @chainable
 	 */
 	wait (duration, passive = false) {
-		if (duration > 0) { this._addStep(duration, this._stepTail.props, null, passive); }
+		if (duration > 0) { this._addStep(+duration, this._stepTail.props, null, passive); }
 		return this;
 	}
 
@@ -400,7 +409,7 @@ export default class Tween extends AbstractTween {
 	 */
 	to (props, duration = 0, ease = Ease.linear) {
 		if (duration < 0) { duration = 0; }
-		let step = this._addStep(duration, null, ease);
+		let step = this._addStep(+duration, null, ease);
 		this._appendProps(props, step);
 		return this;
 	}
@@ -416,9 +425,8 @@ export default class Tween extends AbstractTween {
 	 * // ...
 	 * tween.gotoAndPlay("myLabel"); // would play from 1000ms in.
 	 *
-	 * @method addLabel
+	 * @method label
 	 * @param {String} label The label name.
-	 * @param {Number} position The position this label represents.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
 	 */
@@ -471,26 +479,34 @@ export default class Tween extends AbstractTween {
 	 *	myTween.to({x:100}, 500).play(otherTween);
 	 *
 	 * @method play
-	 * @param {Tween} tween The tween to play.
+	 * @param {Tween} [tween] The tween to play. Defaults to this tween.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
 	 */
 	play (tween) {
-		return this.call(this.setPaused, [ false ], tween || this);
+    return this._addAction(tween || this, this._set, [{ paused: false }]);
 	}
 
 	/**
 	 * Adds an action to pause the specified tween.
 	 *
-	 * 	myTween.pause(otherTween).to({alpha:1}, 1000).play(otherTween);
+	 * myTween.pause(otherTween).to({alpha:1}, 1000).play(otherTween);
+	 *
+	 * Note that this executes at the end of a tween update, so the tween may advance beyond the time the pause
+   * action was inserted at. For example:
+   *
+   * myTween.to({foo:0}, 1000).pause().to({foo:1}, 1000);
+   *
+   * At 60fps the tween will advance by ~16ms per tick, if the tween above was at 999ms prior to the current tick, it
+   * will advance to 1015ms (15ms into the second "step") and then pause.
 	 *
 	 * @method pause
-	 * @param {Tween} tween The tween to pause. If null, it pauses this tween.
+	 * @param {Tween} [tween] The tween to pause. Defaults to this tween.
 	 * @return {Tween} This tween instance (for chaining calls)
 	 * @chainable
 	 */
 	pause (tween) {
-		return this.call(this.setPaused, [ true ], tween || this);
+		return this._addAction(tween || this, this._set, [{ paused: false }]);
 	}
 
 	/**
@@ -509,19 +525,19 @@ export default class Tween extends AbstractTween {
 	 * @protected
 	 */
 	_addPlugin (plugin) {
-		let plugins = this._plugins, priority = plugin.priority, added = false;
-		if (!plugins) { plugins = this._plugins = []; }
+		let ids = this._pluginIds || (this._pluginIds = {}), id = plugin.id;
+		if (!id || ids[id]) { return; } // already added
+
+		ids[id] = true;
+		let plugins = this._plugins || (this._plugins = []), priority = plugin.priority || 0;
 		for (let i = 0, l = plugins.length; i < l; i++) {
-			if (plugins[i] === plugin) {
-				if (!added) { return; }
-				else { plugins.splice(i, 1); }
-			} else if (!added && priority < plugins[i].priority) {
+			if (priority < plugins[i].priority) {
 				plugins.splice(i, 0, plugin);
-				added = true;
+				return;
 			}
 		}
-		if (!added) { plugins.push(plugin); }
-	};
+		plugins.push(plugin);
+	}
 
 	/**
    * @method _updatePosition
@@ -555,7 +571,7 @@ export default class Tween extends AbstractTween {
 		if (ease = step.ease) { ratio = ease(ratio, 0, 1, 1); }
 
 		let plugins = this._plugins;
-		for (let n in p0) {
+		proploop : for (let n in p0) {
 			v = v0 = p0[n];
 			v1 = p1[n];
 
@@ -566,8 +582,8 @@ export default class Tween extends AbstractTween {
 
 			if (plugins) {
 				for (let i = 0, l = plugins.length; i < l; i++) {
-					let value = plugins[i].tween(this, step, n, v, ratio, end);
-					if (v === Tween.IGNORE) { return; }
+					let value = plugins[i].change(this, step, n, v, ratio, end);
+					if (value === Tween.IGNORE) { continue proploop; }
 					if (value !== undefined) { v = value; }
 				}
 			}
@@ -585,7 +601,6 @@ export default class Tween extends AbstractTween {
 	 * @override
 	 */
 	_runActionsRange (startPos, endPos, jump, includeStart) {
-		//console.log("	range", startPos, endPos, jump, includeStart);
 		let rev = startPos > endPos;
 		let action = rev ? this._actionTail : this._actionHead;
 		let ePos = endPos, sPos = startPos;
@@ -594,7 +609,6 @@ export default class Tween extends AbstractTween {
 		while (action) {
 			let pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
-				//console.log(pos, "start", sPos, startPos, "end", ePos, endPos);
 				action.funct.apply(action.scope, action.params);
 				if (t !== this.position) { return true; }
 			}
@@ -607,41 +621,40 @@ export default class Tween extends AbstractTween {
 	 * @param {Object} props
 	 * @protected
 	 */
-	_appendProps (props, step) {
+	_appendProps (props, step, stepPlugins) {
 		let initProps = this._stepHead.props, target = this.target, plugins = Tween._plugins;
-		let inject, ignored;
+		let n, i, l, value, initValue, inject;
 
 		let oldStep = step.prev, oldProps = oldStep.props;
 		let stepProps = step.props = this._cloneProps(oldProps);
 
-		for (let n in props) {
+		for (n in props) {
 			stepProps[n] = props[n];
 
 			if (initProps[n] !== undefined) { continue; }
 
-			let oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
+			initValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive, so we let the plugin take a first swing at it.
 			if (plugins) {
-				for (let i = 0, l = plugins.length; i < l; i++) {
-					let value = plugins[i].init(this, n, oldValue);
-					if (value !== undefined) { oldValue = value; }
-					if (oldValue === Tween.IGNORE) {
+				for (i = 0, l = plugins.length; i < l; i++) {
+					value = plugins[i].init(this, n, initValue);
+					if (value !== undefined) { initValue = value; }
+					if (initValue === Tween.IGNORE) {
 						(ignored = ignored || {})[n] = true;
 						delete(stepProps[n]);
+						delete(props[n]);
 						break;
 					}
 				}
 			}
 
-			if (oldValue !== Tween.IGNORE) {
-				if (oldValue === undefined) { oldValue = target[n]; }
-				oldProps[n] = (oldValue === undefined) ? null : oldValue;
+			if (initValue !== Tween.IGNORE) {
+				if (initValue === undefined) { initValue = target[n]; }
+				oldProps[n] = (initValue === undefined) ? null : initValue;
 			}
 		}
 
-		plugins = this._plugins;
-		for (let n in props) {
-			if (ignored && ignored[n]) { continue; }
-			let value = props[n];
+		for (n in props) {
+			value = props[n];
 
 			// propagate old value to previous steps:
 			let o, prev = oldStep;
@@ -650,31 +663,32 @@ export default class Tween extends AbstractTween {
 				if (prev.props[n] !== undefined) { break; } // already has a value, we're done.
 				prev.props[n] = oldProps[n];
 			}
+		}
 
-			if (plugins) {
-				for (let i = 0, l = plugins.length; i < l; i++) {
-					let value = plugins[i].step(this, step, n, value);
-					if (value !== undefined) { step.props[n] = value; }
-				}
+		if (stepPlugins && (plugins = this._plugins)) {
+			for (i = 0, l = plugins.length; i < l; i++) {
+				plugins[i].step(this, step, props);
 			}
 		}
 
 		if (inject = this._injected) {
 			this._injected = null;
-			this._appendProps(inject, step);
+			this._appendProps(inject, step, false);
 		}
 	}
 
 	/**
-	 * Used by plugins to inject properties. Called from within `Plugin.step` calls.
-	 * @method _injectProps
-	 * @param {Object} props
+	 * Used by plugins to inject properties onto the current step. Called from within `Plugin.step` calls.
+	 * For example, a plugin dealing with color, could read a hex color, and inject red, green, and blue props into the tween.
+	 * See the SamplePlugin for more info.
+	 * @method _injectProp
+	 * @param {String} name
+	 * @param {Object} value
 	 * @protected
 	 */
-	_injectProps (props) {
-		let o = this._injected;
-		if (!this._injected) { o = this._injected = {}; }
-		for (let n in props) { o[n] = props[n]; }
+	_injectProp (name, value) {
+		let o = this._injected || (this._injected = {});
+		o[name] = value;
 	}
 
 	/**

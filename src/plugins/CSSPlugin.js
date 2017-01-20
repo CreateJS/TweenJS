@@ -32,7 +32,7 @@ import Tween from "../Tween";
  * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
  * TweenJS has loaded:
  *
- *      createjs.CSSPlugin.install();
+ *     createjs.CSSPlugin.install();
  *
  * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
  * the top, left, bottom, right, width, height have a "px" suffix appended.
@@ -58,76 +58,98 @@ export default class CSSPlugin {
 	 * @method install
 	 * @static
 	 */
-	install () {
+	static install () {
 		Tween._installPlugin(CSSPlugin);
 	}
 
 	/**
-	 * @method init
-	 * @protected
-	 * @static
+	 * Called by TweenJS when a new property initializes on a tween.
+   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+   * @method init
+   * @param {Tween} tween
+   * @param {String} prop
+   * @param {any} value
+   * @return {any}
+   * @static
 	 */
-	init (tween, prop, value) {
+	static init (tween, prop, value) {
 		let data = tween.pluginData;
 		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
+		let style = tween.target.style, initVal = style[prop];
+		if (initVal === undefined) { return;  }
 
-		let sfx0, sfx1, style, map = CSSPlugin.cssSuffixMap;
-		if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) { return value; }
-		if (!data.CSS_installed) {
-			tween._addPlugin(CSSPlugin);
-			data.CSS_installed = true;
-		}
-		let str = style[prop];
-		if (!str) { return 0; } // no style set.
-		let i = str.length - sfx0.length;
-		if ((sfx1 = str.substr(i)) != sfx0) {
-			throw `CSSPlugin Error: Suffixes do not match. (${sfx0}:${sfx1})`;
+		tween._addPlugin(CSSPlugin);
+
+		// TODO: add special handlers for "transform" and the like.
+
+		let result = CSSPlugin.RE.exec(initVal), cssData = data.CSS || (data.CSS = {});
+		if (result === null) {
+			// a string we can't handle numerically, so add it to the CSSData without a suffix.
+			cssData[prop] = "";
+			return initVal;
 		} else {
-			return parseInt(str);
+			cssData[prop] = result[2];
+			return parseFloat(result[1]);
 		}
 	}
 
 	/**
-	 * @method step
-	 * @protected
+   * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+   * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+   * @method step
+   * @param {Tween} tween
+   * @param {TweenStep} step
+   * @param {Object} props
 	 * @static
 	 */
-	step (tween, step, prop, value, injectProps) {
+	static step (tween, step, props) {
 		// unused
 	}
 
 	/**
-	 * @method tween
-	 * @protected
+   * Called before a property is updated by the tween.
+   * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+   * @method change
+   * @param {Tween} tween
+   * @param {TweenStep} step
+   * @param {String} prop
+   * @param {any} value
+   * @param {Number} ratio
+   * @param {Boolean} end
+   * @return {any}
 	 * @static
 	 */
-	tween (tween, step, prop, value, ratio, end) {
-		let style, map = CSSPlugin.cssSuffixMap, sfx = map[prop];
-		if (sfx === undefined || !(style = tween.target.style)) { return; }
-		style[prop] = (value | 0) + sfx;
+	static change (tween, step, prop, value, ratio, end) {
+		let sfx = tween.pluginData.CSS[prop];
+		if (sfx === undefined) { return; }
+		tween.target.style[prop] = value + sfx;
 		return Tween.IGNORE;
 	}
 
 }
 
-// TODO: update docs.
-
 // static properties
-/**
- * Defines the default suffix map for CSS tweens. This can be overridden on a per tween basis by specifying a
- * cssSuffixMap value for the individual tween. The object maps CSS property names to the suffix to use when
- * reading or setting those properties. For example a map in the form {top:"px"} specifies that when tweening
- * the "top" CSS property, it should use the "px" suffix (ex. target.style.top = "20.5px"). This only applies
- * to tweens with the "css" config property set to true.
- * @property cssSuffixMap
- * @type Object
- * @static
- */
-CSSPlugin.cssSuffixMap = { top: "px", left: "px", bottom: "px", right: "px", width: "px", height: "px", opacity: ""};
-
 /**
  * @property priority
  * @protected
  * @static
  */
 CSSPlugin.priority = -100; // very low priority, should run last
+
+/**
+ * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+ * @property ID
+ * @type {String}
+ * @static
+ * @readonly
+ */
+CSSPlugin.ID = "CSS";
+
+/**
+ * RegExp pattern that matches a 3 or 6 digit RGB string with a preceding #.
+ * @property RE
+ * @type {RegExp}
+ * @static
+ * @readonly
+ */
+CSSPlugin.RE = /^(-?\d+(?:.\d+)?)([a-z%]*)$/m; // extracts the numeric value and suffix

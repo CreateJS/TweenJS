@@ -74,6 +74,7 @@ export default class MotionGuidePlugin {
 	 * @static
 	 */
 	static install () {
+		throw "MotionGuidePlugin has not been updated to work with the latest TweenJS plugin model yet. Soon!";
 		Tween.installPlugin(MotionGuidePlugin, ["guide", "x", "y", "rotation"]);
 		return Tween.IGNORE;
 	}

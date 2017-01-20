@@ -12,13 +12,12 @@
 	<script src="../src/tweenjs/AbstractTween.js"></script>
 	<script src="../src/tweenjs/Tween.js"></script>
 	<script src="../src/tweenjs/Ease.js"></script>
-	<!--<script src="../src/tweenjs/DummyPlugin.js"></script>-->
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
 <script id="editable">
 	var c=createjs, stage, stageW, stageH, fpsFld;
-	var duration=750, count=20000, radius=480, displayTime=3000;
+	var duration=300, count=30000, radius=480, displayTime=3000;
 
 	function init() {
 		fpsFld = document.getElementById("fps");
@@ -26,9 +25,8 @@
 		
 		stageW = stage.canvas.width;
 		stageH = stage.canvas.height;
-		var i = 0, g = new c.Graphics().f("#012").dc(0,0,8);
+		var i = 0, g = new c.Graphics().f("#012").dc(0,0,1);
 		
-		//createjs.DummyPlugin.install(createjs.Tween);
 		while (i++ < count) {
 			tween(stage.addChild(new c.Shape(g)));
 		}
@@ -42,20 +40,15 @@
 		var angle = Math.random() * Math.PI * 2;
 		dot.x = stageW/2;
 		dot.y = Math.random()*stageH;
-		dot.scaleX = dot.scaleY = 0.1;
 		
-		c.Tween.get(dot).wait( Math.random() * duration ).to({
-				x:Math.cos(angle) * radius + stageW/2,
-				//y:Math.sin(angle) * radius + centerY,
-				//scaleX:1,
-				//scaleY:1
-			}, duration, c.Ease.cubicIn).call(tween,[dot]);
-		return dot;
+		c.Tween.get(dot, {loop:-1}).wait(Math.random() * duration )
+			.to({x:Math.cos(angle) * radius + stageW/2}, duration, c.Ease.cubicIn);
 	}
 	
 	function tick(evt) {
-		if ((displayTime -= evt.delta) > 0) { stage.update(); }
-		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(0)+"fps";
+		var render = (displayTime -= evt.delta) > 0;
+		if (render) { stage.update(); }
+		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(0)+"fps"+(render ? "" : " RENDERING DISABLED");
 	}
 
 </script>

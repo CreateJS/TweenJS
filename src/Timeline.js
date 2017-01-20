@@ -64,11 +64,13 @@ export default class Timeline extends AbstractTween {
 
 	// private properties:
 		/**
-		 * @property _tweens
-		 * @type Array[Tween]
-		 * @protected
+		 * The array of tweens in the timeline. It is strongly recommended that you use
+		 * {{#crossLink "Tween/addTween"}}{{/crossLink}} and {{#crossLink "Tween/removeTween"}}{{/crossLink}},
+		 * rather than accessing this directly, but it is  included for advanced uses.
+		 * @property tweens
+		 * @type Array
 		 */
-		this._tweens = [];
+		this.tweens = [];
 
 		if (props.tweens) { this.addTween(...tweens); }
 		this.labels = props.labels;
@@ -90,9 +92,9 @@ export default class Timeline extends AbstractTween {
 		let l = args.length;
 		if (l === 1) {
 			let tween = args[0];
-			this._tweens.push(tween);
+			this.tweens.push(tween);
 			tween._parent = this;
-			tween.setPaused(true);
+			tween.paused = true;
 			let d = tween.duration;
 			if (tween.loop > 0) { d *= tween.loop + 1; }
 			if (d > this.duration) { this.duration = d; }
@@ -115,7 +117,7 @@ export default class Timeline extends AbstractTween {
 	removeTween (...args) {
 		let l = args.length;
 		if (l === 1) {
-			let tweens = this._tweens;
+			let tweens = this.tweens;
 			let i = tweens.length;
 			while (i--) {
 				if (tweens[i] === tween) {
@@ -142,8 +144,8 @@ export default class Timeline extends AbstractTween {
 	 */
 	updateDuration () {
 		this.duration = 0;
-		for (let i = 0, l = this._tweens.length; i < l; i++) {
-			let tween = this._tweens[i];
+		for (let i = 0, l = this.tweens.length; i < l; i++) {
+			let tween = this.tweens[i];
 			let d = tween.duration;
 			if (tween.loop > 0) { d *= tween.loop + 1; }
 			if (d > this.duration) { this.duration = d; }
@@ -165,8 +167,8 @@ export default class Timeline extends AbstractTween {
 	 */
 	_updatePosition (jump, end) {
 		let t = this.position;
-		for (let i = 0, l = this._tweens.length; i < l; i++) {
-			this._tweens[i].setPosition(t, true, jump); // actions will run after all the tweens update.
+		for (let i = 0, l = this.tweens.length; i < l; i++) {
+			this.tweens[i].setPosition(t, true, jump); // actions will run after all the tweens update.
 		}
 	}
 
@@ -177,8 +179,8 @@ export default class Timeline extends AbstractTween {
 	_runActionsRange (startPos, endPos, jump, includeStart) {
 		//console.log("	range", startPos, endPos, jump, includeStart);
 		let t = this.position;
-		for (let i = 0, l = this._tweens.length; i < l; i++) {
-			this._tweens[i]._runActions(startPos, endPos, jump, includeStart);
+		for (let i = 0, l = this.tweens.length; i < l; i++) {
+			this.tweens[i]._runActions(startPos, endPos, jump, includeStart);
 			if (t !== this.position) { return true; } // an action changed this timeline's position.
 		}
 	}

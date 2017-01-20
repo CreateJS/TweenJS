@@ -60,7 +60,7 @@ export default class RelativePlugin {
    * @method install
    * @static
    */
-  install () {
+  static install () {
     Tween._installPlugin(RelativePlugin);
   }
 
@@ -74,36 +74,35 @@ export default class RelativePlugin {
    * @return {any}
    * @static
    */
-  init (tween, prop, value) {
-    let data = tween.pluginData;
-    if (!data.Relative_installed && !data.Relative_disabled) {
-      tween._addPlugin(s);
-      data.Relative_installed = true;
-    }
+  static init (tween, prop, value) {
+    if (!tween.pluginData.Relative_disabled) { tween._addPlugin(RelativePlugin); }
   }
 
   /**
    * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-   * @method init
+   * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+   * @method step
    * @param {Tween} tween
    * @param {TweenStep} step
-   * @param {String} prop
-   * @param {String} value
+   * @param {Object} props
    * @return {any}
    * @static
    */
-  step (tween, step, prop, value) {
-    if (typeof value !== "string") { return; }
-    let prev = step.prev.props[prop], char0 = value[0], val;
-    if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = +value)) { return; }
-    return prev + val;
+  static step (tween, step, prop) {
+    // in this method we check if any prop is a string value starting with "+" or "-", and adjust the value accordingly.
+    for (let n in props) {
+      let value = props[n];
+      if (typeof value !== "string") { continue; }
+      let prev = step.prev.props[n], char0 = value[0];
+      if (!(char0 === "+" || char0 === "-") || isNaN(value = +value + prev)) { continue; }
+      step.props[n] = value;
+    }
   }
 
   /**
    * Called before a property is updated by the tween.
-   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-   * @method tween
+   * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+   * @method change
    * @param {Tween} tween
    * @param {TweenStep} step
    * @param {String} prop
@@ -113,8 +112,17 @@ export default class RelativePlugin {
    * @return {any}
    * @static
    */
-  tween (tween, step, prop, value, ratio, end) {
+  static change (tween, step, prop, value, ratio, end) {
     // nothing
   }
 
 }
+
+/**
+ * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+ * @property ID
+ * @type {String}
+ * @static
+ * @readonly
+ */
+RelativePlugin.ID = "Relative";
