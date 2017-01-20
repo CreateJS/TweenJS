@@ -74,7 +74,7 @@ export default class Tween extends AbstractTween {
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `paused`</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -218,7 +218,7 @@ export default class Tween extends AbstractTween {
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `paused`</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -549,7 +549,7 @@ export default class Tween extends AbstractTween {
 			// find our new step index:
 			let stepNext = step.next;
 			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
-			let ratio = end ? t / d : (t - step.t) / step.d; // TODO: revisit this.
+			let ratio = end ? d === 0 ? 1 : t/d : (t-step.t)/step.d; // TODO: revisit this.
 			this._updateTargetProps(step, ratio, end);
 		}
 		this._stepPosition = step ? t - step.t : 0;
@@ -627,21 +627,23 @@ export default class Tween extends AbstractTween {
 
 		let oldStep = step.prev, oldProps = oldStep.props;
 		let stepProps = step.props = this._cloneProps(oldProps);
+		let cleanProps = {};
 
 		for (n in props) {
-			stepProps[n] = props[n];
+			if (!props.hasOwnProperty(n)) { continue; }
+			cleanProps[n] = stepProps[n] = props[n];
 
 			if (initProps[n] !== undefined) { continue; }
 
 			initValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive, so we let the plugin take a first swing at it.
 			if (plugins) {
-				for (i = 0, l = plugins.length; i < l; i++) {
+        for (i = plugins.length - 1; i >= 0; i--) {
 					value = plugins[i].init(this, n, initValue);
 					if (value !== undefined) { initValue = value; }
 					if (initValue === Tween.IGNORE) {
 						(ignored = ignored || {})[n] = true;
 						delete(stepProps[n]);
-						delete(props[n]);
+						delete(cleanProps[n]);
 						break;
 					}
 				}
@@ -653,7 +655,7 @@ export default class Tween extends AbstractTween {
 			}
 		}
 
-		for (n in props) {
+		for (n in cleanProps) {
 			value = props[n];
 
 			// propagate old value to previous steps:
@@ -666,8 +668,8 @@ export default class Tween extends AbstractTween {
 		}
 
 		if (stepPlugins && (plugins = this._plugins)) {
-			for (i = 0, l = plugins.length; i < l; i++) {
-				plugins[i].step(this, step, props);
+      for (i = plugins.length - 1; i >= 0; i--) {
+				plugins[i].step(this, step, cleanProps);
 			}
 		}
 

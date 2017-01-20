@@ -221,8 +221,12 @@ export default class SamplePlugin {
 
 // static properties:
 /**
- * Used by TweenJS to determine when to call this plugin. Plugins with higher priority have their methods called
- * before plugins with lower priority. The priority value can be any positive or negative number.
+ * Used by TweenJS to determine when to call this plugin relative to others.
+ * Plugins with higher priority read first, and write last.
+ *
+ * For example, if plugin A has `priority=0`, and plugin B has `priority=9` then B's `init` and `step` methods would
+ * be called before A's, but B's `change` method would be called *after* A's.
+ * 
  * @property priority
  * @type {Number}
  * @default 0

@@ -44,7 +44,7 @@ import AbstractTween from "./AbstractTween";
  *    <LI> `reversed`</LI>
  *    <LI> `bounce`</LI>
  *    <LI> `timeScale`</LI>
- *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+ *    <LI> `paused`</LI>
  *    <LI> `position`: indicates the initial position for this tween.</LI>
  *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
  *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -64,9 +64,9 @@ export default class Timeline extends AbstractTween {
 
 	// private properties:
 		/**
-		 * The array of tweens in the timeline. It is strongly recommended that you use
+		 * The array of tweens in the timeline. It is *strongly* recommended that you use
 		 * {{#crossLink "Tween/addTween"}}{{/crossLink}} and {{#crossLink "Tween/removeTween"}}{{/crossLink}},
-		 * rather than accessing this directly, but it is  included for advanced uses.
+		 * rather than accessing this directly, but it is included for advanced uses.
 		 * @property tweens
 		 * @type Array
 		 */

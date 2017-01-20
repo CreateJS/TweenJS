@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TweenJS: CSS Tweening Example</title>
+
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+
+	<script type="text/javascript" src="../src/tweenjs/plugins/CSSPlugin.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/plugins/ColorPlugin.js"></script>
+
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+<style>
+	.box {
+		border-radius: 100%;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 1vw;
+		height: 1vw;
+	}
+</style>
+
+<script id="editable">
+
+	function init() {
+		createjs.CSSPlugin.install();
+		createjs.ColorPlugin.install("hsl");
+		
+		var count = 250;
+		while (--count >= 0) {
+			// create a new box:
+			var box = document.createElement("div");
+			box.className = "box";
+			document.body.appendChild(box);
+			
+			// set up initial rotation & position:
+			var a = Math.random() * 360, hue=count/300*30+180;
+			box.style.transform = "translate(-50%,-50%) rotate(" + a + "deg) translate("+3+"vw, 0px) scale(0.1,0.1)";
+			box.style.background = "hsla("+(hue|0)+", 100%, 50%, 1)";
+			
+			var d = Math.random()*1000+1000|0;
+			// create the tween:
+			createjs.Tween.get(box, {loop: -1})
+				.to({
+					// the * tells it to reuse that operation from the previous step (ie. "translate(-50%,-50%)"):
+					transform:"* rotate(" + (a+Math.random()*140+80) + "deg) translate("+(Math.random()*10+40)+"vw, 0px) scale(4,4)",
+					background:"hsla("+(hue+120|0)+", 100%, 40%, 0)"
+					}, d, createjs.Ease.quadIn);
+			
+		}
+		
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
+	}
+
+
+
+</script>
+</head>
+
+<body onload="init();" style="background-color:#111111; overflow:hidden">
+
+<header class="TweenJS">
+	<h1>CSS Plugin Transform Example</h1>
+
+	<p>Shows the CSSPlugin in action using transform and ColorPlugin.</p>
+</header>
+
+</body>
+</html>
