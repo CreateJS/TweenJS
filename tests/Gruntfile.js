@@ -15,7 +15,8 @@ module.exports = function (grunt) {
 								'spec/Helpers.js'
 							],
 							vendor: [],
-							host: 'http://127.0.0.1:<%=connect.serve.options.port%>/'
+							host: 'http://127.0.0.1:<%=connect.serve.options.port%>/',
+							styles: "styles.css"
 						}
 					}
 				},
