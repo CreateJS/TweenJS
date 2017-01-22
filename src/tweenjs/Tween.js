@@ -415,9 +415,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	Tween._installPlugin = function(plugin) {
-		var priority = plugin.priority, arr = Tween._plugins;
-		if (priority == null) { plugin.priority = priority = 0; }
-		if (!arr) { arr = Tween._plugins = []; }
+		var priority = (plugin.priority = plugin.priority||0), arr = (Tween._plugins = Tween._plugins || []);
 		for (var i=0,l=arr.length;i<l;i++) {
 			if (priority < arr[i].priority) { break; }
 		}
