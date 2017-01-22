@@ -9,6 +9,7 @@ CRITICAL (may break existing content):
 - Removed Tween.installPlugin, in favour of Plugin.install()
 - Removed Tween.tick (instance) in favour of Tween.advance
 - Tween actions in a Timeline now run after all the tween properties are updated
+- added check for hasOwnProperty on tween properties to filter out inherited properties
 
 *****
 DEPRECATED (will break in the future):
