@@ -711,7 +711,6 @@ this.createjs = this.createjs||{};
 		while (action) {
 			var pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
-				console.log(action);
 				action.funct.apply(action.scope, action.params);
 				if (t !== this.position) { return true; }
 			}
