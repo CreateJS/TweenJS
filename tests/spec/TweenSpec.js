@@ -19,14 +19,14 @@ describe("TweenJS", function () {
 					  });
 		});
 
-		it("hasActiveTweens should return a boolean", function () {
+		it("hasActiveTweens())", function () {
 			var obj = {x: 0};
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(false);
 			createjs.Tween.get(obj).to({x: 50}, 500);
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(true);
 		});
 
-		it("paused should work", function (done) {
+		it("paused", function (done) {
 			var obj = {x: 0};
 			var tween = createjs.Tween.get(obj);
 
@@ -50,7 +50,7 @@ describe("TweenJS", function () {
 			}, 250);
 		});
 
-		it("wait() should work", function (done) {
+		it("wait()", function (done) {
 			var startTime = Date.now();
 			createjs.Tween.get({}).wait(500).call(function () {
 				expect(Date.now() - startTime).toBeInRange(490, 510);
@@ -58,7 +58,7 @@ describe("TweenJS", function () {
 			});
 		});
 
-		it("removeAllTweens() should work", function () {
+		it("removeAllTweens()", function () {
 			var obj = {};
 
 			createjs.Tween.get(obj).to({x: 50}, 100);
@@ -68,7 +68,7 @@ describe("TweenJS", function () {
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(false);
 		});
 
-		it("removeTweens() should work", function () {
+		it("removeTweens()", function () {
 			var obj = {};
 
 			createjs.Tween.get(obj).to({x: 50}, 100);
@@ -78,29 +78,28 @@ describe("TweenJS", function () {
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(false);
 		});
 
-		it("tweens should loop", function (done) {
+		it("loop", function (done) {
 			var obj = {};
 
 			var func = {
-				complete: function () {
-				}
+				hitEnd: function () {}
 			};
 
-			spyOn(func, "complete");
+			spyOn(func, "hitEnd");
 
-			createjs.Tween.get(obj, {loop: true}).to({x: 50}, 100).call(func.complete);
+			createjs.Tween.get(obj, {loop: 2}).to({x: 50}, 50).call(func.hitEnd);
 
 			setTimeout(function () {
-				expect(func.complete.calls.count()).toBeGreaterThan(1);
+				expect(func.hitEnd.calls.count()).toBe(3);
 				done();
-			}, 500);
+			}, 200);
 		});
 	});
 	
 	
 	
 	describe("Events", function () {
-		it("tweens should fire change events", function (done) {
+		it("change", function (done) {
 			var obj = {x: 0};
 			var tween = createjs.Tween.get(obj);
 	
@@ -116,6 +115,22 @@ describe("TweenJS", function () {
 				expect(func.change).toHaveBeenCalled();
 				done();
 			}, 50);
+		});
+		
+		it("complete", function (done) {
+			var tween = createjs.Tween.get({}, {loop:2}).wait(50);
+	
+			var func =  {
+				complete: function() { }
+			};
+	
+			spyOn(func, "complete");
+	
+			tween.on("complete", func.complete);
+			setTimeout(function() {
+				expect(func.complete.calls.count()).toBe(1);
+				done();
+			}, 200);
 		});
 	});
 	
