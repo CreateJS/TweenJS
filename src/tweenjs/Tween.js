@@ -675,12 +675,14 @@ this.createjs = this.createjs||{};
 		
 		var plugins = this._plugins;
 		proploop : for (var n in p0) {
-			v = v0 = p0[n];
+			v0 = p0[n];
 			v1 = p1[n];
 			
 			// values are different & it is numeric then interpolate:
 			if (v0 !== v1 && (typeof(v0) === "number")) {
 				v = v0+(v1-v0)*ratio;
+			} else {
+				v = ratio >= 1 ? v1 : v0;
 			}
 			
 			if (plugins) {
@@ -725,7 +727,7 @@ this.createjs = this.createjs||{};
 	 */
 	p._appendProps = function(props, step, stepPlugins) {
 		var initProps = this._stepHead.props, target = this.target, plugins = Tween._plugins;
-		var n, i, l, value, initValue, inject;
+		var n, i, value, initValue, inject;
 		var oldStep = step.prev, oldProps = oldStep.props;
 		var stepProps = step.props = this._cloneProps(oldProps);
 		var cleanProps = {}; // TODO: is there some way to avoid this additional object?
