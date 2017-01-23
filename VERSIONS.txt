@@ -39,6 +39,7 @@ OTHER:
 - improvements / additions to examples
 - added callback param to setPosition for MovieClip use
 - fixed a bug with Tween.set()
+- unit tests made somewhat more robust
 
 
 Version 0.6.2 [November 26, 2015]
