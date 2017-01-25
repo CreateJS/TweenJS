@@ -251,6 +251,11 @@ describe("TweenJS", function () {
 		timeline.addTween(g(timeline.target, {loop:1}).call(trace, ["A"]).wait(5*m).call(trace, ["B"]).wait(5*m).call(trace, ["C"]));
 		tests.push({name:"timeline rev, tween loop", tween:timeline, pass:"CBACBA"});
 		
+		timeline = new createjs.Timeline({useTicks:true});
+		timeline.target = {};
+		timeline.addTween(createjs.Tween.get(timeline.target,{useTicks:true}).call(trace,["A"]).wait(1).call(trace,["B"]));
+		tests.push({name:"first frame action in timeline (AnimateCC)", tween:timeline, pass:"AB"});
+		
 		for (var i = 0; i < tests.length; i++) {
 			addTest(tests[i]);
 		}
