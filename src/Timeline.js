@@ -72,8 +72,8 @@ export default class Timeline extends AbstractTween {
 		 */
 		this.tweens = [];
 
-		if (props.tweens) { this.addTween(...tweens); }
-		this.labels = props.labels;
+		if (props.tweens) { this.addTween(...props.tweens); }
+		if (props.labels) { this.labels = props.labels; }
 
 		this._init(props);
 	}

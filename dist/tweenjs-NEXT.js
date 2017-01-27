@@ -2937,9 +2937,11 @@
       var _this = possibleConstructorReturn(this, _AbstractTween.call(this, props));
       _this.tweens = [];
       if (props.tweens) {
-        _this.addTween.apply(_this, tweens)
+        _this.addTween.apply(_this, props.tweens)
       }
-      _this.labels = props.labels;
+      if (props.labels) {
+        _this.labels = props.labels
+      }
       _this._init(props);
       return _this
     }
@@ -2994,11 +2996,11 @@
       }
       var l = args.length;
       if (l === 1) {
-        var _tweens = this.tweens;
-        var i = _tweens.length;
+        var tweens = this.tweens;
+        var i = tweens.length;
         while (i--) {
-          if (_tweens[i] === tween) {
-            _tweens.splice(i, 1);
+          if (tweens[i] === tween) {
+            tweens.splice(i, 1);
             tween._parent = null;
             if (tween.duration >= this.duration) {
               this.updateDuration()
