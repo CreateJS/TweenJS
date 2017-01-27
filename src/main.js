@@ -54,12 +54,6 @@ export { default as Tween } from "./Tween";
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";
 export { default as Ease } from "./Ease";
-// plugins
-export { default as CSSPlugin } from "./plugins/CSSPlugin";
-export { default as MotionGuidePlugin } from "./plugins/MotionGuidePlugin";
-export { default as RelativePlugin } from "./plugins/RelativePlugin";
-export { default as RotationPlugin } from "./plugins/RotationPlugin";
-export { default as SamplePlugin } from "./plugins/SamplePlugin";
 // TODO: Review this version export.
 // version (templated in gulpfile, pulled from package).
 export const version = "<%= version %>";
