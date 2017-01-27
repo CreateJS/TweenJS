@@ -327,9 +327,7 @@ export default class Tween extends AbstractTween {
 	 * @protected
 	 */
 	static _installPlugin (plugin) {
-		let priority = plugin.priority, arr = Tween._plugins;
-		if (priority == null) { plugin.priority = priority = 0; }
-		if (!arr) { arr = Tween._plugins = []; }
+		let priority = (plugin.priority = plugin.priority || 0), arr = (Tween._plugins = Tween._plugins || []);
 		for (let i = 0, l = arr.length; i < l; i++) {
 			if (priority < arr[i].priority) { break; }
 		}
@@ -572,12 +570,14 @@ export default class Tween extends AbstractTween {
 
 		let plugins = this._plugins;
 		proploop : for (let n in p0) {
-			v = v0 = p0[n];
+			v0 = p0[n];
 			v1 = p1[n];
 
 			// values are different & it is numeric then interpolate:
 			if (v0 !== v1 && (typeof(v0) === "number")) {
 				v = v0 + (v1 - v0) * ratio;
+			} else {
+				v = ratio >= 1 ? v1 : v0;
 			}
 
 			if (plugins) {

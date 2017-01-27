@@ -407,55 +407,6 @@
     };
     return Event
   }();
-  /**
-   * EventDispatcher provides methods for managing queues of event listeners and dispatching events.
-   *
-   * You can either extend EventDispatcher or mix its methods into an existing prototype or instance by using the
-   * EventDispatcher {{#crossLink "EventDispatcher/initialize"}}{{/crossLink}} method.
-   *
-   * Together with the CreateJS Event class, EventDispatcher provides an extended event model that is based on the
-   * DOM Level 2 event model, including addEventListener, removeEventListener, and dispatchEvent. It supports
-   * bubbling / capture, preventDefault, stopPropagation, stopImmediatePropagation, and handleEvent.
-   *
-   * EventDispatcher also exposes a {{#crossLink "EventDispatcher/on"}}{{/crossLink}} method, which makes it easier
-   * to create scoped listeners, listeners that only run once, and listeners with associated arbitrary data. The
-   * {{#crossLink "EventDispatcher/off"}}{{/crossLink}} method is merely an alias to
-   * {{#crossLink "EventDispatcher/removeEventListener"}}{{/crossLink}}.
-   *
-   * Another addition to the DOM Level 2 model is the {{#crossLink "EventDispatcher/removeAllEventListeners"}}{{/crossLink}}
-   * method, which can be used to listeners for all events, or listeners for a specific event. The Event object also
-   * includes a {{#crossLink "Event/remove"}}{{/crossLink}} method which removes the active listener.
-   *
-   * <h4>Example</h4>
-   * Add EventDispatcher capabilities to the "MyClass" class.
-   *
-   *      EventDispatcher.initialize(MyClass.prototype);
-   *
-   * Add an event (see {{#crossLink "EventDispatcher/addEventListener"}}{{/crossLink}}).
-   *
-   *      instance.addEventListener("eventName", handlerMethod);
-   *      function handlerMethod(event) {
-   *          console.log(event.target + " Was Clicked");
-   *      }
-   *
-   * <b>Maintaining proper scope</b><br />
-   * Scope (ie. "this") can be be a challenge with events. Using the {{#crossLink "EventDispatcher/on"}}{{/crossLink}}
-   * method to subscribe to events simplifies this.
-   *
-   *      instance.addEventListener("click", function(event) {
-   *          console.log(instance == this); // false, scope is ambiguous.
-   *      });
-   *
-   *      instance.on("click", function(event) {
-   *          console.log(instance == this); // true, "on" uses dispatcher scope by default.
-   *      });
-   *
-   * If you want to use addEventListener instead, you may want to use function.bind() or a similar proxy to manage scope.
-   *
-   *
-   * @class EventDispatcher
-   * @module CreateJS
-   */
   var EventDispatcher = function() {
     // static methods:
     /**
@@ -802,28 +753,6 @@
     };
     return EventDispatcher
   }();
-  /**
-   * The Ticker provides a centralized tick or heartbeat broadcast at a set interval. Listeners can subscribe to the tick
-   * event to be notified when a set time interval has elapsed.
-   *
-   * Note that the interval that the tick event is called is a target interval, and may be broadcast at a slower interval
-   * when under high CPU load. The Ticker class uses a static interface (ex. `Ticker.framerate = 30;`) and
-   * can not be instantiated.
-   *
-   * <h4>Example</h4>
-   *
-   *      createjs.Ticker.addEventListener("tick", handleTick);
-   *      function handleTick(event) {
-   *          // Actions carried out each tick (aka frame)
-   *          if (!event.paused) {
-   *              // Actions carried out when the Ticker is not paused.
-   *          }
-   *      }
-   *
-   * @class TickerAPI
-   * @extends EventDispatcher
-   * @module CreateJS
-   */
   var TickerAPI = function(_EventDispatcher) {
     inherits(TickerAPI, _EventDispatcher);
     // constructor:
@@ -1294,14 +1223,6 @@
    * @module CreateJS
    */
   var Ticker = new TickerAPI("createjs.global");
-  /**
-   * Base class that both {{#crossLink "Tween"}}{{/crossLink}} and {{#crossLink "Timeline"}}{{/crossLink}} extend. Should not be instantiated directly.
-   * @class AbstractTween
-   * @param {Object} [props]
-   * @extends EventDispatcher
-   * @module TweenJS
-   * @constructor
-   */
   var AbstractTween = function(_EventDispatcher) {
     inherits(AbstractTween, _EventDispatcher);
     // constructor:
@@ -1446,7 +1367,7 @@
     /**
      * Returns a list of the labels defined on this tween sorted by position.
      * @property labels
-     * @return {Array[Object]} A sorted array of objects with label and position properties.
+     * @type {Array[Object]}
      */
     // public methods:
     /**
@@ -1507,7 +1428,7 @@
       this.rawPosition = rawPosition;
       this._updatePosition(jump, end);
       if (end) {
-        this.setPaused(true)
+        this.paused = true
       }
       callback && callback(this);
       if (!ignoreActions) {
@@ -1570,37 +1491,13 @@
       }
     };
     /**
-     * Returns the name of the label on or immediately before the current position. For example, given a tween with
-     * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
-     * <UL>
-     * 		<LI>null if the current position is 2.</LI>
-     * 		<LI>"first" if the current position is 4.</LI>
-     * 		<LI>"first" if the current position is 7.</LI>
-     * 		<LI>"second" if the current position is 15.</LI>
-     * </UL>
-     * @method getCurrentLabel
-     * @return {String} The name of the current label or null if there is no label
-     */
-    AbstractTween.prototype.getCurrentLabel = function getCurrentLabel(pos) {
-      var labels = this.labels;
-      if (pos == null) {
-        pos = this.position
-      }
-      for (var _i2 = 0, l = labels.length; _i2 < l; _i2++) {
-        if (pos < labels[_i2].position) {
-          break
-        }
-      }
-      return i === 0 ? null : labels[i - 1].label
-    };
-    /**
      * Unpauses this timeline and jumps to the specified position or label.
      * @method gotoAndPlay
      * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
      * or label to jump to.
      */
     AbstractTween.prototype.gotoAndPlay = function gotoAndPlay(positionOrLabel) {
-      this.setPaused(false);
+      this.paused = false;
       this._goto(positionOrLabel)
     };
     /**
@@ -1610,7 +1507,7 @@
      * to jump to.
      */
     AbstractTween.prototype.gotoAndStop = function gotoAndStop(positionOrLabel) {
-      this.setPaused(true);
+      this.paused = true;
       this._goto(positionOrLabel)
     };
     /**
@@ -1625,17 +1522,6 @@
         pos = this._labels && this._labels[positionOrLabel]
       }
       return pos
-    };
-    /**
-     * Pauses or plays this tween.
-     * @method setPaused
-     * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-     * @return {Tween} This tween instance (for chaining calls)
-     * @chainable
-     */
-    AbstractTween.prototype.setPaused = function setPaused(value) {
-      Tween._register(this, value);
-      return this
     };
     /**
      * Returns a string representation of this object.
@@ -1660,7 +1546,7 @@
      */
     AbstractTween.prototype._init = function _init(props) {
       if (!props || !props.paused) {
-        this.setPaused(false)
+        this.paused = false
       }
       if (props && props.position != null) {
         this.setPosition(props.position)
@@ -1685,7 +1571,7 @@
       // console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
       // if we don't have any actions, and we're not a Timeline, then return:
       // TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
-      if (!this._actionHead && !this._tweens) {
+      if (!this._actionHead && !this.tweens) {
         return
       }
       var d = this.duration,
@@ -1720,7 +1606,7 @@
       // special cases:
       if (jump) {
         return this._runActionsRange(t1, t1, jump, includeStart)
-      } else if (loop0 === loop1 && t0 === t1 && !jump) {
+      } else if (loop0 === loop1 && t0 === t1 && !jump && !includeStart) {
         return
       } else if (loop0 === -1) {
         loop0 = t0 = 0
@@ -1771,9 +1657,41 @@
         this._labels = labels;
         this._labelList = null
       }
+    }, {
+      key: "currentLabel",
+      get: function get() {
+        var labels = this.getLabels();
+        var pos = this.position;
+        for (var _i2 = 0, l = labels.length; _i2 < l; _i2++) {
+          if (pos < labels[_i2].position) {
+            break
+          }
+        }
+        return i === 0 ? null : labels[i - 1].label
+      }
+    }, {
+      key: "paused",
+      get: function get() {
+        return this._paused
+      },
+      set: function set(paused) {
+        Tween._register(this, paused);
+        this._paused = paused
+      }
     }]);
     return AbstractTween
   }(EventDispatcher);
+  // events:
+  /**
+   * Dispatched whenever the tween's position changes. It occurs after all tweened properties are updated and actions
+   * are executed.
+   * @event change
+   */
+  /**
+   * Dispatched when the tween reaches its end and has paused itself. This does not fire until all loops are complete;
+   * tweens that loop continuously will never fire a complete event.
+   * @event complete
+   */
   /**
    * The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param
    * easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
@@ -2048,6 +1966,14 @@
     };
     return Ease
   }();
+  // static properties
+  /**
+   * Identical to linear.
+   * @method none
+   * @param {Number} t
+   * @static
+   * @return {Number}
+   */
   Ease.none = Ease.linear;
   /**
    * @method quadIn
@@ -2175,34 +2101,6 @@
    * @return {Number}
    */
   Ease.elasticInOut = Ease.getElasticInOut(1, .3 * 1.5);
-  /**
-   * Tweens properties for a single target. Methods can be chained to create complex animation sequences:
-   *
-   * <h4>Example</h4>
-   *
-   *	createjs.Tween.get(target)
-   *		.wait(500)
-   *		.to({alpha:0, visible:false}, 1000)
-   *		.call(handleComplete);
-   *
-   * Multiple tweens can share a target, however if they affect the same properties there could be unexpected
-   * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass `override:true`
-   * in the props argument.
-   *
-   * 	createjs.Tween.get(target, {override:true}).to({x:100});
-   *
-   * Subscribe to the {{#crossLink "Tween/change:event"}}{{/crossLink}} event to be notified when the tween position changes.
-   *
-   * 	createjs.Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
-   * 	function handleChange(event) {
-   * 		// The tween changed.
-   * 	}
-   *
-   * See the {{#crossLink "Tween/get"}}{{/crossLink}} method also.
-   * @class Tween
-   * @extends AbstractTween
-   * @module TweenJS
-   */
   var Tween = function(_AbstractTween) {
     inherits(Tween, _AbstractTween);
     // constructor:
@@ -2219,7 +2117,7 @@
      *    <LI> `bounce`</LI>
      *    <LI> `timeScale`</LI>
      *    <LI> `pluginData`</LI>
-     *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+     *    <LI> `paused`</LI>
      *    <LI> `position`: indicates the initial position for this tween.</LI>
      *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
      *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -2305,6 +2203,14 @@
        */
       _this._plugins = null;
       /**
+       * Hash for quickly looking up added plugins. Null until a plugin is added.
+       * @property _plugins
+       * @type Object
+       * @default null
+       * @protected
+       */
+      _this._pluginIds = null;
+      /**
        * Used by plugins to inject new properties.
        * @property _injected
        * @type {Object}
@@ -2346,7 +2252,7 @@
      *    <LI> `bounce`</LI>
      *    <LI> `timeScale`</LI>
      *    <LI> `pluginData`</LI>
-     *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+     *    <LI> `paused`</LI>
      *    <LI> `position`: indicates the initial position for this tween.</LI>
      *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
      *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -2409,7 +2315,7 @@
       while (tween) {
         var next = tween._next;
         if (tween.target === target) {
-          Tween._register(tween, true)
+          tween.paused = true
         }
         tween = next
       }
@@ -2456,14 +2362,8 @@
      * @protected
      */
     Tween._installPlugin = function _installPlugin(plugin) {
-      var priority = plugin.priority,
-        arr = Tween._plugins;
-      if (priority == null) {
-        plugin.priority = priority = 0
-      }
-      if (!arr) {
-        arr = Tween._plugins = []
-      }
+      var priority = plugin.priority = plugin.priority || 0,
+        arr = Tween._plugins = Tween._plugins || [];
       for (var _i = 0, l = arr.length; _i < l; _i++) {
         if (priority < arr[_i].priority) {
           break
@@ -2482,7 +2382,7 @@
     Tween._register = function _register(tween, paused) {
       var target = tween.target;
       if (!paused && tween._paused) {
-        // TODO: this approach might fail if a dev is using sealed objects in ES5
+        // TODO: this approach might fail if a dev is using sealed objects
         if (target) {
           target.tweenjs_count = target.tweenjs_count ? target.tweenjs_count + 1 : 1
         }
@@ -2515,7 +2415,6 @@
         } // was head.
         tween._next = tween._prev = null
       }
-      tween._paused = paused
     };
     // public methods:
     /**
@@ -2536,7 +2435,7 @@
     Tween.prototype.wait = function wait(duration) {
       var passive = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       if (duration > 0) {
-        this._addStep(duration, this._stepTail.props, null, passive)
+        this._addStep(+duration, this._stepTail.props, null, passive)
       }
       return this
     };
@@ -2563,7 +2462,7 @@
       if (duration < 0) {
         duration = 0
       }
-      var step = this._addStep(duration, null, ease);
+      var step = this._addStep(+duration, null, ease);
       this._appendProps(props, step);
       return this
     };
@@ -2578,9 +2477,8 @@
      * // ...
      * tween.gotoAndPlay("myLabel"); // would play from 1000ms in.
      *
-     * @method addLabel
+     * @method label
      * @param {String} label The label name.
-     * @param {Number} position The position this label represents.
      * @return {Tween} This tween instance (for chaining calls).
      * @chainable
      */
@@ -2630,25 +2528,37 @@
      *	myTween.to({x:100}, 500).play(otherTween);
      *
      * @method play
-     * @param {Tween} tween The tween to play.
+     * @param {Tween} [tween] The tween to play. Defaults to this tween.
      * @return {Tween} This tween instance (for chaining calls).
      * @chainable
      */
     Tween.prototype.play = function play(tween) {
-      return this.call(this.setPaused, [false], tween || this)
+      return this._addAction(tween || this, this._set, [{
+        paused: false
+      }])
     };
     /**
      * Adds an action to pause the specified tween.
      *
-     * 	myTween.pause(otherTween).to({alpha:1}, 1000).play(otherTween);
+     * myTween.pause(otherTween).to({alpha:1}, 1000).play(otherTween);
+     *
+     * Note that this executes at the end of a tween update, so the tween may advance beyond the time the pause
+     * action was inserted at. For example:
+     *
+     * myTween.to({foo:0}, 1000).pause().to({foo:1}, 1000);
+     *
+     * At 60fps the tween will advance by ~16ms per tick, if the tween above was at 999ms prior to the current tick, it
+     * will advance to 1015ms (15ms into the second "step") and then pause.
      *
      * @method pause
-     * @param {Tween} tween The tween to pause. If null, it pauses this tween.
+     * @param {Tween} [tween] The tween to pause. Defaults to this tween.
      * @return {Tween} This tween instance (for chaining calls)
      * @chainable
      */
     Tween.prototype.pause = function pause(tween) {
-      return this.call(this.setPaused, [true], tween || this)
+      return this._addAction(tween || this, this._set, [{
+        paused: false
+      }])
     };
     /**
      * @method clone
@@ -2665,27 +2575,21 @@
      * @protected
      */
     Tween.prototype._addPlugin = function _addPlugin(plugin) {
-      var plugins = this._plugins,
-        priority = plugin.priority,
-        added = false;
-      if (!plugins) {
-        plugins = this._plugins = []
-      }
+      var ids = this._pluginIds || (this._pluginIds = {}),
+        id = plugin.id;
+      if (!id || ids[id]) {
+        return
+      } // already added
+      ids[id] = true;
+      var plugins = this._plugins || (this._plugins = []),
+        priority = plugin.priority || 0;
       for (var _i2 = 0, l = plugins.length; _i2 < l; _i2++) {
-        if (plugins[_i2] === plugin) {
-          if (!added) {
-            return
-          } else {
-            plugins.splice(_i2, 1)
-          }
-        } else if (!added && priority < plugins[_i2].priority) {
+        if (priority < plugins[_i2].priority) {
           plugins.splice(_i2, 0, plugin);
-          added = true
+          return
         }
       }
-      if (!added) {
-        plugins.push(plugin)
-      }
+      plugins.push(plugin)
     };
     /**
      * @method _updatePosition
@@ -2702,7 +2606,7 @@
           step = step.next;
           stepNext = step.next
         }
-        var ratio = end ? t / d : (t - step.t) / step.d; // TODO: revisit this.
+        var ratio = end ? d === 0 ? 1 : t / d : (t - step.t) / step.d; // TODO: revisit this.
         this._updateTargetProps(step, ratio, end)
       }
       this._stepPosition = step ? t - step.t : 0
@@ -2728,18 +2632,20 @@
         ratio = ease(ratio, 0, 1, 1)
       }
       var plugins = this._plugins;
-      for (var n in p0) {
-        v = v0 = p0[n];
+      proploop: for (var n in p0) {
+        v0 = p0[n];
         v1 = p1[n];
         // values are different & it is numeric then interpolate:
         if (v0 !== v1 && typeof v0 === "number") {
           v = v0 + (v1 - v0) * ratio
+        } else {
+          v = ratio >= 1 ? v1 : v0
         }
         if (plugins) {
           for (var _i3 = 0, l = plugins.length; _i3 < l; _i3++) {
-            var value = plugins[_i3].tween(this, step, n, v, ratio, end);
-            if (v === Tween.IGNORE) {
-              return
+            var value = plugins[_i3].change(this, step, n, v, ratio, end);
+            if (value === Tween.IGNORE) {
+              continue proploop
             }
             if (value !== undefined) {
               v = value
@@ -2758,7 +2664,6 @@
      * @override
      */
     Tween.prototype._runActionsRange = function _runActionsRange(startPos, endPos, jump, includeStart) {
-      //console.log("	range", startPos, endPos, jump, includeStart);
       var rev = startPos > endPos;
       var action = rev ? this._actionTail : this._actionHead;
       var ePos = endPos,
@@ -2771,7 +2676,6 @@
       while (action) {
         var pos = action.t;
         if (pos === endPos || pos > sPos && pos < ePos || includeStart && pos === startPos) {
-          //console.log(pos, "start", sPos, startPos, "end", ePos, endPos);
           action.funct.apply(action.scope, action.params);
           if (t !== this.position) {
             return true
@@ -2785,47 +2689,52 @@
      * @param {Object} props
      * @protected
      */
-    Tween.prototype._appendProps = function _appendProps(props, step) {
+    Tween.prototype._appendProps = function _appendProps(props, step, stepPlugins) {
       var initProps = this._stepHead.props,
         target = this.target,
         plugins = Tween._plugins;
-      var inject = void 0,
-        ignored = void 0;
+      var n = void 0,
+        i = void 0,
+        l = void 0,
+        value = void 0,
+        initValue = void 0,
+        inject = void 0;
       var oldStep = step.prev,
         oldProps = oldStep.props;
       var stepProps = step.props = this._cloneProps(oldProps);
-      for (var n in props) {
-        stepProps[n] = props[n];
+      var cleanProps = {};
+      for (n in props) {
+        if (!props.hasOwnProperty(n)) {
+          continue
+        }
+        cleanProps[n] = stepProps[n] = props[n];
         if (initProps[n] !== undefined) {
           continue
         }
-        var oldValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive.
+        initValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive, so we let the plugin take a first swing at it.
         if (plugins) {
-          for (var _i4 = 0, l = plugins.length; _i4 < l; _i4++) {
-            var value = plugins[_i4].init(this, n, oldValue);
+          for (i = plugins.length - 1; i >= 0; i--) {
+            value = plugins[i].init(this, n, initValue);
             if (value !== undefined) {
-              oldValue = value
+              initValue = value
             }
-            if (oldValue === Tween.IGNORE) {
+            if (initValue === Tween.IGNORE) {
               (ignored = ignored || {})[n] = true;
               delete stepProps[n];
+              delete cleanProps[n];
               break
             }
           }
         }
-        if (oldValue !== Tween.IGNORE) {
-          if (oldValue === undefined) {
-            oldValue = target[n]
+        if (initValue !== Tween.IGNORE) {
+          if (initValue === undefined) {
+            initValue = target[n]
           }
-          oldProps[n] = oldValue === undefined ? null : oldValue
+          oldProps[n] = initValue === undefined ? null : initValue
         }
       }
-      plugins = this._plugins;
-      for (var _n in props) {
-        if (ignored && ignored[_n]) {
-          continue
-        }
-        var _value = props[_n];
+      for (n in cleanProps) {
+        value = props[n];
         // propagate old value to previous steps:
         var o = void 0,
           prev = oldStep;
@@ -2833,39 +2742,34 @@
           if (prev.props === o.props) {
             continue
           } // wait step
-          if (prev.props[_n] !== undefined) {
+          if (prev.props[n] !== undefined) {
             break
           } // already has a value, we're done.
-          prev.props[_n] = oldProps[_n]
+          prev.props[n] = oldProps[n]
         }
-        if (plugins) {
-          for (var _i5 = 0, _l = plugins.length; _i5 < _l; _i5++) {
-            var _value2 = plugins[_i5].step(this, step, _n, _value2);
-            if (_value2 !== undefined) {
-              step.props[_n] = _value2
-            }
-          }
+      }
+      if (stepPlugins && (plugins = this._plugins)) {
+        for (i = plugins.length - 1; i >= 0; i--) {
+          plugins[i].step(this, step, cleanProps)
         }
       }
       if (inject = this._injected) {
         this._injected = null;
-        this._appendProps(inject, step)
+        this._appendProps(inject, step, false)
       }
     };
     /**
-     * Used by plugins to inject properties. Called from within `Plugin.step` calls.
-     * @method _injectProps
-     * @param {Object} props
+     * Used by plugins to inject properties onto the current step. Called from within `Plugin.step` calls.
+     * For example, a plugin dealing with color, could read a hex color, and inject red, green, and blue props into the tween.
+     * See the SamplePlugin for more info.
+     * @method _injectProp
+     * @param {String} name
+     * @param {Object} value
      * @protected
      */
-    Tween.prototype._injectProps = function _injectProps(props) {
-      var o = this._injected;
-      if (!this._injected) {
-        o = this._injected = {}
-      }
-      for (var n in props) {
-        o[n] = props[n]
-      }
+    Tween.prototype._injectProp = function _injectProp(name, value) {
+      var o = this._injected || (this._injected = {});
+      o[name] = value
     };
     /**
      * @method _addStep
@@ -2921,7 +2825,9 @@
       return o
     };
     return Tween
-  }(AbstractTween); {
+  }(AbstractTween);
+  // tiny api (primarily for tool output):
+  {
     var p = Tween.prototype;
     p.w = p.wait;
     p.t = p.to;
@@ -3002,7 +2908,7 @@
    *    <LI> `reversed`</LI>
    *    <LI> `bounce`</LI>
    *    <LI> `timeScale`</LI>
-   *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+   *    <LI> `paused`</LI>
    *    <LI> `position`: indicates the initial position for this tween.</LI>
    *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
    *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -3017,16 +2923,19 @@
      * @constructor
      * @param {Object} props
      */
-    function Timeline(props) {
+    function Timeline() {
+      var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       classCallCheck(this, Timeline);
       // private properties:
       /**
-       * @property _tweens
-       * @type Array[Tween]
-       * @protected
+       * The array of tweens in the timeline. It is *strongly* recommended that you use
+       * {{#crossLink "Tween/addTween"}}{{/crossLink}} and {{#crossLink "Tween/removeTween"}}{{/crossLink}},
+       * rather than accessing this directly, but it is included for advanced uses.
+       * @property tweens
+       * @type Array
        */
       var _this = possibleConstructorReturn(this, _AbstractTween.call(this, props));
-      _this._tweens = [];
+      _this.tweens = [];
       if (props.tweens) {
         _this.addTween.apply(_this, tweens)
       }
@@ -3050,9 +2959,9 @@
       var l = args.length;
       if (l === 1) {
         var _tween = args[0];
-        this._tweens.push(_tween);
+        this.tweens.push(_tween);
         _tween._parent = this;
-        _tween.setPaused(true);
+        _tween.paused = true;
         var d = _tween.duration;
         if (_tween.loop > 0) {
           d *= _tween.loop + 1
@@ -3085,7 +2994,7 @@
       }
       var l = args.length;
       if (l === 1) {
-        var _tweens = this._tweens;
+        var _tweens = this.tweens;
         var i = _tweens.length;
         while (i--) {
           if (_tweens[i] === tween) {
@@ -3115,8 +3024,8 @@
      */
     Timeline.prototype.updateDuration = function updateDuration() {
       this.duration = 0;
-      for (var i = 0, l = this._tweens.length; i < l; i++) {
-        var _tween2 = this._tweens[i];
+      for (var i = 0, l = this.tweens.length; i < l; i++) {
+        var _tween2 = this.tweens[i];
         var d = _tween2.duration;
         if (_tween2.loop > 0) {
           d *= _tween2.loop + 1
@@ -3140,8 +3049,8 @@
      */
     Timeline.prototype._updatePosition = function _updatePosition(jump, end) {
       var t = this.position;
-      for (var i = 0, l = this._tweens.length; i < l; i++) {
-        this._tweens[i].setPosition(t, true, jump)
+      for (var i = 0, l = this.tweens.length; i < l; i++) {
+        this.tweens[i].setPosition(t, true, jump)
       }
     };
     /**
@@ -3151,8 +3060,8 @@
     Timeline.prototype._runActionsRange = function _runActionsRange(startPos, endPos, jump, includeStart) {
       //console.log("	range", startPos, endPos, jump, includeStart);
       var t = this.position;
-      for (var i = 0, l = this._tweens.length; i < l; i++) {
-        this._tweens[i]._runActions(startPos, endPos, jump, includeStart);
+      for (var i = 0, l = this.tweens.length; i < l; i++) {
+        this.tweens[i]._runActions(startPos, endPos, jump, includeStart);
         if (t !== this.position) {
           return true
         }
@@ -3160,777 +3069,6 @@
     };
     return Timeline
   }(AbstractTween);
-  /**
-   * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
-   * TweenJS has loaded:
-   *
-   *      createjs.CSSPlugin.install();
-   *
-   * You can adjust the CSS properties it will work with by modifying the <code>cssSuffixMap</code> property. Currently,
-   * the top, left, bottom, right, width, height have a "px" suffix appended.
-   *
-   * Please note that the CSS Plugin is not included in the TweenJS minified file.
-   * @class CSSPlugin
-   * @module TweenJS
-   * @static
-   */
-  var CSSPlugin = function() {
-    // constructor:
-    /**
-     * @constructor
-     */
-    function CSSPlugin() {
-      classCallCheck(this, CSSPlugin);
-      throw "CSSPlugin is static and cannot be instanitated."
-    }
-    // static methods
-    /**
-     * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-     * @method install
-     * @static
-     */
-    CSSPlugin.prototype.install = function install() {
-      Tween._installPlugin(CSSPlugin)
-    };
-    /**
-     * @method init
-     * @protected
-     * @static
-     */
-    CSSPlugin.prototype.init = function init(tween, prop, value) {
-      var data = tween.pluginData;
-      if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) {
-        return
-      }
-      var sfx0 = void 0,
-        sfx1 = void 0,
-        style = void 0,
-        map = CSSPlugin.cssSuffixMap;
-      if ((sfx0 = map[prop]) === undefined || !(style = tween.target.style)) {
-        return value
-      }
-      if (!data.CSS_installed) {
-        tween._addPlugin(CSSPlugin);
-        data.CSS_installed = true
-      }
-      var str = style[prop];
-      if (!str) {
-        return 0
-      } // no style set.
-      var i = str.length - sfx0.length;
-      if ((sfx1 = str.substr(i)) != sfx0) {
-        throw "CSSPlugin Error: Suffixes do not match. (" + sfx0 + ":" + sfx1 + ")"
-      } else {
-        return parseInt(str)
-      }
-    };
-    /**
-     * @method step
-     * @protected
-     * @static
-     */
-    CSSPlugin.prototype.step = function step(tween, _step, prop, value, injectProps) {};
-    CSSPlugin.prototype.tween = function tween(_tween, step, prop, value, ratio, end) {
-      var style = void 0,
-        map = CSSPlugin.cssSuffixMap,
-        sfx = map[prop];
-      if (sfx === undefined || !(style = _tween.target.style)) {
-        return
-      }
-      style[prop] = (value | 0) + sfx;
-      return Tween.IGNORE
-    };
-    return CSSPlugin
-  }();
-  CSSPlugin.cssSuffixMap = {
-    top: "px",
-    left: "px",
-    bottom: "px",
-    right: "px",
-    width: "px",
-    height: "px",
-    opacity: ""
-  };
-  /**
-   * @property priority
-   * @protected
-   * @static
-   */
-  CSSPlugin.priority = -100; // very low priority, should run last
-  /**
-   * A TweenJS plugin for working with motion guides.
-   *
-   * To use, install the plugin after TweenJS has loaded. Next tween the 'guide' property with an object as detailed below.
-   *
-   *       createjs.MotionGuidePlugin.install();
-   *
-   * <h4>Example</h4>
-   *
-   *      // Using a Motion Guide
-   *	    createjs.Tween.get(target).to({guide:{ path:[0,0, 0,200,200,200, 200,0,0,0] }},7000);
-   *	    // Visualizing the line
-   *	    graphics.moveTo(0,0).curveTo(0,200,200,200).curveTo(200,0,0,0);
-   *
-   * Each path needs pre-computation to ensure there's fast performance. Because of the pre-computation there's no
-   * built in support for path changes mid tween. These are the Guide Object's properties:<UL>
-   *      <LI> path: Required, Array : The x/y points used to draw the path with a moveTo and 1 to n curveTo calls.</LI>
-   *      <LI> start: Optional, 0-1 : Initial position, default 0 except for when continuing along the same path.</LI>
-   *      <LI> end: Optional, 0-1 : Final position, default 1 if not specified.</LI>
-   *      <LI> orient: Optional, string : "fixed"/"auto"/"cw"/"ccw"<UL>
-   *				<LI>"fixed" forces the object to face down the path all movement (relative to start rotation),</LI>
-   *      		<LI>"auto" rotates the object along the path relative to the line.</LI>
-   *      		<LI>"cw"/"ccw" force clockwise or counter clockwise rotations including flash like behaviour</LI>
-   * 		</UL></LI>
-   * </UL>
-   * Guide objects should not be shared between tweens even if all properties are identical, the library stores
-   * information on these objects in the background and sharing them can cause unexpected behaviour. Values
-   * outside 0-1 range of tweens will be a "best guess" from the appropriate part of the defined curve.
-   *
-   * @class MotionGuidePlugin
-   * @module TweenJS
-   * @static
-   */
-  var MotionGuidePlugin = function() {
-    function MotionGuidePlugin() {
-      classCallCheck(this, MotionGuidePlugin);
-      throw "MotionGuidePlugin is static and cannot be instantiated."
-    }
-    // static methods
-    /**
-     * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-     * @method install
-     * @static
-     */
-    MotionGuidePlugin.install = function install() {
-      Tween.installPlugin(MotionGuidePlugin, ["guide", "x", "y", "rotation"]);
-      return Tween.IGNORE
-    };
-    /**
-     * @method init
-     * @protected
-     * @static
-     */
-    MotionGuidePlugin.init = function init(tween, prop, value) {
-      var target = tween.target;
-      if (!target.hasOwnProperty("x")) {
-        target.x = 0
-      }
-      if (!target.hasOwnProperty("y")) {
-        target.y = 0
-      }
-      if (!target.hasOwnProperty("rotation")) {
-        target.rotation = 0
-      }
-      if (prop === "rotation") {
-        tween.__needsRot = true
-      }
-      return prop === "guide" ? null : value
-    };
-    /**
-     * @method step
-     * @protected
-     * @static
-     */
-    MotionGuidePlugin.step = function step(tween, prop, startValue, endValue, injectProps) {
-      // other props
-      if (prop === "rotation") {
-        tween.__rotGlobalS = startValue;
-        tween.__rotGlobalE = endValue;
-        MotionGuidePlugin.testRotData(tween, injectProps)
-      }
-      if (prop !== "guide") {
-        return endValue
-      }
-      // guide only information - Start -
-      var temp = void 0,
-        data = endValue;
-      if (!data.hasOwnProperty("path")) {
-        data.path = []
-      }
-      var path = data.path;
-      if (!data.hasOwnProperty("end")) {
-        data.end = 1
-      }
-      if (!data.hasOwnProperty("start")) {
-        data.start = startValue && startValue.hasOwnProperty("end") && startValue.path === path ? startValue.end : 0
-      }
-      // Figure out subline information
-      if (data.hasOwnProperty("_segments") && data._length) {
-        return endValue
-      }
-      var l = path.length;
-      var accuracy = 10; // Adjust to improve line following precision but sacrifice performance (# of seg)
-      if (l >= 6 && (l - 2) % 4 == 0) {
-        // Enough points && contains correct number per entry ignoring start
-        data._segments = [];
-        data._length = 0;
-        for (var i = 2; i < l; i += 4) {
-          var sx = path[i - 2],
-            sy = path[i - 1];
-          var cx = path[i + 0],
-            cy = path[i + 1];
-          var ex = path[i + 2],
-            ey = path[i + 3];
-          var oldX = sx,
-            oldY = sy;
-          var tempX = void 0,
-            tempY = void 0,
-            total = 0;
-          var sublines = [];
-          for (var _i = 1; _i <= accuracy; _i++) {
-            var t = _i / accuracy;
-            var inv = 1 - t;
-            tempX = inv * inv * sx + 2 * inv * t * cx + t * t * ex;
-            tempY = inv * inv * sy + 2 * inv * t * cy + t * t * ey;
-            total += sublines[sublines.push(Math.sqrt((temp = tempX - oldX) * temp + (temp = tempY - oldY) * temp)) - 1];
-            oldX = tempX;
-            oldY = tempY
-          }
-          data._segments.push(total, sublines);
-          data._length += total
-        }
-      } else {
-        throw "invalid 'path' data, please see documentation for valid paths"
-      }
-      // Setup x/y tweens
-      temp = data.orient;
-      data.orient = true;
-      var o = {};
-      MotionGuidePlugin.calc(data, data.start, o);
-      tween.__rotPathS = Number(o.rotation.toFixed(5));
-      MotionGuidePlugin.calc(data, data.end, o);
-      tween.__rotPathE = Number(o.rotation.toFixed(5));
-      data.orient = false; //here and now we don't know if we need to
-      MotionGuidePlugin.calc(data, data.end, injectProps);
-      data.orient = temp;
-      // Setup rotation properties
-      if (!data.orient) {
-        return endValue
-      }
-      tween.__guideData = data;
-      MotionGuidePlugin.testRotData(tween, injectProps);
-      return endValue
-    };
-    /**
-     * @method testRotData
-     * @protected
-     * @static
-     */
-    MotionGuidePlugin.testRotData = function testRotData(tween, injectProps) {
-      // no rotation informat? if we need it come back, if we don't use 0 & ensure we have guide data
-      if (tween.__rotGlobalS === undefined || tween.__rotGlobalE === undefined) {
-        if (tween.__needsRot) {
-          return
-        }
-        if (tween._curQueueProps.rotation !== undefined) {
-          tween.__rotGlobalS = tween.__rotGlobalE = tween._curQueueProps.rotation
-        } else {
-          tween.__rotGlobalS = tween.__rotGlobalE = injectProps.rotation = tween.target.rotation || 0
-        }
-      }
-      if (tween.__guideData === undefined) {
-        return
-      }
-      // Process rotation properties
-      var data = tween.__guideData;
-      var rotGlobalD = tween.__rotGlobalE - tween.__rotGlobalS;
-      var rotPathD = tween.__rotPathE - tween.__rotPathS;
-      var rot = rotGlobalD - rotPathD;
-      switch (data.orient) {
-        case "auto":
-          if (rot > 180) {
-            rot -= 360
-          } else if (rot < -180) {
-            rot += 360
-          }
-          break;
-        case "cw":
-          while (rot < 0) {
-            rot += 360
-          }
-          if (rot === 0 && rotGlobalD > 0 && rotGlobalD !== 180) {
-            rot += 360
-          }
-          break;
-        case "ccw":
-          rot = rotGlobalD - (rotPathD > 180 ? 360 - rotPathD : rotPathD); // sign flipping on path
-          while (rot > 0) {
-            rot -= 360
-          }
-          if (rot === 0 && rotGlobalD < 0 && rotGlobalD !== -180) {
-            rot -= 360
-          }
-          break
-      }
-      data.rotDelta = rot;
-      data.rotOffS = tween.__rotGlobalS - tween.__rotPathS;
-      // reset
-      tween.__rotGlobalS = tween.__rotGlobalE = tween.__guideData = tween.__needsRot = undefined
-    };
-    /**
-     * @method tween
-     * @protected
-     * @static
-     */
-    MotionGuidePlugin.tween = function tween(_tween, prop, value, startValues, endValues, ratio, wait, end) {
-      var data = endValues.guide;
-      if (data === undefined || data === startValues.guide) {
-        return value
-      }
-      if (data.lastRatio !== ratio) {
-        // first time through so calculate what I need to
-        var t = (data.end - data.start) * (wait ? data.end : ratio) + data.start;
-        MotionGuidePlugin.calc(data, t, _tween.target);
-        switch (data.orient) {
-          case "cw": // mix in the original rotation
-          case "ccw":
-          case "auto":
-            _tween.target.rotation += data.rotOffS + data.rotDelta * ratio;
-            break;
-          case "fixed": // follow fixed behaviour to solve potential issues
-          default:
-            _tween.target.rotation += data.rotOffS;
-            break
-        }
-        data.lastRatio = ratio
-      }
-      if (prop === "rotation" && (!data.orient || data.orient === "false")) {
-        return value
-      }
-      return _tween.target[prop]
-    };
-    /**
-     * Determine the appropriate x/y/rotation information about a path for a given ratio along the path.
-     * Assumes a path object with all optional parameters specified.
-     * @param {Object} data Data object you would pass to the "guide:" property in a Tween
-     * @param {Number} ratio Distance along path, values outside 0-1 are "best guess"
-     * @param {Object} [target=false] to copy the results onto, will use a new object if not supplied.
-     * @return {Object} The target object or a new object w/ the tweened properties
-     * @static
-     */
-    MotionGuidePlugin.calc = function calc(data, ratio) {
-      var target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
-        x: 0,
-        y: 0,
-        rotation: 0
-      };
-      if (data._segments === undefined) {
-        MotionGuidePlugin.validate(data)
-      }
-      var seg = data._segments;
-      var path = data.path;
-      // find segment
-      var pos = data._length * ratio;
-      var cap = seg.length - 2;
-      var n = 0;
-      while (pos > seg[n] && n < cap) {
-        pos -= seg[n];
-        n += 2
-      }
-      // find subline
-      var sublines = seg[n + 1];
-      var i = 0;
-      cap = sublines.length - 1;
-      while (pos > sublines[i] && i < cap) {
-        pos -= sublines[i++]
-      }
-      var t = i / ++cap + pos / (cap * sublines[i]);
-      // find x/y
-      n += n + 2;
-      var inv = 1 - t;
-      target.x = inv * inv * path[n - 2] + 2 * inv * t * path[n + 0] + t * t * path[n + 2];
-      target.y = inv * inv * path[n - 1] + 2 * inv * t * path[n + 1] + t * t * path[n + 3];
-      // orientation
-      if (data.orient) {
-        target.rotation = 57.2957795 * Math.atan2((path[n + 1] - path[n - 1]) * inv + (path[n + 3] - path[n + 1]) * t, (path[n + 0] - path[n - 2]) * inv + (path[n + 2] - path[n + 0]) * t)
-      }
-      return target
-    };
-    return MotionGuidePlugin
-  }();
-  MotionGuidePlugin.priority = 0; // high priority, should run sooner
-  /**
-   * @property _rotOffS
-   * @private
-   * @static
-   */
-  MotionGuidePlugin._rotOffS = undefined;
-  /**
-   * @property _rotOffE
-   * @private
-   * @static
-   */
-  MotionGuidePlugin._rotOffE = undefined;
-  /**
-   * @property _rotNormS
-   * @private
-   * @static
-   */
-  MotionGuidePlugin._rotNormS = undefined;
-  /**
-   * @property _rotNormE
-   * @private
-   * @static
-   */
-  MotionGuidePlugin._rotNormE = undefined;
-  /**
-   * The RelativePlugin for TweenJS enables relative numeric values for tweens. Install using:
-   *
-   * 	RotationPlugin.install();
-   *
-   * Once installed, you can pass in relative numeric property values as strings beginning with "+" or "-". For example,
-   * the following tween would tween the x position of `foo` from its initial value of `200` to `50` (200-150), then to
-   * `125` (50+75).
-   *
-   * 	foo.x = 200;
-   * 	Tween.get(foo).to({x:"-150"}, 500).to({x:"+75"}, 500);
-   *
-   * @class RelativePlugin
-   * @module TweenJS
-   * @static
-   */
-  var RelativePlugin = function() {
-    // constructor:
-    /**
-     * @constructor
-     */
-    function RelativePlugin() {
-      classCallCheck(this, RelativePlugin);
-      throw "RelativePlugin is static and cannot be instantiated."
-    }
-    // static methods:
-    /**
-     * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-     * @method install
-     * @static
-     */
-    RelativePlugin.prototype.install = function install() {
-      Tween._installPlugin(RelativePlugin)
-    };
-    /**
-     * Called by TweenJS when a new property initializes on a tween.
-     * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-     * @method init
-     * @param {Tween} tween
-     * @param {String} prop
-     * @param {any} value
-     * @return {any}
-     * @static
-     */
-    RelativePlugin.prototype.init = function init(tween, prop, value) {
-      var data = tween.pluginData;
-      if (!data.Relative_installed && !data.Relative_disabled) {
-        tween._addPlugin(s);
-        data.Relative_installed = true
-      }
-    };
-    /**
-     * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-     * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-     * @method init
-     * @param {Tween} tween
-     * @param {TweenStep} step
-     * @param {String} prop
-     * @param {String} value
-     * @return {any}
-     * @static
-     */
-    RelativePlugin.prototype.step = function step(tween, _step, prop, value) {
-      if (typeof value !== "string") {
-        return
-      }
-      var prev = _step.prev.props[prop],
-        char0 = value[0],
-        val = void 0;
-      if (typeof prev !== "number" || !(char0 === "+" || char0 === "-") || isNaN(val = +value)) {
-        return
-      }
-      return prev + val
-    };
-    /**
-     * Called before a property is updated by the tween.
-     * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-     * @method tween
-     * @param {Tween} tween
-     * @param {TweenStep} step
-     * @param {String} prop
-     * @param {any} value
-     * @param {Number} ratio
-     * @param {Boolean} end
-     * @return {any}
-     * @static
-     */
-    RelativePlugin.prototype.tween = function tween(_tween, step, prop, value, ratio, end) {};
-    return RelativePlugin
-  }();
-  /**
-   * The RotationPlugin for TweenJS modifies tweens of rotation properties. These properties can be changed using the
-   * `RotationPlugin.props` property. Install using:
-   *
-   * 	RotationPlugin.install();
-   *
-   * After installation, by default all rotation tweens will rotate in the shortest direction. For example, if you
-   * tween from `rotation=15` to `rotation=330`, it will rotate counter-clockwise. You can modify this behaviour by
-   * specifying a `rotationDir` tween value. A value of `-1` will force CCW rotation, `1` will force CW, and `0` will
-   * disable the plugin effects for that portion of the tween.
-   *
-   * Note that the `rotationDir` value will persist until overridden in future `to` calls.
-   *
-   * 	// this tween will rotate: CCW, then CCW (persisted), then CW.
-   * 	myTween.get(foo).to({rotation:30, rotationDir:-1}).to({rotation:60}).to({rotation:10, rotationDir:1});
-   *
-   * You can also disable the plugin completely for a tween by setting `tween.pluginData.Rotation_disabled=true`.
-   *
-   * @class RotationPlugin
-   * @module TweenJS
-   * @static
-   */
-  var RotationPlugin = function() {
-    // constructor:
-    /**
-     * @constructor
-     */
-    function RotationPlugin() {
-      classCallCheck(this, RotationPlugin);
-      throw "RotationPlugin is static and cannot be instantiated."
-    }
-    // static methods:
-    /**
-     * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-     * @method install
-     * @static
-     */
-    RotationPlugin.prototype.install = function install() {
-      Tween._installPlugin(RotationPlugin)
-    };
-    /**
-     * Called by TweenJS when a new property initializes on a tween.
-     * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-     * @method init
-     * @param {Tween} tween
-     * @param {String} prop
-     * @param {any} value
-     * @return {any}
-     * @static
-     */
-    RotationPlugin.prototype.init = function init(tween, prop, value) {
-      var data = tween.pluginData;
-      if (s.props[prop] && !data.Rotation_installed && !data.Rotation_disabled) {
-        tween._addPlugin(s);
-        data.Rotation_installed = true
-      }
-    };
-    /**
-     * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-     * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-     * @method init
-     * @param {Tween} tween
-     * @param {TweenStep} step
-     * @param {String} prop
-     * @param {String} value
-     * @return {any}
-     * @static
-     */
-    RotationPlugin.prototype.step = function step(tween, _step, prop, value) {
-      if (!s.props[prop]) {
-        return
-      }
-      tween.pluginData.Rotation_end = value;
-      var dir = _step.props.rotationDir;
-      if (dir === 0) {
-        return
-      }
-      dir = dir || 0;
-      var start = _step.prev.props[prop];
-      var delta = (value - start) % 360;
-      if (dir === 0 && delta > 180 || dir === -1 && delta > 0) {
-        delta -= 360
-      } else if (dir === 0 && delta < -180 || dir === 1 && delta < 0) {
-        delta += 360
-      }
-      return start + delta
-    };
-    /**
-     * Called before a property is updated by the tween.
-     * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-     * @method tween
-     * @param {Tween} tween
-     * @param {TweenStep} step
-     * @param {String} prop
-     * @param {any} value
-     * @param {Number} ratio
-     * @param {Boolean} end
-     * @return {any}
-     * @static
-     */
-    RotationPlugin.prototype.tween = function tween(_tween, step, prop, value, ratio, end) {
-      if (prop === "rotationDir") {
-        return Tween.IGNORE
-      }
-      if (end && s.props[prop]) {
-        return _tween.pluginData.Rotation_end
-      }
-    };
-    return RotationPlugin
-  }();
-  RotationPlugin.props = {
-    rotation: 1,
-    rotationX: 1,
-    rotationY: 1,
-    rotationZ: 1
-  };
-  /**
-   * A sample TweenJS plugin. This plugin does not actually affect tweens in any way, it's merely intended to document
-   * how to build TweenJS plugins. Please look at the code for inline comments.
-   *
-   * A TweenJS plugin is simply an object that exposes one property (priority), and three methods (init, step, and tween).
-   * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
-   * @class SamplePlugin
-   * @module TweenJS
-   * @static
-   */
-  var SamplePlugin = function() {
-    // constructor:
-    /**
-     * @constructor
-     */
-    function SamplePlugin() {
-      classCallCheck(this, SamplePlugin);
-      throw "SamplePlugin is static and cannot be instantiated."
-    }
-    // static methods:
-    /**
-     * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-     * @method install
-     * @static
-     */
-    SamplePlugin.install = function install() {
-      Tween._installPlugin(SamplePlugin)
-    };
-    /**
-     * Called by TweenJS when a new property initializes on a tween. Generally, the call
-     * to `Plugin.init` will be immediately followed by a call to `Plugin.step`.
-     *
-     * For example:
-     *
-     * 	Tween.get(foo)
-     * 		.to({x:10}) // init called with prop = "x", value = 0
-     * 		.to({x:20}) // init is NOT called
-     * 		.to({y:200}) // init called with prop = "y", value = 100
-     *
-     * @method init
-     * @param {Tween} tween The related tween instance.
-     * @param {String} prop The name of the property that is being initialized.
-     * @param {any} value If another plugin has returned a starting value, it will be passed in. Otherwise value will be undefined.
-     * @return {any} The starting tween value for the property. In most cases, you would simply return the value parameter,
-     * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this tween
-     * from being added to the tween.
-     * @static
-     */
-    SamplePlugin.init = function init(tween, prop, value) {
-      console.log("init: ", prop, value);
-      // its good practice to let users opt out (or in some cases, maybe in) via pluginData:
-      var data = tween.pluginData;
-      if (data.Sample_disabled) {
-        return value
-      } // make sure to pass through value.
-      // filter which properties you want to work on by using "prop":
-      if (prop !== "x" && prop !== "y") {
-        return value
-      } // make sure to pass through value.
-      // you can then add this plugin to the tween:
-      // Tween._addPlugin will screen for duplicate plugins, but its more efficient to set and check a flag:
-      if (!data.Sample_installed) {
-        data.Sample_installed = true; // don't install again if we init on the same tween twice.
-        // most plugins can just be a single shared plugin class:
-        tween._addPlugin(SamplePlugin)
-      }
-      // note that it's also possible to create a plugin that doesn't add itself, but hooks into the "change" event instead.
-      // you can grab the current value on the target using:
-      var targetValue = tween.target[prop];
-      // this would get the current starting value for the property, using value from previous plugins if specified, or the target value if not:
-      // this is a bit of a pain, but it prevents accessing target values that aren't needed, which can be very expensive (ex. width on a HTMLElement, when we actually want to grab it from style)
-      var defaultValue = value === undefined ? targetValue : value;
-      // this would round the starting value of "x" properties:
-      if (prop === "x") {
-        return Math.round(defaultValue)
-      }
-      // this would tell the tween to not include the "y" property:
-      // if (prop === "y") { return Tween.IGNORE }
-      // you can also use pluginData to attach arbitrary data to the tween for later use:
-      if (!data) {
-        data = tween.pluginData = {}
-      } // to reduce GC churn, pluginData is null by default.
-      data._Sample_value = 200; // namespacing your values will help prevent conflicts
-      // if you don't want to make changes, then makes sure to pass other plugins changes through:
-      return value
-    };
-    /**
-     * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-     * For example:
-     *
-     * 	Tween.get(foo)
-     * 		.to({x:10}) // step called with prop = "x"
-     * 		.to({y:100}) // step called with prop = "y"
-     * 		.to({x:20, y:200}) // step is called twice
-     *
-     * @method init
-     * @param {Tween} tween The related tween instance.
-     * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
-     * @param {String} prop The name of the property being tweened.
-     * @param {String} value The value of the property for this step.
-     * @param {Object} injectProps If a previous plugin returned an injectProps object, it will be passed here.
-     * @return {Object} If you'd like to inject new properties into the tween, you can return a generic object with name value pairs. You should add to the existing injectProps object if it exists.
-     * @static
-     */
-    SamplePlugin.step = function step(tween, _step, prop, value, injectProps) {
-      console.log("step: ", _step, prop, injectProps);
-      // filter which properties you want to work on by using "prop":
-      if (prop !== "x") {
-        return
-      }
-      // you can grab the start value from previous step:
-      var startValue = _step.prev.props[prop]
-    };
-    /**
-     * Called before a property is updated by the tween.
-     * @method tween
-     * @param {Tween} tween The related tween instance.
-     * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
-     * @param {String} prop The name of the property being tweened.
-     * @param {any} value The current tweened value of the property, as calculated by TweenJS. Previous plugins may have modified this value.
-     * @param {Number} ratio A value indicating the eased progress through the current step. This
-     * number is generally between 0 and 1, though some eases will generate values outside
-     * this range.
-     * @param {Boolean} end Indicates that the tween has reached the end.
-     * @return {any} Return the value that should be assigned to the target property.
-     * @static
-     */
-    SamplePlugin.tween = function tween(_tween, step, prop, value, ratio, end) {
-      // ratio is the eased ratio
-      console.log("tween", step, prop, value, ratio, end);
-      // filter which properties you want to work on by using "prop":
-      if (prop !== "x") {
-        return value
-      } // make sure you ALWAYS pass through value!
-      // you can grab the end value for the step via its props object:
-      var endValue = step.props[prop];
-      // similarly, you can grab the start value from previous step:
-      var startValue = step.prev.props[prop];
-      // you could calculate the unmodified tweened value using the ratio:
-      // this will be the same as "value" unless a previous plugin returned a modified value
-      var unmodifiedValue = startValue + (endValue - startValue) * ratio;
-      if (value !== unmodifiedValue) {} /* a previous plugin modified the value */
-      // check if the tween is currently in a "wait" by comparing the props objects of this and the previous step:
-      var inWait = step.props === step.prev.props;
-      // tell the tween to not set the value on the target:
-      // return Tween.IGNORE;
-      // you can return a modified value to be set on the target:
-      return Math.round(value)
-    };
-    return SamplePlugin
-  }();
-  SamplePlugin.priority = 0;
   /**
    * The TweenJS JavaScript library provides a simple but powerful tweening interface. It supports tweening of both
    * numeric object properties & CSS style properties, and allows you to chain tweens and actions together to create
@@ -3977,9 +3115,7 @@
    * This is explained here: https://github.com/rollup/rollup/issues/845#issuecomment-240277194
    */
   // re-export shared classes
-  // TODO: Review this version export.
-  // version (templated in gulpfile, pulled from package).
-  var version = "1.0.0";
+  var version = "2.0.0";
   exports.version = version;
   exports.EventDispatcher = EventDispatcher;
   exports.Event = Event;
@@ -3987,11 +3123,6 @@
   exports.Tween = Tween;
   exports.AbstractTween = AbstractTween;
   exports.Timeline = Timeline;
-  exports.Ease = Ease;
-  exports.CSSPlugin = CSSPlugin;
-  exports.MotionGuidePlugin = MotionGuidePlugin;
-  exports.RelativePlugin = RelativePlugin;
-  exports.RotationPlugin = RotationPlugin;
-  exports.SamplePlugin = SamplePlugin
+  exports.Ease = Ease
 })(this.createjs = this.createjs || {});
 //# sourceMappingURL=tweenjs-NEXT.map

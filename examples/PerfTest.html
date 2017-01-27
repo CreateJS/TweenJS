@@ -16,8 +16,8 @@
 	  http://code.createjs.com -->
 
 <script id="editable">
-	var c=createjs, stage, stageW, stageH, fpsFld;
-	var duration=300, count=30000, radius=480, displayTime=3000;
+	var c=createjs, stage, stageW, stageH, fpsFld, g, ttl;
+	var duration=300, count=0, radius=480, displayTime=3000;
 
 	function init() {
 		fpsFld = document.getElementById("fps");
@@ -25,11 +25,8 @@
 		
 		stageW = stage.canvas.width;
 		stageH = stage.canvas.height;
-		var i = 0, g = new c.Graphics().f("#012").dc(0,0,1);
-		
-		while (i++ < count) {
-			tween(stage.addChild(new c.Shape(g)));
-		}
+		g = new c.Graphics().f("#012").dc(0,0,1);
+		ttl = 0;
 		
 		c.Ticker.framerate = 60;
 		c.Ticker.timingMode = c.Ticker.RAF;
@@ -48,7 +45,14 @@
 	function tick(evt) {
 		var render = (displayTime -= evt.delta) > 0;
 		if (render) { stage.update(); }
-		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(0)+"fps"+(render ? "" : " RENDERING DISABLED");
+		var fps = c.Ticker.getMeasuredFPS(120), t = c.Ticker.getMeasuredTickTime(20);;
+		fpsFld.innerHTML = ttl+" @ "+fps.toFixed(0)+"fps ("+t.toFixed(0)+"ms) "+(render ? "" : " RENDERING DISABLED");
+		
+		var count = (t>15) ? 0 : Math.max(1,Math.ceil(Math.pow(15-t, 3)/250))*250;
+		for (var i= 0; i<count; i++) {
+			tween(stage.addChild(new c.Shape(g)));
+		}
+		ttl += count;
 	}
 
 </script>
@@ -58,8 +62,11 @@
 
 <header class="TweenJS">
 	<h1>Performance Test</h1>
-	<p>This will run a large quantity of single property tweens simultaneously and track framerate. It will update the stage for the first 3 seconds
-	(to confirm functionality), then will stop rendering to isolate tween performance.</p>
+	<p>This will continuously add tweens until Tween is taking over 15ms per tick (ie. slightly better than 60fps). Note that this only accounts for the time spent in
+	Tween; some browsers have additional overhead that could result in the actual framerate being noticeably lower than 60fps. Safari amy also throttle the test to
+	30fps, which makes getting accurate results difficult for that browser.
+	<br/><br/>
+	It will update the stage for the first 3 seconds (to confirm functionality), then stop rendering to isolate tween performance.</p>
 	<p id="fps" style="font-family:monospace; font-weight: bold; opacity:0.5;">-- fps</p>
 </header>
 

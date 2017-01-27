@@ -449,7 +449,7 @@ export default class AbstractTween extends EventDispatcher {
 
 		// special cases:
 		if (jump) { return this._runActionsRange(t1, t1, jump, includeStart); } // jump.
-		else if (loop0 === loop1 && t0 === t1 && !jump) { return; } // no actions if the position is identical.
+    else if (loop0 === loop1 && t0 === t1 && !jump && !includeStart) { return; } // no actions if the position is identical and we aren't including the start
 		else if (loop0 === -1) { loop0 = t0 = 0; } // correct the -1 value for first advance, important with useTicks.
 
 		let dir = (startRawPos <= endRawPos), loop = loop0;

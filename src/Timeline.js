@@ -59,7 +59,7 @@ export default class Timeline extends AbstractTween {
 	 * @constructor
 	 * @param {Object} props
 	 */
-	constructor (props) {
+	constructor (props = {}) {
 		super(props);
 
 	// private properties:
