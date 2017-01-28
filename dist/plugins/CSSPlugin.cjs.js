@@ -1,4 +1,79 @@
 /*
+ * @license CSSPlugin
+ * Visit http://createjs.com for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Distributed under the terms of the MIT license.
+ * http://www.opensource.org/licenses/mit-license.html
+ *
+ * This notice shall be included in all copies or substantial portions of the Software.
+ */
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+
+
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+
+
+
+
+var set = function set(object, property, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent !== null) {
+      set(parent, property, value, receiver);
+    }
+  } else if ("value" in desc && desc.writable) {
+    desc.value = value;
+  } else {
+    var setter = desc.set;
+
+    if (setter !== undefined) {
+      setter.call(receiver, value);
+    }
+  }
+
+  return value;
+};
+
+/*
 * CSSPlugin
 * Visit http://createjs.com/ for documentation, updates and examples.
 *
@@ -25,8 +100,6 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
-
-const TRANSFORM = "transform";
 
 /**
  * A TweenJS plugin for working with numeric CSS string properties (ex. top, left). To use simply install after
@@ -67,107 +140,117 @@ const TRANSFORM = "transform";
  * @module TweenJS
  * @static
  */
-export class CSSPlugin {
 
-// constructor:
-	/**
-	 * @constructor
-	 */
-	constructor () {
-		throw "CSSPlugin is static and cannot be instanitated.";
-	}
+var CSSPlugin = function () {
 
-// static methods
-	/**
-	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
-	 * @static
-	 */
-	static install (props) {
+  // constructor:
+  /**
+   * @constructor
+   */
+  function CSSPlugin() {
+    classCallCheck(this, CSSPlugin);
 
-	}
+    throw "CSSPlugin is static and cannot be instanitated.";
+  }
 
-	/**
-	 * Called by TweenJS when a new property initializes on a tween.
-   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-   * @method init
-   * @param {Tween} tween
-   * @param {String} prop
-   * @param {any} value
-   * @return {any}
+  // static methods
+  /**
+   * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
+   * @method install
    * @static
-	 */
-	static init (tween, prop, value) {
-		let data = tween.pluginData;
-		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
-		let initVal = value || getStyle(tween.target, prop, data.CSS_compute);
-		if (initVal === undefined) { return; }
+   */
 
-		tween._addPlugin(CSSPlugin);
 
-    let cssData = data.CSS || (data.CSS = {});
+  CSSPlugin.install = function install(props) {};
+
+  /**
+   * Called by TweenJS when a new property initializes on a tween.
+    * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+    * @method init
+    * @param {Tween} tween
+    * @param {String} prop
+    * @param {any} value
+    * @return {any}
+    * @static
+   */
+
+
+  CSSPlugin.init = function init(tween, prop, value) {
+    var data = tween.pluginData;
+    if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) {
+      return;
+    }
+    var initVal = value || getStyle(tween.target, prop, data.CSS_compute);
+    if (initVal === undefined) {
+      return;
+    }
+
+    tween._addPlugin(CSSPlugin);
+
+    var cssData = data.CSS || (data.CSS = {});
     if (prop === "transform") {
       cssData[prop] = "";
       return parseTransform(initVal);
     }
 
-    let result = s.VALUE_RE.exec(initVal);
-		if (result === null) {
-			// a string we can't handle numerically, so add it to the CSSData without a suffix.
-			cssData[prop] = "";
-			return initVal;
-		} else {
-			cssData[prop] = result[2];
-			return parseFloat(result[1]);
-		}
-	}
-
-	/**
-   * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-   * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
-   * @method step
-   * @param {Tween} tween
-   * @param {TweenStep} step
-   * @param {Object} props
-	 * @static
-	 */
-	static step (tween, step, props) {
-    if (props.transform) {
-      step.props.transform = parseTransform(step.props.transform, step.prev.props.transform);
+    var result = s.VALUE_RE.exec(initVal);
+    if (result === null) {
+      // a string we can't handle numerically, so add it to the CSSData without a suffix.
+      cssData[prop] = "";
+      return initVal;
+    } else {
+      cssData[prop] = result[2];
+      return parseFloat(result[1]);
     }
-	}
+  };
 
-	/**
-   * Called before a property is updated by the tween.
-   * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
-   * @method change
-   * @param {Tween} tween
-   * @param {TweenStep} step
-   * @param {String} prop
-   * @param {any} value
-   * @param {Number} ratio
-   * @param {Boolean} end
-   * @return {any}
-	 * @static
-	 */
-	static change (tween, step, prop, value, ratio, end) {
-		let sfx = tween.pluginData.CSS[prop];
-		if (sfx === undefined) { return; }
+  /**
+    * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+    * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+    * @method step
+    * @param {Tween} tween
+    * @param {TweenStep} step
+    * @param {Object} props
+   * @static
+   */
+
+
+  CSSPlugin.step = function step(tween, _step, props) {
+    if (props.transform) {
+      _step.props.transform = parseTransform(_step.props.transform, _step.prev.props.transform);
+    }
+  };
+
+  /**
+    * Called before a property is updated by the tween.
+    * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+    * @method change
+    * @param {Tween} tween
+    * @param {TweenStep} step
+    * @param {String} prop
+    * @param {any} value
+    * @param {Number} ratio
+    * @param {Boolean} end
+    * @return {any}
+   * @static
+   */
+
+
+  CSSPlugin.change = function change(tween, step, prop, value, ratio, end) {
+    var sfx = tween.pluginData.CSS[prop];
+    if (sfx === undefined) {
+      return;
+    }
     if (prop === "transform") {
       value = writeTransform(step.prev.props.transform, step.props.transform, ratio);
     }
-		tween.target.style[prop] = value + sfx;
-		return Tween.IGNORE;
-	}
+    tween.target.style[prop] = value + sfx;
+    return Tween.IGNORE;
+  };
 
-}
+  return CSSPlugin;
+}();
 
-// static properties
-/**
- * @property priority
- * @protected
- * @static
- */
 CSSPlugin.priority = 100; // high priority, should read first and write last
 
 /**
@@ -206,7 +289,6 @@ CSSPlugin.TRANSFORM_VALUE_RE = /(-?[\d.]+)([a-z%]*),?\s*/g;
  */
 CSSPlugin.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^|\s)(\*)(?:$|\s)/g;
 
-
 /**
  * By default, CSSPlugin uses only inline styles on the target element (ie. set via the style attribute, `style` property, or `cssText`)
  * to determine which properties should be tweened via CSS, and what units to use.
@@ -236,39 +318,50 @@ CSSPlugin.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^|\s)(\*)(?:$|\s)/g;
 CSSPlugin.compute = false;
 
 // private helper methods:
-function getStyle (target, prop, compute) {
-	if (compute || (compute == null && CSSPlugin.compute)) {
-		return window.getComputedStyle(target)[prop];
-	} else {
-		return target.style[prop];
-	}
+function getStyle(target, prop, compute) {
+  if (compute || compute == null && CSSPlugin.compute) {
+    return window.getComputedStyle(target)[prop];
+  } else {
+    return target.style[prop];
+  }
 }
 
-function parseTransform (str, compare) {
-  let result, valStr, list = [false, str];
+function parseTransform(str, compare) {
+  var result = void 0,
+      valStr = void 0,
+      list = [false, str];
   do {
     // pull out the next "component" of the transform (ex. "translate(10px, 20px)")
     result = CSSPlugin.TRANSFORM_RE.exec(str);
-    if (!result) { break; }
+    if (!result) {
+      break;
+    }
     if (result[3] === "*") {
       // reuse previous value:
       list.push(compare[list.length]);
       continue;
     }
-    let component = [result[1]], compareComp = compare && compare[list.length];
+    var component = [result[1]],
+        compareComp = compare && compare[list.length];
 
     // check that the operation type matches (ex. "translate" vs "rotate"):
-    if (compare && (!compareComp || component[0] !== compareComp[0])) { compare = null; console.log("transforms don't match: ", component[0], compareComp[0]); } // component doesn't match
+    if (compare && (!compareComp || component[0] !== compareComp[0])) {
+      compare = null;console.log("transforms don't match: ", component[0], compareComp[0]);
+    } // component doesn't match
 
     valStr = result[2];
     do {
       // pull out the next value (ex. "20px", "12.4rad"):
       result = CSSPlugin.TRANSFORM_VALUE_RE.exec(valStr);
-      if (!result) { break; }
+      if (!result) {
+        break;
+      }
       component.push(+result[1], result[2]);
 
       // chack that the units match (ex. "px" vs "em"):
-      if (compare && (compareComp[component.length-1] !== result[2])) { compare = null; console.log("transform units don't match: ", component[0], compareComp[component.length-1], result[2]); } // unit doesn't match
+      if (compare && compareComp[component.length - 1] !== result[2]) {
+        compare = null;console.log("transform units don't match: ", component[0], compareComp[component.length - 1], result[2]);
+      } // unit doesn't match
     } while (true);
 
     list.push(component);
@@ -278,23 +371,32 @@ function parseTransform (str, compare) {
   return list;
 }
 
-function writeTransform (list0, list1, ratio) {
+function writeTransform(list0, list1, ratio) {
   // check if we should just use the original transform strings:
   // TODO: do we want to worry about how this works with bounce eases & ratio>1?
-  if (ratio === 1) { return list1[1]; }
-  if (ratio === 0 || !list1[0]) { return list0[1]; }
+  if (ratio === 1) {
+    return list1[1];
+  }
+  if (ratio === 0 || !list1[0]) {
+    return list0[1];
+  }
 
   // they match, we want to apply the ratio:
-  let str = "";
-  for (let i = 2, l = list0.length; i < l; i++) {
-    let component0 = list0[i], component1 = list1[i];
-    str += `${component0[0]}(`;
-    for (let i = 1, l = component0.length; i < l; i += 2) {
-      str += component0[i]+(component1[i]-component0[i])*ratio+component0[i+1];
-      if (i < l-2) { str += ", "; }
+  var str = "";
+  for (var i = 2, l = list0.length; i < l; i++) {
+    var component0 = list0[i],
+        component1 = list1[i];
+    str += component0[0] + "(";
+    for (var _i = 1, _l = component0.length; _i < _l; _i += 2) {
+      str += component0[_i] + (component1[_i] - component0[_i]) * ratio + component0[_i + 1];
+      if (_i < _l - 2) {
+        str += ", ";
+      }
     }
     str += ")";
-    if (i < l-1) { str += " "; }
+    if (i < l - 1) {
+      str += " ";
+    }
   }
   return str;
 }
@@ -316,3 +418,5 @@ function writeSingleTransform (list) {
   return str;
 }
 */
+
+exports.CSSPlugin = CSSPlugin;

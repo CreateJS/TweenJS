@@ -26,8 +26,6 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import Tween from "../Tween";
-
 const RGB = "rgb";
 
 /**
@@ -39,7 +37,7 @@ const RGB = "rgb";
  * @module TweenJS
  * @static
  */
-export default class ColorPlugin {
+export class ColorPlugin {
 
 // constructor:
 	/**
@@ -56,9 +54,8 @@ export default class ColorPlugin {
 	 * and output. You can input any color type regardless of the mode setting.
 	 * @static
 	 */
-	static install (mode) {
-		if (mode) { ColorPlugin._mode = mode; }
-		Tween._installPlugin(s);
+	static install (props) {
+		if (props && props.mode) { ColorPlugin._mode = props.mode; }
 	}
 
 	/**

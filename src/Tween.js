@@ -321,12 +321,13 @@ export default class Tween extends AbstractTween {
 	 * Installs a plugin, which can modify how certain properties are handled when tweened. See the {{#crossLink "SamplePlugin"}}{{/crossLink}}
 	 * for an example of how to write TweenJS plugins. Plugins should generally be installed via their own `install` method, in order to provide
 	 * the plugin with an opportunity to configure itself.
-	 * @method _installPlugin
+	 * @method installPlugin
 	 * @param {Object} plugin The plugin to install
+	 * @param {Object} props The props to pass to the plugin
 	 * @static
-	 * @protected
 	 */
-	static _installPlugin (plugin) {
+	static installPlugin (plugin, props) {
+		plugin.install(props);
 		let priority = (plugin.priority = plugin.priority || 0), arr = (Tween._plugins = Tween._plugins || []);
 		for (let i = 0, l = arr.length; i < l; i++) {
 			if (priority < arr[i].priority) { break; }

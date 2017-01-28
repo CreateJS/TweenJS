@@ -26,8 +26,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import Tween from "../Tween";
-
 /**
  * A TweenJS plugin for working with motion guides.
  *
@@ -61,7 +59,7 @@ import Tween from "../Tween";
  * @module TweenJS
  * @static
  */
-export default class MotionGuidePlugin {
+export class MotionGuidePlugin {
 
 	constructor () {
 		throw "MotionGuidePlugin is static and cannot be instantiated.";
@@ -73,10 +71,8 @@ export default class MotionGuidePlugin {
 	 * @method install
 	 * @static
 	 */
-	static install () {
+	static install (props) {
 		throw "MotionGuidePlugin has not been updated to work with the latest TweenJS plugin model yet. Soon!";
-		Tween.installPlugin(MotionGuidePlugin, ["guide", "x", "y", "rotation"]);
-		return Tween.IGNORE;
 	}
 
 	/**

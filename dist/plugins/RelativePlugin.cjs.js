@@ -1,4 +1,79 @@
 /*
+ * @license RelativePlugin
+ * Visit http://createjs.com for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Distributed under the terms of the MIT license.
+ * http://www.opensource.org/licenses/mit-license.html
+ *
+ * This notice shall be included in all copies or substantial portions of the Software.
+ */
+
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var classCallCheck = function (instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+
+
+var get = function get(object, property, receiver) {
+  if (object === null) object = Function.prototype;
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent === null) {
+      return undefined;
+    } else {
+      return get(parent, property, receiver);
+    }
+  } else if ("value" in desc) {
+    return desc.value;
+  } else {
+    var getter = desc.get;
+
+    if (getter === undefined) {
+      return undefined;
+    }
+
+    return getter.call(receiver);
+  }
+};
+
+
+
+
+
+var set = function set(object, property, value, receiver) {
+  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+  if (desc === undefined) {
+    var parent = Object.getPrototypeOf(object);
+
+    if (parent !== null) {
+      set(parent, property, value, receiver);
+    }
+  } else if ("value" in desc && desc.writable) {
+    desc.value = value;
+  } else {
+    var setter = desc.set;
+
+    if (setter !== undefined) {
+      setter.call(receiver, value);
+    }
+  }
+
+  return value;
+};
+
+/*
 * RelativePlugin
 * Visit http://createjs.com/ for documentation, updates and examples.
 *
@@ -42,25 +117,27 @@
  * @module TweenJS
  * @static
  */
-export class RelativePlugin {
+var RelativePlugin = function () {
 
-// constructor:
+  // constructor:
   /**
    * @constructor
    */
-	constructor () {
-		throw "RelativePlugin is static and cannot be instantiated.";
-	}
+  function RelativePlugin() {
+    classCallCheck(this, RelativePlugin);
 
-// static methods:
+    throw "RelativePlugin is static and cannot be instantiated.";
+  }
+
+  // static methods:
   /**
    * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
    * @method install
    * @static
    */
-  static install (props) {
 
-  }
+
+  RelativePlugin.install = function install(props) {};
 
   /**
    * Called by TweenJS when a new property initializes on a tween.
@@ -72,9 +149,13 @@ export class RelativePlugin {
    * @return {any}
    * @static
    */
-  static init (tween, prop, value) {
-    if (!tween.pluginData.Relative_disabled) { tween._addPlugin(RelativePlugin); }
-  }
+
+
+  RelativePlugin.init = function init(tween, prop, value) {
+    if (!tween.pluginData.Relative_disabled) {
+      tween._addPlugin(RelativePlugin);
+    }
+  };
 
   /**
    * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
@@ -86,16 +167,23 @@ export class RelativePlugin {
    * @return {any}
    * @static
    */
-  static step (tween, step, prop) {
+
+
+  RelativePlugin.step = function step(tween, _step, prop) {
     // in this method we check if any prop is a string value starting with "+" or "-", and adjust the value accordingly.
-    for (let n in props) {
-      let value = props[n];
-      if (typeof value !== "string") { continue; }
-      let prev = step.prev.props[n], char0 = value[0];
-      if (!(char0 === "+" || char0 === "-") || isNaN(value = +value + prev)) { continue; }
-      step.props[n] = value;
+    for (var n in props) {
+      var value = props[n];
+      if (typeof value !== "string") {
+        continue;
+      }
+      var prev = _step.prev.props[n],
+          char0 = value[0];
+      if (!(char0 === "+" || char0 === "-") || isNaN(value = +value + prev)) {
+        continue;
+      }
+      _step.props[n] = value;
     }
-  }
+  };
 
   /**
    * Called before a property is updated by the tween.
@@ -110,17 +198,15 @@ export class RelativePlugin {
    * @return {any}
    * @static
    */
-  static change (tween, step, prop, value, ratio, end) {
+
+
+  RelativePlugin.change = function change(tween, step, prop, value, ratio, end) {
     // nothing
-  }
+  };
 
-}
+  return RelativePlugin;
+}();
 
-/**
- * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
- * @property ID
- * @type {String}
- * @static
- * @readonly
- */
 RelativePlugin.ID = "Relative";
+
+exports.RelativePlugin = RelativePlugin;

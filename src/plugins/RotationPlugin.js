@@ -26,8 +26,6 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import Tween from "../Tween";
-
 /**
  * The RotationPlugin for TweenJS modifies tweens of rotation properties. These properties can be changed using the
  * `RotationPlugin.props` property. Install using:
@@ -50,7 +48,7 @@ import Tween from "../Tween";
  * @module TweenJS
  * @static
  */
-export default class RotationPlugin {
+export class RotationPlugin {
 
 // constructor:
 	/**
@@ -66,8 +64,8 @@ export default class RotationPlugin {
 	 * @method install
 	 * @static
 	 */
-	static install () {
-		Tween._installPlugin(RotationPlugin);
+	static install (props) {
+
 	}
 
 	/**
