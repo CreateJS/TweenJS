@@ -23,7 +23,7 @@
     "Wes Gorgichuk <wes@gskinner.com> (https://github.com/wdamien)",
     "Patrick McGuckin <patrick@gskinner.com> (https://github.com/tehvgg)"
   ],
-  "main": "dist/tweenjs.cjs.js",
+  "main": "dist/tweenjs-2.0.0.cjs.js",
   "jsnext:main": "dist/tweenjs.es6.js",
   "logo": "icon.png",
   "repository": {
