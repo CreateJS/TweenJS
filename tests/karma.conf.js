@@ -7,11 +7,14 @@ module.exports = function (config) {
       // lib and sourcemaps
        "dist/tweenjs-NEXT.js",
       { pattern: "src/**/*.js", included: false },
-      { pattern: "dist/tweenjs-NEXT.map", included: false },
+      { pattern: "dist/tweenjs-NEXT.js.map", included: false },
       // helpers
       "tests/helpers/helpers.js",
       // specs
       "tests/spec/*.js"
-    ]
+    ],
+    preprocessors: {
+      "dist/tweenjs-NEXT.js": [ "sourcemap" ]
+    }
   });
 };

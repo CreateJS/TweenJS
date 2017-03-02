@@ -1,5 +1,5 @@
 /**
- * @license tweenjs
+ * @license TweenJS
  * Visit http://createjs.com for documentation, updates and examples.
  *
  * Copyright (c) 2017 gskinner.com, inc.
@@ -27,105 +27,6 @@
  */
 (function(exports) {
   "use strict";
-  var asyncGenerator = function() {
-    function AwaitValue(value) {
-      this.value = value
-    }
-
-    function AsyncGenerator(gen) {
-      var front, back;
-
-      function send(key, arg) {
-        return new Promise(function(resolve, reject) {
-          var request = {
-            key: key,
-            arg: arg,
-            resolve: resolve,
-            reject: reject,
-            next: null
-          };
-          if (back) {
-            back = back.next = request
-          } else {
-            front = back = request;
-            resume(key, arg)
-          }
-        })
-      }
-
-      function resume(key, arg) {
-        try {
-          var result = gen[key](arg);
-          var value = result.value;
-          if (value instanceof AwaitValue) {
-            Promise.resolve(value.value).then(function(arg) {
-              resume("next", arg)
-            }, function(arg) {
-              resume("throw", arg)
-            })
-          } else {
-            settle(result.done ? "return" : "normal", result.value)
-          }
-        } catch (err) {
-          settle("throw", err)
-        }
-      }
-
-      function settle(type, value) {
-        switch (type) {
-          case "return":
-            front.resolve({
-              value: value,
-              done: true
-            });
-            break;
-          case "throw":
-            front.reject(value);
-            break;
-          default:
-            front.resolve({
-              value: value,
-              done: false
-            });
-            break
-        }
-        front = front.next;
-        if (front) {
-          resume(front.key, front.arg)
-        } else {
-          back = null
-        }
-      }
-      this._invoke = send;
-      if (typeof gen.return !== "function") {
-        this.return = undefined
-      }
-    }
-    if (typeof Symbol === "function" && Symbol.asyncIterator) {
-      AsyncGenerator.prototype[Symbol.asyncIterator] = function() {
-        return this
-      }
-    }
-    AsyncGenerator.prototype.next = function(arg) {
-      return this._invoke("next", arg)
-    };
-    AsyncGenerator.prototype.throw = function(arg) {
-      return this._invoke("throw", arg)
-    };
-    AsyncGenerator.prototype.return = function(arg) {
-      return this._invoke("return", arg)
-    };
-    return {
-      wrap: function(fn) {
-        return function() {
-          return new AsyncGenerator(fn.apply(this, arguments))
-        }
-      },
-      await: function(value) {
-        return new AwaitValue(value)
-      }
-    }
-  }();
   var classCallCheck = function(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function")
@@ -147,26 +48,6 @@
       return Constructor
     }
   }();
-  var get$1 = function get$1(object, property, receiver) {
-    if (object === null) object = Function.prototype;
-    var desc = Object.getOwnPropertyDescriptor(object, property);
-    if (desc === undefined) {
-      var parent = Object.getPrototypeOf(object);
-      if (parent === null) {
-        return undefined
-      } else {
-        return get$1(parent, property, receiver)
-      }
-    } else if ("value" in desc) {
-      return desc.value
-    } else {
-      var getter = desc.get;
-      if (getter === undefined) {
-        return undefined
-      }
-      return getter.call(receiver)
-    }
-  };
   var inherits = function(subClass, superClass) {
     if (typeof superClass !== "function" && superClass !== null) {
       throw new TypeError("Super expression must either be null or a function, not " + typeof superClass)
@@ -186,23 +67,6 @@
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called")
     }
     return call && (typeof call === "object" || typeof call === "function") ? call : self
-  };
-  var set$1 = function set$1(object, property, value, receiver) {
-    var desc = Object.getOwnPropertyDescriptor(object, property);
-    if (desc === undefined) {
-      var parent = Object.getPrototypeOf(object);
-      if (parent !== null) {
-        set$1(parent, property, value, receiver)
-      }
-    } else if ("value" in desc && desc.writable) {
-      desc.value = value
-    } else {
-      var setter = desc.set;
-      if (setter !== undefined) {
-        setter.call(receiver, value)
-      }
-    }
-    return value
   };
   /**
    * A collection of classes that are shared across the CreateJS libraries.
@@ -407,6 +271,55 @@
     };
     return Event
   }();
+  /**
+   * EventDispatcher provides methods for managing queues of event listeners and dispatching events.
+   *
+   * You can either extend EventDispatcher or mix its methods into an existing prototype or instance by using the
+   * EventDispatcher {{#crossLink "EventDispatcher/initialize"}}{{/crossLink}} method.
+   *
+   * Together with the CreateJS Event class, EventDispatcher provides an extended event model that is based on the
+   * DOM Level 2 event model, including addEventListener, removeEventListener, and dispatchEvent. It supports
+   * bubbling / capture, preventDefault, stopPropagation, stopImmediatePropagation, and handleEvent.
+   *
+   * EventDispatcher also exposes a {{#crossLink "EventDispatcher/on"}}{{/crossLink}} method, which makes it easier
+   * to create scoped listeners, listeners that only run once, and listeners with associated arbitrary data. The
+   * {{#crossLink "EventDispatcher/off"}}{{/crossLink}} method is merely an alias to
+   * {{#crossLink "EventDispatcher/removeEventListener"}}{{/crossLink}}.
+   *
+   * Another addition to the DOM Level 2 model is the {{#crossLink "EventDispatcher/removeAllEventListeners"}}{{/crossLink}}
+   * method, which can be used to listeners for all events, or listeners for a specific event. The Event object also
+   * includes a {{#crossLink "Event/remove"}}{{/crossLink}} method which removes the active listener.
+   *
+   * <h4>Example</h4>
+   * Add EventDispatcher capabilities to the "MyClass" class.
+   *
+   *      EventDispatcher.initialize(MyClass.prototype);
+   *
+   * Add an event (see {{#crossLink "EventDispatcher/addEventListener"}}{{/crossLink}}).
+   *
+   *      instance.addEventListener("eventName", handlerMethod);
+   *      function handlerMethod(event) {
+   *          console.log(event.target + " Was Clicked");
+   *      }
+   *
+   * <b>Maintaining proper scope</b><br />
+   * Scope (ie. "this") can be be a challenge with events. Using the {{#crossLink "EventDispatcher/on"}}{{/crossLink}}
+   * method to subscribe to events simplifies this.
+   *
+   *      instance.addEventListener("click", function(event) {
+   *          console.log(instance == this); // false, scope is ambiguous.
+   *      });
+   *
+   *      instance.on("click", function(event) {
+   *          console.log(instance == this); // true, "on" uses dispatcher scope by default.
+   *      });
+   *
+   * If you want to use addEventListener instead, you may want to use function.bind() or a similar proxy to manage scope.
+   *
+   *
+   * @class EventDispatcher
+   * @module CreateJS
+   */
   var EventDispatcher = function() {
     // static methods:
     /**
@@ -753,6 +666,28 @@
     };
     return EventDispatcher
   }();
+  /**
+   * The Ticker provides a centralized tick or heartbeat broadcast at a set interval. Listeners can subscribe to the tick
+   * event to be notified when a set time interval has elapsed.
+   *
+   * Note that the interval that the tick event is called is a target interval, and may be broadcast at a slower interval
+   * when under high CPU load. The Ticker class uses a static interface (ex. `Ticker.framerate = 30;`) and
+   * can not be instantiated.
+   *
+   * <h4>Example</h4>
+   *
+   *      createjs.Ticker.addEventListener("tick", handleTick);
+   *      function handleTick(event) {
+   *          // Actions carried out each tick (aka frame)
+   *          if (!event.paused) {
+   *              // Actions carried out when the Ticker is not paused.
+   *          }
+   *      }
+   *
+   * @class TickerAPI
+   * @extends EventDispatcher
+   * @module CreateJS
+   */
   var TickerAPI = function(_EventDispatcher) {
     inherits(TickerAPI, _EventDispatcher);
     // constructor:
@@ -1223,6 +1158,14 @@
    * @module CreateJS
    */
   var Ticker = new TickerAPI("createjs.global");
+  /**
+   * Base class that both {{#crossLink "Tween"}}{{/crossLink}} and {{#crossLink "Timeline"}}{{/crossLink}} extend. Should not be instantiated directly.
+   * @class AbstractTween
+   * @param {Object} [props]
+   * @extends EventDispatcher
+   * @module TweenJS
+   * @constructor
+   */
   var AbstractTween = function(_EventDispatcher) {
     inherits(AbstractTween, _EventDispatcher);
     // constructor:
@@ -1681,17 +1624,6 @@
     }]);
     return AbstractTween
   }(EventDispatcher);
-  // events:
-  /**
-   * Dispatched whenever the tween's position changes. It occurs after all tweened properties are updated and actions
-   * are executed.
-   * @event change
-   */
-  /**
-   * Dispatched when the tween reaches its end and has paused itself. This does not fire until all loops are complete;
-   * tweens that loop continuously will never fire a complete event.
-   * @event complete
-   */
   /**
    * The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param
    * easing signature. Instead it uses a single param which indicates the current linear ratio (0 to 1) of the tween.
@@ -1966,14 +1898,6 @@
     };
     return Ease
   }();
-  // static properties
-  /**
-   * Identical to linear.
-   * @method none
-   * @param {Number} t
-   * @static
-   * @return {Number}
-   */
   Ease.none = Ease.linear;
   /**
    * @method quadIn
@@ -2101,6 +2025,34 @@
    * @return {Number}
    */
   Ease.elasticInOut = Ease.getElasticInOut(1, .3 * 1.5);
+  /**
+   * Tweens properties for a single target. Methods can be chained to create complex animation sequences:
+   *
+   * <h4>Example</h4>
+   *
+   *	createjs.Tween.get(target)
+   *		.wait(500)
+   *		.to({alpha:0, visible:false}, 1000)
+   *		.call(handleComplete);
+   *
+   * Multiple tweens can share a target, however if they affect the same properties there could be unexpected
+   * behaviour. To stop all tweens on an object, use {{#crossLink "Tween/removeTweens"}}{{/crossLink}} or pass `override:true`
+   * in the props argument.
+   *
+   * 	createjs.Tween.get(target, {override:true}).to({x:100});
+   *
+   * Subscribe to the {{#crossLink "Tween/change:event"}}{{/crossLink}} event to be notified when the tween position changes.
+   *
+   * 	createjs.Tween.get(target, {override:true}).to({x:100}).addEventListener("change", handleChange);
+   * 	function handleChange(event) {
+   * 		// The tween changed.
+   * 	}
+   *
+   * See the {{#crossLink "Tween/get"}}{{/crossLink}} method also.
+   * @class Tween
+   * @extends AbstractTween
+   * @module TweenJS
+   */
   var Tween = function(_AbstractTween) {
     inherits(Tween, _AbstractTween);
     // constructor:
@@ -2356,12 +2308,13 @@
      * Installs a plugin, which can modify how certain properties are handled when tweened. See the {{#crossLink "SamplePlugin"}}{{/crossLink}}
      * for an example of how to write TweenJS plugins. Plugins should generally be installed via their own `install` method, in order to provide
      * the plugin with an opportunity to configure itself.
-     * @method _installPlugin
+     * @method installPlugin
      * @param {Object} plugin The plugin to install
+     * @param {Object} props The props to pass to the plugin
      * @static
-     * @protected
      */
-    Tween._installPlugin = function _installPlugin(plugin) {
+    Tween.installPlugin = function installPlugin(plugin, props) {
+      plugin.install(props);
       var priority = plugin.priority = plugin.priority || 0,
         arr = Tween._plugins = Tween._plugins || [];
       for (var _i = 0, l = arr.length; _i < l; _i++) {
@@ -2825,9 +2778,7 @@
       return o
     };
     return Tween
-  }(AbstractTween);
-  // tiny api (primarily for tool output):
-  {
+  }(AbstractTween); {
     var p = Tween.prototype;
     p.w = p.wait;
     p.t = p.to;
@@ -3117,6 +3068,8 @@
    * This is explained here: https://github.com/rollup/rollup/issues/845#issuecomment-240277194
    */
   // re-export shared classes
+  // TODO: Review this version export.
+  // version (templated in gulpfile, pulled from package).
   var version = "2.0.0";
   exports.version = version;
   exports.EventDispatcher = EventDispatcher;
@@ -3127,4 +3080,4 @@
   exports.Timeline = Timeline;
   exports.Ease = Ease
 })(this.createjs = this.createjs || {});
-//# sourceMappingURL=tweenjs-NEXT.map
+//# sourceMappingURL=tweenjs-NEXT.js.map
