@@ -32,7 +32,7 @@
  * complex sequences.
  *
  * <h4>Simple Tween</h4>
- * This tween will tween the target's alpha property from 0 to 1 for 1s then call the <code>handleComplete</code> function.
+ * This tween will tween the target's alpha property from 0 to 1 for 1000ms (1 second) then call the <code>handleComplete</code> function.
  *
  *	    target.alpha = 0;
  *	    createjs.Tween.get(target).to({alpha:1}, 1000).call(handleComplete);
@@ -109,7 +109,7 @@ this.createjs = this.createjs||{};
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `paused`</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -306,7 +306,7 @@ this.createjs = this.createjs||{};
 	 *    <LI> `bounce`</LI>
 	 *    <LI> `timeScale`</LI>
 	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`: indicates whether to start the tween paused.</LI>
+	 *    <LI> `paused`</LI>
 	 *    <LI> `position`: indicates the initial position for this tween.</LI>
 	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
 	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
@@ -415,9 +415,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	Tween._installPlugin = function(plugin) {
-		var priority = plugin.priority, arr = Tween._plugins;
-		if (priority == null) { plugin.priority = priority = 0; }
-		if (!arr) { arr = Tween._plugins = []; }
+		var priority = (plugin.priority = plugin.priority||0), arr = (Tween._plugins = Tween._plugins || []);
 		for (var i=0,l=arr.length;i<l;i++) {
 			if (priority < arr[i].priority) { break; }
 		}
@@ -654,7 +652,7 @@ this.createjs = this.createjs||{};
 			// find our new step index:
 			var stepNext = step.next;
 			while (stepNext && stepNext.t <= t) { step = step.next; stepNext = step.next; }
-			var ratio = end ? t/d : (t-step.t)/step.d; // TODO: revisit this.
+			var ratio = end ? d === 0 ? 1 : t/d : (t-step.t)/step.d; // TODO: revisit this.
 			this._updateTargetProps(step, ratio, end);
 		}
 		this._stepPosition = step ? t-step.t : 0;
@@ -677,12 +675,14 @@ this.createjs = this.createjs||{};
 		
 		var plugins = this._plugins;
 		proploop : for (var n in p0) {
-			v = v0 = p0[n];
+			v0 = p0[n];
 			v1 = p1[n];
 			
 			// values are different & it is numeric then interpolate:
 			if (v0 !== v1 && (typeof(v0) === "number")) {
 				v = v0+(v1-v0)*ratio;
+			} else {
+				v = ratio >= 1 ? v1 : v0;
 			}
 			
 			if (plugins) {
@@ -713,7 +713,6 @@ this.createjs = this.createjs||{};
 		while (action) {
 			var pos = action.t;
 			if (pos === endPos || (pos > sPos && pos < ePos) || (includeStart && pos === startPos)) {
-				console.log(action);
 				action.funct.apply(action.scope, action.params);
 				if (t !== this.position) { return true; }
 			}
@@ -728,23 +727,25 @@ this.createjs = this.createjs||{};
 	 */
 	p._appendProps = function(props, step, stepPlugins) {
 		var initProps = this._stepHead.props, target = this.target, plugins = Tween._plugins;
-		var n, i, l, value, initValue, inject;
+		var n, i, value, initValue, inject;
 		var oldStep = step.prev, oldProps = oldStep.props;
 		var stepProps = step.props = this._cloneProps(oldProps);
+		var cleanProps = {}; // TODO: is there some way to avoid this additional object?
 
 		for (n in props) {
-			stepProps[n] = props[n];
+			if (!props.hasOwnProperty(n)) { continue; }
+			cleanProps[n] = stepProps[n] = props[n];
 
 			if (initProps[n] !== undefined) { continue; }
 
 			initValue = undefined; // accessing missing properties on DOMElements when using CSSPlugin is INSANELY expensive, so we let the plugin take a first swing at it.
 			if (plugins) {
-				for (i = 0, l = plugins.length; i < l; i++) {
+				for (i = plugins.length-1; i >= 0; i--) {
 					value = plugins[i].init(this, n, initValue);
 					if (value !== undefined) { initValue = value; }
 					if (initValue === Tween.IGNORE) {
 						delete(stepProps[n]);
-						delete(props[n]);
+						delete(cleanProps[n]);
 						break;
 					}
 				}
@@ -756,7 +757,7 @@ this.createjs = this.createjs||{};
 			}
 		}
 		
-		for (n in props) {
+		for (n in cleanProps) {
 			value = props[n];
 
 			// propagate old value to previous steps:
@@ -769,8 +770,8 @@ this.createjs = this.createjs||{};
 		}
 		
 		if (stepPlugins !== false && (plugins = this._plugins)) {
-			for (i = 0, l = plugins.length; i < l; i++) {
-				plugins[i].step(this, step, props);
+			for (i = plugins.length-1; i >= 0; i--) {
+				plugins[i].step(this, step, cleanProps);
 			}
 		}
 		

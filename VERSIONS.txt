@@ -3,30 +3,43 @@ Version NEXT [not yet released]
 CRITICAL (may break existing content):
 
 - Plugin model has changed significantly. See SamplePlugin for information.
-- Second param of Tween.setPosition() is now runActions boolean
+- Second param of Tween/Timeline.setPosition() is now runActions boolean
 - Removed Tween.NONE, Tween.LOOP, and Tween.REVERSE constants
 - pluginData is now a property in the props param, instead of its own param
 - Removed Tween.installPlugin, in favour of Plugin.install()
 - Removed Tween.tick (instance) in favour of Tween.advance
 - Tween actions in a Timeline now run after all the tween properties are updated
+- added check for hasOwnProperty on tween properties to filter out inherited properties
 
 *****
 DEPRECATED (will break in the future):
 - Timeline constructor now expects a single param `props`, which now supports `tweens` and `labels` properties
 - to make a tween loop continuously, you should now use loop:-1, instead of loop:true
+- setPaused deprecated in favor of paused getter / setter
+- getCurrentLabel deprecated in favor of currentLabel getter / setter
 
 *****
 OTHER:
-- Very significant performance improvements to Tween and CSSPlugin
+- Very significant performance improvements to Tween and plugins
+- Plugin model is now much more powerful / flexible.
+- Tween and Timeline now extend AbstractTween
 - Tween and Timeline now have more similar/consistent interfaces
 - Added Tween.reversed and Tween.bounce properties (also on Timeline)
 - Tween.loop now supports setting a numeric loop count value (also on Timeline)
 - Added Tween.rawPosition and Tween.useTicks read-only properties (also on Timeline)
-- Timeline now correctly removes tweens from other timelines when adding them
-- Tween and Timeline now extend AbstractTween
-- Added .label() to Tween
+- Timeline now removes tweens from other timelines when adding them
 - Tweens now support getLabels(), addLabel(), setLabels(), gotoAndPlay(), gotoAndStop(), and resolve()
+- Added .label() to Tween
 - Added Tween.timeScale & Timeline.timeScale
+- Added ColorPlugin, RelativePlugin, and RotationPlugin
+- CSSPlugin now works with any style value, and can optionally use computed styles
+- fixed issues with zero length tweens
+- action execution is now correct for tweens in timelines with looping
+- Timeline.tweens added
+- improvements / additions to examples
+- added callback param to setPosition for MovieClip use
+- fixed a bug with Tween.set()
+- unit tests made somewhat more robust
 
 
 Version 0.6.2 [November 26, 2015]

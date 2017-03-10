@@ -254,7 +254,7 @@ this.createjs = this.createjs||{};
 	 * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage collection
 	 * if no other references to it exist.
 	 * @property paused
-	 * @type {Boolean}
+	 * @type Boolean
 	 * @readonly
 	 **/
 	 
@@ -268,7 +268,7 @@ this.createjs = this.createjs||{};
 	 * 		<LI>"second" if the current position is 15.</LI>
 	 * </UL>
 	 * @property currentLabel
-	 * @type {String}
+	 * @type String
 	 * @readonly
 	 **/
 	
@@ -517,7 +517,7 @@ this.createjs = this.createjs||{};
 		
 		// special cases:
 		if (jump) { return this._runActionsRange(t1, t1, jump, includeStart); } // jump.
-		else if (loop0 === loop1 && t0 === t1 && !jump) { return; } // no actions if the position is identical.
+		else if (loop0 === loop1 && t0 === t1 && !jump && !includeStart) { return; } // no actions if the position is identical and we aren't including the start
 		else if (loop0 === -1) { loop0 = t0 = 0; } // correct the -1 value for first advance, important with useTicks.
 		
 		var dir = (startRawPos <= endRawPos), loop = loop0;
