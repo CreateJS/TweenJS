@@ -26,19 +26,22 @@
 		stage.autoClear = true;
 
 		var ball;
-		var count = 1000;
+		var count = 750;
 
 		while (count--) {
 			ball = new createjs.Shape();
-			ball.graphics.ss(1, 'round', 'round').s('#000000').f("#" + rc() + rc() + rc()).dc(0, 0, 5).ef().es();
+			ball.graphics.ss(1, 'round', 'round').s('#000000').f("#" + rc() + rc() + rc()).dc(0, 0, 6).ef().es();
+
 			var path = [rx(), ry(), rx(), ry(), rx(), ry()];
 			createjs.Tween.get(ball, {loop: true})
-					.to({guide: {path: path, start: 0, end: 1}}, 5000)
-					.wait(Math.random() * 4000)
-					.to({guide: {path: path, start: 1, end: 0}}, 5000);
+				.to({guide: {path: path, start: 0, end: 1}}, 5000)
+				.wait(Math.random() * 4000)
+				.to({guide: {path: path, start: 1, end: 0}}, 5000);
+
 			stage.addChild(ball);
 		}
 
+		createjs.Ticker.setFPS(60);
 		createjs.Ticker.addEventListener("tick", stage);
 	}
 

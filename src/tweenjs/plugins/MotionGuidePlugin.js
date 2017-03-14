@@ -59,7 +59,7 @@ this.createjs = this.createjs||{};
 	 *				<LI>"fixed" forces the object to face down the path all movement (relative to start rotation),</LI>
 	 * 				<LI>"auto" rotates the object along the path relative to the line.</LI>
 	 * 				<LI>"cw"/"ccw" force clockwise or counter clockwise rotations including Adobe Flash/Animate-like
-	 * 				behaviour</LI>
+	 * 				behaviour. This may override your end rotation value.</LI>
 	 * 		</UL></LI>
 	 * </UL>
 	 * Guide objects should not be shared between tweens even if all properties are identical, the library stores
@@ -103,69 +103,106 @@ this.createjs = this.createjs||{};
 		return createjs.Tween.IGNORE;
 	};
 
+	/**
+	 * Called by TweenJS when a new property initializes on a tween.
+	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
+	 * @method init
+	 * @param {Tween} tween
+	 * @param {String} prop
+	 * @param {any} value
+	 * @return {any}
+	 * @static
+	 **/
 	s.init = function(tween, prop, value) {
 		if(prop == "guide") {
 			tween._addPlugin(s);
 		}
 	};
 
-	s.step = function(tween, prop, props) {
+	/**
+	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
+	 * @method step
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {Object} props
+	 * @static
+	 **/
+	s.step = function(tween, step, props) {
 		for (var n in props) {
 			if(n != "guide") { continue; }
-			tween.pluginData.motionGuide = {};
-			s._solveGuideData(prop.props.guide, tween.pluginData.motionGuide);
+
+			var guideData = step.props.guide;
+			var error = s._solveGuideData(props.guide, guideData);
+			guideData.valid = !error;
+
+			if(error || !guideData.orient) { break; }
+
+			var initRot = step.prev.props.rotation === undefined ? (tween.target.rotation || 0) : step.prev.props.rotation;
+			var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
+
+			guideData.endAbsRot = finalRot;
+			guideData.startOffsetRot = initRot - guideData.startData.rotation;
+
+			var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
+			var modRot = deltaRot % 360;
+
+			switch(guideData.orient) {
+				case "fixed":
+					guideData.deltaRotation = 0;
+					break;
+				case "auto":
+					guideData.deltaRotation = deltaRot;
+					break;
+				case "cw":
+					guideData.deltaRotation = ((modRot + 360) % 360) + (360 * Math.abs((deltaRot/360) |0));
+					break;
+				case "ccw":
+					guideData.deltaRotation = ((modRot - 360) % 360) + (-360 * Math.abs((deltaRot/360) |0));
+					break;
+			}
 		}
 	};
 
+	/**
+	 * Called before a property is updated by the tween.
+	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+	 * @method change
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {String} prop
+	 * @param {any} value
+	 * @param {Number} ratio
+	 * @param {Boolean} end
+	 * @return {any}
+	 * @static
+	 **/
 	s.change = function(tween, step, prop, value, ratio, end) {
-		if(prop != "guide"){ return; }
-
 		var guideData = step.props.guide;
-		var tweenData = tween.pluginData.motionGuide;
-		var subLines = tweenData.subLines;
 
-		var i,l, t, test, target;
-
-		var subLine, look = 0;
-		var precision = 10;
-
-		// find subline
-		l = subLines.length;
-		for(i=0; i<l; i++) {
-			test = subLines[i].portion;
-			if(look + test >= ratio){ target = i; break; }
-			look += test;
+		if(!guideData) { return; }							// have no business making decisions
+		if(
+			(prop == "guide" && !guideData.valid) ||		// this data is broken
+			(prop == "x" || prop == "y") ||					// these always get over-written
+			(prop == "rotation" && guideData.orient)		// currently over-written
+		){
+			return createjs.Tween.IGNORE;
 		}
 
-		// find midline weighting
-		subLines = subLines[target].weightings;
-		l = subLines.length;
-		for(i=0; i<l; i++) {
-			test = subLines[i];
-			if(look + test >= ratio){
-				// take the distance we've covered in our ratio, and scale it to distance into the weightings
-				//t = (i/precision) + (((ratio-look) / test) * (1/precision)); // logical but unoptimized
-				t = (i*test + ratio-look) / (test * precision);
-				break;
-			}
-			look += test;
-		}
-
-		// position
-		target = (target*4) + 2;	// translate the subline index into a position in the path data
-		var pathData = guideData.path;
-
-		s._getParamsForCurve(
-			pathData[target-2],			pathData[target-1],
-			pathData[target],			pathData[target+1],
-			pathData[target+2],			pathData[target+3],
-			t,
-			guideData.orient,
-			tween.target
-		);
+		s._ratioToPositionData(ratio, guideData, tween.target);
 	};
 
 // public methods
+	/**
+	 * Provide potentially useful debugging information, like running the error detection system, and rendering the path
+	 * defined in the guide data.
+	 *
+	 * NOTE: you will need to transform your context 2D to the local space of the guide if you wish to line it up.
+	 * @param {Object} guideData All the information describing the guide to be followed.
+	 * @param {DrawingContext2D} [ctx=undefined] The context to draw the object into.
+	 * @param {Array} [higlight=undefined] Array of ratio positions to highlight
+	 * @returns {undefined|String}
+	 */
 	s.debug = function(guideData, ctx, higlight) {
 		guideData = guideData.guide || guideData;
 
@@ -176,14 +213,16 @@ this.createjs = this.createjs||{};
 		}
 
 		// drawing
-		if(!ctx){ return; }
+		if(!ctx){ return err; }
 
 		var i;
 		var path = guideData.path;
 		var pathLength = path.length;
+		var width = 3;
+		var length = 9;
 
 		ctx.save();
-		ctx.resetTransform();
+		//ctx.resetTransform();
 
 		ctx.lineCap = "round";
 		ctx.lineJoin = "miter";
@@ -199,30 +238,70 @@ this.createjs = this.createjs||{};
 		}
 
 		ctx.strokeStyle = "black";
-		ctx.lineWidth = 4;
+		ctx.lineWidth = width*1.5;
 		ctx.stroke();
 		ctx.strokeStyle = "white";
-		ctx.lineWidth = 2;
+		ctx.lineWidth = width;
 		ctx.stroke();
+		ctx.closePath();
 
 		// highlights
-		//TODO: draw highlight arrows showing&logging orientation&location of each point in array
+		var hiCount = higlight.length;
+		if(higlight && hiCount) {
+			var tempStore = {};
+			var tempLook = {};
+			s._solveGuideData(guideData, tempStore);
+
+			for(var i=0; i<hiCount; i++){
+				tempStore.orient = "fixed";
+				s._ratioToPositionData(higlight[i], tempStore, tempLook);
+
+				ctx.beginPath();
+
+				ctx.moveTo(tempLook.x, tempLook.y);
+				ctx.lineTo(
+					tempLook.x + Math.cos(tempLook.rotation * 0.0174533) * length,
+					tempLook.y + Math.sin(tempLook.rotation * 0.0174533) * length
+				);
+
+				ctx.strokeStyle = "black";
+				ctx.lineWidth = width*1.5;
+				ctx.stroke();
+				ctx.strokeStyle = "red";
+				ctx.lineWidth = width;
+				ctx.stroke();
+				ctx.closePath();
+			}
+		}
 
 		// end draw
-		ctx.closePath();
 		ctx.restore();
+
+		return err;
 	};
 
 // private methods
+	/**
+	 * Calculate and store optimization data about the desired path to improve performance and accuracy of positions.
+	 * @param {Object} source The guide data provided to the tween call
+	 * @param {Object} storage the guide data used by the step calls and plugin to do the job, will be overwritten
+	 * @returns {undefined|String} Can return an error if unable to generate the data.
+	 * @private
+	 */
 	s._solveGuideData = function(source, storage) {
-		if(s._findPathProblems(source)) { return; }
+		var err = undefined;
+		if(err = s.debug(source)) { return err; }
 
 		var path = storage.path = source.path;
 		var orient = storage.orient = source.orient;
 		storage.subLines = [];
 		storage.totalLength = 0;
+		storage.startOffsetRot = 0;
+		storage.deltaRotation = 0;
+		storage.startData = {ratio: 0};
+		storage.endData = {ratio: 1};
+		storage.animSpan = 1;
 
-		var guideData = storage;
 		var pathLength = path.length;
 
 		var precision = 10;
@@ -277,11 +356,93 @@ this.createjs = this.createjs||{};
 		}
 
 		// determine start and end data
+		var startRatio = isNaN(source.start) ? 0 : source.start;
+		var endRatio = isNaN(source.end) ? 1 : source.end;
+		s._ratioToPositionData(startRatio, storage, storage.startData);
+		s._ratioToPositionData(endRatio, storage, storage.endData);
 
-
-
+		// this has to be done last else the prev ratios will be out of place
+		storage.startData.ratio = startRatio;
+		storage.endData.ratio = endRatio;
+		storage.animSpan = storage.endData.ratio - storage.startData.ratio;
 	};
 
+	/**
+	 * Convert a percentage along the line into, a local line (start, control, end) t-value for calculation.
+	 * @param {Number} ratio The (euclidean distance) percentage into the whole curve.
+	 * @param {Object} guideData All the information describing the guide to be followed.
+	 * @param {Object} output Object to save output properties of x,y, and rotation onto.
+	 * @returns {Object} The output object, useful for isolated calls.
+	 * @private
+	 */
+	s._ratioToPositionData = function(ratio, guideData, output) {
+		var lineSegments = guideData.subLines;
+
+		var i,l, t, test, target;
+
+		var look = 0;
+		var precision = 10;
+		var effRatio = (ratio * guideData.animSpan) + guideData.startData.ratio;
+
+		// find subline
+		l = lineSegments.length;
+		for(i=0; i<l; i++) {
+			test = lineSegments[i].portion;
+			if(look + test >= effRatio){ target = i; break; }
+			look += test;
+		}
+		if(target === undefined) { target = l-1;  look -= test; }
+
+		// find midline weighting
+		var subLines = lineSegments[target].weightings;
+		var portion = test;
+		l = subLines.length;
+		for(i=0; i<l; i++) {
+			test = subLines[i] * portion;
+			if(look + test >= effRatio){ break; }
+			look += test;
+		}
+
+		// translate the subline index into a position in the path data
+		target = (target*4) + 2;
+		// take the distance we've covered in our ratio, and scale it to distance into the weightings
+		t = (i/precision) + (((effRatio-look) / test) * (1/precision));
+
+		// position
+		var pathData = guideData.path;
+		s._getParamsForCurve(
+			pathData[target-2],			pathData[target-1],
+			pathData[target],			pathData[target+1],
+			pathData[target+2],			pathData[target+3],
+			t,
+			guideData.orient,
+			output
+		);
+
+		if(guideData.orient) {
+			if(ratio >= 0.99999 && ratio <= 1.00001 && guideData.endAbsRot !== undefined) {
+				output.rotation = guideData.endAbsRot;
+			} else {
+				output.rotation += guideData.startOffsetRot + (ratio * guideData.deltaRotation);
+			}
+		}
+
+		return output;
+	};
+
+	/**
+	 * For a given quadratic bezier t-value, what is the position and rotation. Save it onto the output object.
+	 * @param {Number} sx Start x.
+	 * @param {Number} sy Start y.
+	 * @param {Number} cx Control x.
+	 * @param {Number} cy Control y.
+	 * @param {Number} ex End x.
+	 * @param {Number} ey End y.
+	 * @param {Number} t T value (parametric distance into curve).
+	 * @param {Boolean} orient Save rotation data.
+	 * @param {Object} output Object to save output properties of x,y, and rotation onto.
+	 * @private
+	 */
 	s._getParamsForCurve = function(sx,sy, cx,cy, ex,ey, t, orient, output) {
 		var inv = 1 - t;
 
@@ -296,28 +457,43 @@ this.createjs = this.createjs||{};
 				(cy - sy)*inv + (ey - cy)*t,
 				(cx - sx)*inv + (ex - cx)*t
 			);
+
+			console.log(
+				(cy - sy)*inv + (ey - cy)*t,
+				(cx - sx)*inv + (ex - cx)*t
+			);
 		}
 	};
 
+	/**
+	 * Perform a check to validate path information so plugin can avoid later error checking.
+	 * @param {Object} guideData All the information describing the guide to be followed.
+	 * @returns {undefined|String} The problem found, or undefined if no problems.
+	 * @private
+	 */
 	s._findPathProblems = function(guideData) {
 		var path = guideData.path;
-		var pointCount = (path && path.length) || 0;	// ensure this is a number to simplify later logic
-		if(pointCount < 6 || (pointCount-2) % 4) {
-			var message =	"Cannot parse 'path' property due to invalid number of points in path.";
-			message +=		"Requires x,y pairs for every point in the curve. The curve starts with a single point.";
-			message +=		"Following that are control and end point pairs describing the line. See 'CanvasRenderingContext2D.quadraticCurveTo'";
-			message +=		"Only [ "+ pointCount +" ] points found. Expected: "+ Math.max(Math.ceil((pointCount-2)/4)*4+2, 6); //6, 10, 14,...
+		var valueCount = (path && path.length) || 0;	// ensure this is a number to simplify later logic
+		if(valueCount < 6 || (valueCount-2) % 4) {
+			var message =	"\tCannot parse 'path' array due to invalid number of entries in path. ";
+			message +=		"There should be an odd number of points, at least 3 points, and 2 entries per point (x & y). ";
+			message +=		"See 'CanvasRenderingContext2D.quadraticCurveTo' for details as 'path' models a quadratic bezier.\n\n";
+			message +=		"Only [ "+ valueCount +" ] values found. Expected: "+ Math.max(Math.ceil((valueCount-2)/4)*4+2, 6); //6, 10, 14,...
 			return message;
 		}
 
-		//TODO: check each value in array for undefined? This doesn't break things just causes NaN positions/rotations
+		for(var i=0; i<valueCount; i++) {
+			if(isNaN(path[i])){
+				return "All data in path array must be numeric";
+			}
+		}
 
 		var start = guideData.start;
-		if(isNaN(start) && !(start === undefined) || start < 0 || start > 1) {
+		if(isNaN(start) && !(start === undefined)/* || start < 0 || start > 1*/) {	// outside 0-1 is unpredictable, but not breaking
 			return "'start' out of bounds. Expected 0 to 1, got: "+ start;
 		}
 		var end = guideData.end;
-		if(isNaN(end) && (end !== undefined) || end < 0 || end > 1) {
+		if(isNaN(end) && (end !== undefined)/* || end < 0 || end > 1*/) {	// outside 0-1 is unpredictable, but not breaking
 			return "'end' out of bounds. Expected 0 to 1, got: "+ end;
 		}
 
