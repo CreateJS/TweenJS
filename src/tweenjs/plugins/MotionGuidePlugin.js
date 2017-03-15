@@ -68,7 +68,7 @@ this.createjs = this.createjs||{};
 	 *
 	 * @class MotionGuidePlugin
 	 * @constructor
-	 **/
+	 */
 	function MotionGuidePlugin() {
 		throw("MotionGuidePlugin cannot be instantiated.")
 	}
@@ -80,7 +80,7 @@ this.createjs = this.createjs||{};
 	 * @property priority
 	 * @protected
 	 * @static
-	 **/
+	 */
 	s.priority = 0; // high priority, should run sooner
 
 	/**
@@ -89,7 +89,7 @@ this.createjs = this.createjs||{};
 	 * @type {String}
 	 * @static
 	 * @readonly
-	 **/
+	 */
 	s.ID = "MotionGuide";
 
 // static methods
@@ -97,7 +97,7 @@ this.createjs = this.createjs||{};
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
-	 **/
+	 */
 	s.install = function() {
 		createjs.Tween._installPlugin(MotionGuidePlugin);
 		return createjs.Tween.IGNORE;
@@ -112,7 +112,7 @@ this.createjs = this.createjs||{};
 	 * @param {any} value
 	 * @return {any}
 	 * @static
-	 **/
+	 */
 	s.init = function(tween, prop, value) {
 		if(prop == "guide") {
 			tween._addPlugin(s);
@@ -127,7 +127,7 @@ this.createjs = this.createjs||{};
 	 * @param {TweenStep} step
 	 * @param {Object} props
 	 * @static
-	 **/
+	 */
 	s.step = function(tween, step, props) {
 		for (var n in props) {
 			if(n != "guide") { continue; }
@@ -176,7 +176,7 @@ this.createjs = this.createjs||{};
 	 * @param {Boolean} end
 	 * @return {any}
 	 * @static
-	 **/
+	 */
 	s.change = function(tween, step, prop, value, ratio, end) {
 		var guideData = step.props.guide;
 
