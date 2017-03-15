@@ -22,35 +22,38 @@
 
 		canvas = document.getElementById("testCanvas");
 		stage = new createjs.Stage(canvas);
-		stage.autoClear = true;
 
-		var ball = new createjs.Shape();
-		var g = ball.graphics;
+		var ball = makeBall(55, "#F24828");
+
+		// pass in a guide object with a path property
+		createjs.Tween.get(ball, {loop: true}, true)
+			.to({guide: {path: [100,100, 800,100, 800,300], orient: "fixed"}}, 4000);
+
+		// it doesn't matter where we put the ball it will snap to the path
+		stage.addChild(ball);
+		ball.x = -200;
+		ball.y = -200;
+
+		createjs.Ticker.setFPS(60);
+		createjs.Ticker.addEventListener("tick", stage);
+	}
+
+	function makeBall(size, color) {
+		var shape = new createjs.Shape();
+		var g = shape.graphics;
+
 		g.setStrokeStyle(5, 'round', 'round');
 		g.beginStroke('#000000');
-		g.beginFill("#FF0000").drawCircle(0, 0, 50);
+		g.beginFill(color).drawCircle(0, 0, size);
 		g.endStroke();
 		g.endFill();
 		g.setStrokeStyle(1, 'round', 'round');
 		g.beginStroke('#000000');
 		g.moveTo(0, 0);
-		g.lineTo(50, 0);
+		g.lineTo(size, 0);
 		g.endStroke();
 
-		var tween = createjs.Tween.get(ball, {loop: true}, true)
-						.to({guide: {path: [100, 100, 800, 100, 800, 300], orient: true}}, 5000)
-						.wait(1000)
-						.to({guide: {path: [800, 300, 100, 300, 100, 100], end: 0.75, orient: true}}, 3750)
-				;
-
-		stage.addChild(ball);
-
-		createjs.Ticker.addEventListener("tick", stage);
-	}
-
-	function handleComplete(tween) {
-		var ball = tween._target;
-
+		return shape;
 	}
 
 </script>
@@ -60,7 +63,7 @@
 <div>
 
 	<header class="EaselJS">
-		<h1>Simple Tween Demo</h1>
+		<h1>Simple Motion Guide Demo</h1>
 
 		<p>This example shows a simple use of the MotionGuidePlugin.</p>
 	</header>
