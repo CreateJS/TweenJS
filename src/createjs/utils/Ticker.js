@@ -415,7 +415,7 @@ this.createjs = this.createjs||{};
 		}
 		Ticker.removeAllEventListeners("tick");
 		Ticker._timerId = Ticker._times = Ticker._tickTimes = null;
-		Ticker._startTime = Ticker._lastTime = Ticker._ticks = 0;
+		Ticker._startTime = Ticker._lastTime = Ticker._ticks = Ticker._pausedTime = 0;
 		Ticker._inited = false;
 	};
 
@@ -627,9 +627,9 @@ this.createjs = this.createjs||{};
 	 * @static
 	 * @protected
 	 **/
-	var now = window.performance && (performance.now || performance.mozNow || performance.msNow || performance.oNow || performance.webkitNow);
+	var w=window, now=w.performance.now || w.performance.mozNow || w.performance.msNow || w.performance.oNow || w.performance.webkitNow;
 	Ticker._getTime = function() {
-		return ((now&&now.call(performance))||(new Date().getTime())) - Ticker._startTime;
+		return ((now&&now.call(w.performance))||(new Date().getTime())) - Ticker._startTime;
 	};
 
 
