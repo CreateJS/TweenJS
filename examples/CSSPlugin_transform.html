@@ -19,7 +19,7 @@
 	  http://code.createjs.com -->
 <style>
 	.box {
-		border-radius: 100%;
+		border-radius: 25%;
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -44,14 +44,14 @@
 			// set up initial rotation & position:
 			var a = Math.random() * 360, hue=count/300*30+180;
 			box.style.transform = "translate(-50%,-50%) rotate(" + a + "deg) translate("+3+"vw, 0px) scale(0.1,0.4)";
-			box.style.background = "hsla("+(hue|0)+", 100%, 50%, 1)";
+			box.style.backgroundColor = "hsla("+(hue|0)+", 100%, 50%, 1)";
 			
 			// create the tween:
 			createjs.Tween.get(box, {loop: -1, bounce:true, reversed:true})
 				.to({
 					// the * tells it to reuse the corresponding operation from the previous step (ie. "translate(-50%,-50%)"):
 					transform:"* rotate(" + (a+Math.random()*90+90) + "deg) translate("+(Math.random()*10+40)+"vw, 0px) scale(4,6)",
-					background:"hsla("+(hue+120|0)+", 100%, 40%, 0)"
+					backgroundColor:"hsla("+(hue+120|0)+", 100%, 40%, 0)"
 					}, Math.random()*2000+1500|0, createjs.Ease.quadIn);
 		}
 		

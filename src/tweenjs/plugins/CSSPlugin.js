@@ -104,9 +104,9 @@ this.createjs = this.createjs||{};
 	 */
 	s.VALUE_RE = /^(-?[\d.]+)([a-z%]*)$/; // extracts the numeric value and suffix from a single CSS value
 	
-	s.TRANSFORM_VALUE_RE = /(-?[\d.]+)([a-z%]*),?\s*/g; // extracts the numeric value and suffix from comma delimited lists
+	s.TRANSFORM_VALUE_RE = /(?:^| |,)(-?[\d.]+)([a-z%]*)/g; // extracts the numeric value and suffix from comma delimited lists
 	
-	s.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^|\s)(\*)(?:$|\s)/g; // extracts the components of a transform
+	s.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^| )(\*)(?:$| )/g; // extracts the components of a transform
 	
 	
 	
@@ -166,10 +166,9 @@ this.createjs = this.createjs||{};
 		if (initVal === undefined) { return;  }
 		
 		tween._addPlugin(CSSPlugin);
-		
 		var cssData = data.CSS || (data.CSS = {});
 		if (prop === "transform") {
-			cssData[prop] = "";
+			cssData[prop] = "_t";
 			return parseTransform(initVal);
 		}
 		
@@ -217,9 +216,11 @@ this.createjs = this.createjs||{};
 		var sfx = tween.pluginData.CSS[prop];
 		if (sfx === undefined) { return; }
 		if (prop === "transform") {
-			value = writeTransform(step.prev.props.transform, step.props.transform, ratio);
+			value = writeTransform(step.prev.props[prop], step.props[prop], ratio);
+		} else {
+			value += sfx;
 		}
-		tween.target.style[prop] = value+sfx;
+		tween.target.style[prop] = value;
 		return createjs.Tween.IGNORE;
 	};
 	
@@ -234,7 +235,7 @@ this.createjs = this.createjs||{};
 	}
 
 	function parseTransform(str, compare) {
-		var result, valStr, list = [false, str];
+		var result, list = [false, str];
 		do {
 			// pull out the next "component" of the transform (ex. "translate(10px, 20px)")
 			result = s.TRANSFORM_RE.exec(str);
@@ -247,18 +248,9 @@ this.createjs = this.createjs||{};
 			var component = [result[1]], compareComp = compare && compare[list.length];
 			
 			// check that the operation type matches (ex. "translate" vs "rotate"):
-			if (compare && (!compareComp || component[0] !== compareComp[0])) { compare=null; console.log("transforms don't match: ",component[0],compareComp[0]); } // component doesn't match
+			if (compare && (!compareComp || component[0] !== compareComp[0])) { console.log("transforms don't match: ",component[0],compareComp[0]); compare=null; } // component doesn't match
 			
-			valStr = result[2];
-			do {
-				// pull out the next value (ex. "20px", "12.4rad"):
-				result = s.TRANSFORM_VALUE_RE.exec(valStr);
-				if (!result) { break; }
-				component.push(+result[1], result[2]);
-				
-				// chack that the units match (ex. "px" vs "em"):
-				if (compare && (compareComp[component.length-1] !== result[2])) { compare=null; console.log("transform units don't match: ",component[0],compareComp[component.length-1],result[2]); } // unit doesn't match
-			} while(true);
+			parseMulti(result[2], compareComp, component);
 
 			list.push(component);
 		} while(true);
@@ -266,10 +258,25 @@ this.createjs = this.createjs||{};
 		list[0] = !!compare;
 		return list;
 	}
+	
+	// this was separated so that it can be used for other multi element styles in the future
+	// ex. transform-origin, border, etc.
+	function parseMulti(str, compare, arr) {
+		// TODO: add logic to deal with "0" values? Troublesome because the browser automatically appends a unit for some 0 values.
+		do {
+			// pull out the next value (ex. "20px", "12.4rad"):
+			var result = s.TRANSFORM_VALUE_RE.exec(str);
+			if (!result) { return arr; }
+			if (!arr) { arr = []; }
+			arr.push(+result[1], result[2]);
+
+			// check that the units match (ex. "px" vs "em"):
+			if (compare && (compare[arr.length-1] !== result[2])) { console.log("transform units don't match: ",arr[0], compare[arr.length-1], result[2]); compare=null;  } // unit doesn't match
+		} while(true);
+	}
 
 	function writeTransform(list0, list1, ratio) {
 		// check if we should just use the original transform strings:
-		// TODO: do we want to worry about how this works with bounce eases & ratio>1?
 		if (ratio === 1) { return list1[1]; }
 		if (ratio === 0 || !list1[0]) { return list0[1]; }
 
@@ -279,7 +286,8 @@ this.createjs = this.createjs||{};
 			var component0 = list0[i], component1 = list1[i];
 			str += component0[0]+"(";
 			for (j=1, jl=component0.length; j<jl; j+=2) {
-				str += component0[j]+(component1[j]-component0[j])*ratio+component0[j+1];
+				str += component0[j]+(component1[j]-component0[j])*ratio; // value
+				str += component1[j+1] || component0[j+1]; // unit
 				if (j < jl-2) { str += ", "; }
 			}
 			str += ")";
@@ -289,6 +297,21 @@ this.createjs = this.createjs||{};
 	}
 	
 	/*
+	
+	// this was part of an attempt to handle multi element css values, ex. margin="10px 10px 20px 30px"
+	// discarded because the browser likes to collapse values, which makes a generic solution infeasible.
+	// for example, margin="10px 10px 10px 10px" will collapse to just "10px"
+	// requires custom logic to handle each scenario.
+	s.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/; // matches CSS values that consist of two or more values with suffixes
+	function writeMulti(arr0, arr1, ratio) {
+		var str = "", l=arr0.length, i;
+		for (i=0; i<l; i+=2) {
+			str += arr0[i]+(arr1[i]-arr0[i])*ratio+arr0[i+1];
+			if (i < l-2) { str += " "; }
+		}
+		return str;
+	}
+	
 	// this method is really only needed for roundtrip tests.
 	function writeSingleTransform(list) {
 		var str = "", l=list.length, i, j, jl, component;
