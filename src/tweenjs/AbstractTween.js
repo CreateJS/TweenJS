@@ -51,8 +51,8 @@ this.createjs = this.createjs||{};
 	// public properties:
 		/**
 		 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {{#crossLink "Ticker"}}{{/crossLink}},
-		 * then setting this to false (the default) will cause this tween to be paused when `Ticker.setPaused(true)`
-		 * is called. See the {{#crossLink "Tween/tick"}}{{/crossLink}} method for more info. Can be set via the `props`
+		 * then setting this to false (the default) will cause this tween to be paused when `Ticker.paused` is set to
+		 * `true`. See the {{#crossLink "Tween/tick"}}{{/crossLink}} method for more info. Can be set via the `props`
 		 * parameter.
 		 * @property ignoreGlobalPause
 		 * @type Boolean
@@ -197,9 +197,6 @@ this.createjs = this.createjs||{};
 
 	var p = createjs.extend(AbstractTween, createjs.EventDispatcher);
 
-	// TODO: deprecated
-	// p.initialize = function() {}; // searchable for devs wondering where it is. REMOVED. See docs for details.
-
 // events:
 	/**
 	 * Dispatched whenever the tween's position changes. It occurs after all tweened properties are updated and actions
@@ -216,34 +213,34 @@ this.createjs = this.createjs||{};
 // getter / setters:
 	
 	/**
-	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
-	 * @method setPaused
+	 * A chainable method that has the same effect as the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}}
+	 * property.
+	 * @method _setPaused
 	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
+	 * @protected
 	 * @return {Tween} This tween instance (for chaining calls)
-	 * @deprecated
-	 * @chainable
 	 */
-	p.setPaused = function(value) {
+	p._setPaused = function(value) {
 		createjs.Tween._register(this, value);
 		return this;
 	};
 	
 	/**
 	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
-	 * @method getPaused
-	 * @deprecated
+	 * @method _getPaused
+	 * @protected
 	 */
-	p.getPaused = function() { 
+	p._getPaused = function() {
 		return this._paused;
 	};
 	
 	/**
 	 * 
-	 * @method getCurrentLabel
+	 * @method _getCurrentLabel
+	 * @protected
 	 * @return {String} The name of the current label or null if there is no label
-	 * @deprecated
 	 **/
-	p.getCurrentLabel = function(pos) {
+	p._getCurrentLabel = function(pos) {
 		var labels = this.getLabels();
 		if (pos == null) { pos = this.position; }
 		for (var i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
@@ -251,8 +248,8 @@ this.createjs = this.createjs||{};
 	};
 	
 	/**
-	 * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage collection
-	 * if no other references to it exist.
+	 * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage
+	 * collection if no other references to it exist.
 	 * @property paused
 	 * @type Boolean
 	 * @readonly
@@ -260,7 +257,7 @@ this.createjs = this.createjs||{};
 	 
 	/**
 	 * Returns the name of the label on or immediately before the current position. For example, given a tween with
-	 * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
+	 * two labels, "first" on frame index 4, and "second" on frame 8, `currentLabel` would return:
 	 * <UL>
 	 * 		<LI>null if the current position is 2.</LI>
 	 * 		<LI>"first" if the current position is 4.</LI>
@@ -274,8 +271,8 @@ this.createjs = this.createjs||{};
 	
 	try {
 		Object.defineProperties(p, {
-			paused: { set: p.setPaused, get: p.getPaused },
-			currentLabel: { get: p.getCurrentLabel }
+			paused: { set: p._setPaused, get: p._getPaused },
+			currentLabel: { get: p._getCurrentLabel }
 		});
 	} catch (e) {}
 

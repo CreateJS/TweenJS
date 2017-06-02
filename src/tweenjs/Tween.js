@@ -237,10 +237,6 @@ this.createjs = this.createjs||{};
 
 	var p = createjs.extend(Tween, createjs.AbstractTween);
 
-	// TODO: deprecated
-	// p.initialize = function() {}; // searchable for devs wondering where it is. REMOVED. See docs for details.
-	
-
 // static properties
 
 	/**
