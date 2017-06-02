@@ -182,6 +182,7 @@ this.createjs = this.createjs||{};
 
 		if(!guideData) { return; }							// have no business making decisions
 		if(
+			(step.props === step.prev.props) ||
 			(prop == "guide" && !guideData.valid) ||		// this data is broken
 			(prop == "x" || prop == "y") ||					// these always get over-written
 			(prop == "rotation" && guideData.orient)		// currently over-written
