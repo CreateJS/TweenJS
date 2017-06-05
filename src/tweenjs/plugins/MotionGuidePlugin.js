@@ -130,18 +130,24 @@ this.createjs = this.createjs||{};
 	 */
 	s.step = function(tween, step, props) {
 		for (var n in props) {
-			if(n != "guide") { continue; }
+			if(n !== "guide") { continue; }
 
 			var guideData = step.props.guide;
 			var error = s._solveGuideData(props.guide, guideData);
 			guideData.valid = !error;
+
+			var end = guideData.endData;
+			step.props.x = end.x;
+			step.props.y = end.y;
+			
+			console.log("SET X/Y", step.props);
 
 			if(error || !guideData.orient) { break; }
 
 			var initRot = step.prev.props.rotation === undefined ? (tween.target.rotation || 0) : step.prev.props.rotation;
 			var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
 
-			guideData.endAbsRot = finalRot;
+			step.props.rotation = guideData.endAbsRot = finalRot;
 			guideData.startOffsetRot = initRot - guideData.startData.rotation;
 
 			var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
@@ -180,12 +186,17 @@ this.createjs = this.createjs||{};
 	s.change = function(tween, step, prop, value, ratio, end) {
 		var guideData = step.props.guide;
 
-		if(!guideData) { return; }							// have no business making decisions
 		if(
-			(step.props === step.prev.props) ||
-			(prop == "guide" && !guideData.valid) ||		// this data is broken
-			(prop == "x" || prop == "y") ||					// these always get over-written
-			(prop == "rotation" && guideData.orient)		// currently over-written
+				!guideData ||
+				(step.props === step.prev.props) ||
+				(guideData === step.prev.props.guide)
+		) {
+			return;
+		}						// have no business making decisions
+		if(
+				(prop === "guide" && !guideData.valid) ||		// this data is broken
+				(prop == "x" || prop == "y") ||					// these always get over-written					// these always get over-written
+				(prop === "rotation" && guideData.orient)		// currently over-written
 		){
 			return createjs.Tween.IGNORE;
 		}
@@ -455,11 +466,6 @@ this.createjs = this.createjs||{};
 		if(orient) {
 			// convert from radians back to degrees
 			output.rotation = 57.2957795 * Math.atan2(
-				(cy - sy)*inv + (ey - cy)*t,
-				(cx - sx)*inv + (ex - cx)*t
-			);
-
-			console.log(
 				(cy - sy)*inv + (ey - cy)*t,
 				(cx - sx)*inv + (ex - cx)*t
 			);
