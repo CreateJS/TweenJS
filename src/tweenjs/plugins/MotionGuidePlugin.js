@@ -145,8 +145,8 @@ this.createjs = this.createjs||{};
 			var initRot = step.prev.props.rotation === undefined ? (tween.target.rotation || 0) : step.prev.props.rotation;
 			var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
 
-			step.props.rotation = guideData.endAbsRot = finalRot;
-			tween._injectProp("rotation", initRot);
+			guideData.endAbsRot = finalRot;
+			tween._injectProp("rotation", finalRot);
 			guideData.startOffsetRot = initRot - guideData.startData.rotation;
 
 			var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
