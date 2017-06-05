@@ -139,8 +139,10 @@ this.createjs = this.createjs||{};
 			var end = guideData.endData;
 			step.props.x = end.x;
 			step.props.y = end.y;
-			
-			console.log("SET X/Y", step.props);
+
+			var start = guideData.startData;
+			tween._injectProp("x", start.x);
+			tween._injectProp("y", start.y);
 
 			if(error || !guideData.orient) { break; }
 
@@ -148,6 +150,7 @@ this.createjs = this.createjs||{};
 			var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
 
 			step.props.rotation = guideData.endAbsRot = finalRot;
+			tween._injectProp("rotation", initRot);
 			guideData.startOffsetRot = initRot - guideData.startData.rotation;
 
 			var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
@@ -187,15 +190,15 @@ this.createjs = this.createjs||{};
 		var guideData = step.props.guide;
 
 		if(
-				!guideData ||
-				(step.props === step.prev.props) ||
-				(guideData === step.prev.props.guide)
+				!guideData ||							// Missing data
+				(step.props === step.prev.props) || 	// In a wait()
+				(guideData === step.prev.props.guide) 	// Guide hasn't changed
 		) {
-			return;
-		}						// have no business making decisions
+			return; // have no business making decisions
+		}
 		if(
 				(prop === "guide" && !guideData.valid) ||		// this data is broken
-				(prop == "x" || prop == "y") ||					// these always get over-written					// these always get over-written
+				(prop == "x" || prop == "y") ||					// these always get over-written
 				(prop === "rotation" && guideData.orient)		// currently over-written
 		){
 			return createjs.Tween.IGNORE;
