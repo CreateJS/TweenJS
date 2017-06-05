@@ -725,7 +725,7 @@ this.createjs = this.createjs||{};
 		var initProps = this._stepHead.props, target = this.target, plugins = Tween._plugins;
 		var n, i, value, initValue, inject;
 		var oldStep = step.prev, oldProps = oldStep.props;
-		var stepProps = step.props = this._cloneProps(oldProps);
+		var stepProps = step.props || (step.props = this._cloneProps(oldProps));
 		var cleanProps = {}; // TODO: is there some way to avoid this additional object?
 
 		for (n in props) {
