@@ -137,12 +137,8 @@ this.createjs = this.createjs||{};
 			guideData.valid = !error;
 
 			var end = guideData.endData;
-			step.props.x = end.x;
-			step.props.y = end.y;
-
-			var start = guideData.startData;
-			tween._injectProp("x", start.x);
-			tween._injectProp("y", start.y);
+			tween._injectProp("x", end.x);
+			tween._injectProp("y", end.y);
 
 			if(error || !guideData.orient) { break; }
 
