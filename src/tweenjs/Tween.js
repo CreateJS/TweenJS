@@ -101,19 +101,19 @@ this.createjs = this.createjs||{};
 	 * @param {Object} target The target object that will have its properties tweened.
 	 * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
 	 * Supported props are listed below. These props are set on the corresponding instance properties except where
-	 * specified.<UL>
-	 *    <LI> `useTicks`</LI>
-	 *    <LI> `ignoreGlobalPause`</LI>
-	 *    <LI> `loop`</LI>
-	 *    <LI> `reversed`</LI>
-	 *    <LI> `bounce`</LI>
-	 *    <LI> `timeScale`</LI>
-	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`</LI>
-	 *    <LI> `position`: indicates the initial position for this tween.</LI>
-	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
-	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
-	 *    <LI> `override`: if true, removes all existing tweens for the target</LI>
+	 * specified.
+	 * @param {boolean} [props.useTicks=false]  See the {{#crossLink "AbstractTween/useTicks:property"}}{{/crossLink}} property for more information.
+	 * @param {boolean} [props.ignoreGlobalPause=false] See the {{#crossLink "AbstractTween/ignoreGlobalPause:property"}}{{/crossLink}} for more information.
+	 * @param {number|boolean} [props.loop=0] See the {{#crossLink "AbstractTween/loop:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.reversed=false] See the {{#crossLink "AbstractTween/reversed:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.bounce=false] See the {{#crossLink "AbstractTween/bounce:property"}}{{/crossLink}} for more information.
+	 * @param {number} [props.timeScale=1] See the {{#crossLink "AbstractTween/timeScale:property"}}{{/crossLink}} for more information.
+	 * @param {object} [props.pluginData] See the {{#crossLink "Tween/pluginData:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.paused=false] See the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} for more information.
+	 * @param {number} [props.position=0] The initial position for this tween. See {{#crossLink "AbstractTween/position:property"}}{{/crossLink}}
+	 * @param {Function} [props.onChange] Adds the specified function as a listener to the {{#crossLink "AbstractTween/change:event"}}{{/crossLink}} event
+	 * @param {Function} [props.onComplete] Adds the specified function as a listener to the {{#crossLink "AbstractTween/complete:event"}}{{/crossLink}} event
+	 * @param {boolean} [props.override=false] Removes all existing tweens for the target when set to `true`.
 	 * </UL>
 	 * @extends AbstractTween
 	 * @constructor
@@ -294,20 +294,19 @@ this.createjs = this.createjs||{};
 	 * @param {Object} target The target object that will have its properties tweened.
 	 * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
 	 * Supported props are listed below. These props are set on the corresponding instance properties except where
-	 * specified.<UL>
-	 *    <LI> `useTicks`</LI>
-	 *    <LI> `ignoreGlobalPause`</LI>
-	 *    <LI> `loop`</LI>
-	 *    <LI> `reversed`</LI>
-	 *    <LI> `bounce`</LI>
-	 *    <LI> `timeScale`</LI>
-	 *    <LI> `pluginData`</LI>
-	 *    <LI> `paused`</LI>
-	 *    <LI> `position`: indicates the initial position for this tween.</LI>
-	 *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
-	 *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
-	 *    <LI> `override`: if true, removes all existing tweens for the target</LI>
-	 * </UL>
+	 * specified.
+	 * @param {boolean} [props.useTicks=false]  See the {{#crossLink "AbstractTween/useTicks:property"}}{{/crossLink}} property for more information.
+	 * @param {boolean} [props.ignoreGlobalPause=false] See the {{#crossLink "AbstractTween/ignoreGlobalPause:property"}}{{/crossLink}} for more information.
+	 * @param {number|boolean} [props.loop=0] See the {{#crossLink "AbstractTween/loop:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.reversed=false] See the {{#crossLink "AbstractTween/reversed:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.bounce=false] See the {{#crossLink "AbstractTween/bounce:property"}}{{/crossLink}} for more information.
+	 * @param {number} [props.timeScale=1] See the {{#crossLink "AbstractTween/timeScale:property"}}{{/crossLink}} for more information.
+	 * @param {object} [props.pluginData] See the {{#crossLink "Tween/pluginData:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.paused=false] See the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} for more information.
+	 * @param {number} [props.position=0] The initial position for this tween. See {{#crossLink "AbstractTween/position:property"}}{{/crossLink}}
+	 * @param {Function} [props.onChange] Adds the specified function as a listener to the {{#crossLink "AbstractTween/change:event"}}{{/crossLink}} event
+	 * @param {Function} [props.onComplete] Adds the specified function as a listener to the {{#crossLink "AbstractTween/complete:event"}}{{/crossLink}} event
+	 * @param {boolean} [props.override=false] Removes all existing tweens for the target when set to `true`.
 	 * @return {Tween} A reference to the created tween.
 	 * @static
 	 */

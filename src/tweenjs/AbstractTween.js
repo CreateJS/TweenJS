@@ -41,7 +41,17 @@ this.createjs = this.createjs||{};
 	/**
 	 * Base class that both {{#crossLink "Tween"}}{{/crossLink}} and {{#crossLink "Timeline"}}{{/crossLink}} extend. Should not be instantiated directly.
 	 * @class AbstractTween
-	 * @param {Object} [props]
+	 * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
+	 * Supported props are listed below. These props are set on the corresponding instance properties except where
+	 * specified.
+	 * @param {boolean} [props.useTicks=false]  See the {{#crossLink "AbstractTween/useTicks:property"}}{{/crossLink}} property for more information.
+	 * @param {boolean} [props.ignoreGlobalPause=false] See the {{#crossLink "AbstractTween/ignoreGlobalPause:property"}}{{/crossLink}} for more information.
+	 * @param {number|boolean} [props.loop=0] See the {{#crossLink "AbstractTween/loop:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.reversed=false] See the {{#crossLink "AbstractTween/reversed:property"}}{{/crossLink}} for more information.
+	 * @param {boolean} [props.bounce=false] See the {{#crossLink "AbstractTween/bounce:property"}}{{/crossLink}} for more information.
+	 * @param {number} [props.timeScale=1] See the {{#crossLink "AbstractTween/timeScale:property"}}{{/crossLink}} for more information.
+	 * @param {Function} [props.onChange] Adds the specified function as a listener to the {{#crossLink "AbstractTween/change:event"}}{{/crossLink}} event
+	 * @param {Function} [props.onComplete] Adds the specified function as a listener to the {{#crossLink "AbstractTween/complete:event"}}{{/crossLink}} event
 	 * @extends EventDispatcher
 	 * @constructor
 	 */
@@ -62,6 +72,9 @@ this.createjs = this.createjs||{};
 	
 		/**
 		 * Indicates the number of times to loop. If set to -1, the tween will loop continuously.
+		 *
+		 * Note that a tween must loop at _least_ once to see it play in both directions when `{{#crossLink "AbstractTween/bounce:property"}}{{/crossLink}}`
+		 * is set to `true`.
 		 * @property loop
 		 * @type {Number}
 		 * @default 0
@@ -87,7 +100,9 @@ this.createjs = this.createjs||{};
 		this.reversed = false;
 		
 		/**
-		 * Causes the tween to reverse direction at the end of each loop.
+		 * Causes the tween to reverse direction at the end of each loop. Each single-direction play-through of the
+		 * tween counts as a single bounce. For example, to play a tween once forward, and once back, set the
+		 * `{{#crossLink "AbstractTween/loop:property"}}{{/crossLink}}` to `1`.
 		 * @property bounce
 		 * @type {Boolean}
 		 * @default false
