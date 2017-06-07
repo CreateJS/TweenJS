@@ -152,11 +152,12 @@ this.createjs = this.createjs||{};
 				guideData.deltaRotation = 0;
 			} else {
 				// interpreted rotation
-				guideData.endAbsRot = finalRot;
 
 				var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
 				var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
 				var modRot = deltaRot % 360;
+
+				guideData.endAbsRot = finalRot;
 
 				switch(guideData.orient) {
 					case "auto":
