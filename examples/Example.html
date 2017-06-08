@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>TweenJS: Canvas Tweening Example</title>
+	<title>TweenJS: Simple Tweening Example</title>
 
 	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
 	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
@@ -23,13 +23,13 @@
 
 		var highlight = new createjs.Shape();
 		highlight.graphics.beginFill("#FFFF66").drawRect(-50, -5, 100, 30);
-		highlight.x = 250;
-		highlight.y = 250;
+		highlight.x = 450;
+		highlight.y = 30;
 
 		var txt = new createjs.Text("TweenJS", "bold 20px Arial");
 		txt.textAlign = "center";
-		txt.x = 250;
-		txt.y = 250;
+		txt.x = 450;
+		txt.y = 30;
 
 		stage.addChild(circle, highlight, txt);
 
@@ -54,22 +54,20 @@
 		// this tween just updates the text.
 		// note that it has ignoreGlobalPause set to true, so it will keep playing even when Ticker is paused.
 		createjs.Tween.get(txt, {loop: -1, ignoreGlobalPause: true}) // get a tween targeting txt
-				.to({text: "the new javascript tweening engine"}, 1500) // change text after 1.5s
+				.to({text: "A JavaScript tweening engine"}, 1500) // change text after 1.5s
 				.set({visible: false}, highlight) // set visible=false on highlight
-				.to({text: "by Grant Skinner, gskinner.com"}, 1500) // change text after 1.5s
+				.to({text: "by Grant Skinner & gskinner"}, 1500) // change text after 1.5s
 				.to({text: "TweenJS"}, 1500).set({visible: true}, highlight); // change text after 1.5s & set visible=true on highlight
 		/*
 		 // We could also do the above using wait and set, but this doesn't work as well if you want to jump around in the tween arbitrarily.
-		 .wait(1500) // wait 1.5s
-		 .set({visible:false},highlight) // set visible=false on highlight
-		 .set({text:"the new javascript tweening engine"}) // set the text property of the target
-		 .wait(1500).set({text:"by Grant Skinner, gskinner.com"}) // wait 1.5s & update text
-		 .wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
+			 .wait(1500) // wait 1.5s
+			 .set({visible:false},highlight) // set visible=false on highlight
+			 .set({text:"A JavaScript tweening engine"}) // set the text property of the target
+			 .wait(1500).set({text:"by Grant Skinner, gskinner"}) // wait 1.5s & update text
+			 .wait(1500).set({text:"TweenJS"}).set({visible:true},highlight); // etc.
 		 */
 
-		createjs.Ticker.setFPS(20);
-		// in order for the stage to continue to redraw when the Ticker is paused we need to add it with
-		// the second ("pauseable") param set to false.
+		createjs.Ticker.framerate = 20;
 		createjs.Ticker.addEventListener("tick", stage);
 	}
 </script>

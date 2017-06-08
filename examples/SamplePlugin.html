@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>TweenJS: Canvas Tweening Example</title>
+	<title>TweenJS: Sample Plugin Example</title>
 
 	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
 	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
@@ -30,7 +30,8 @@
 		createjs.SamplePlugin.install();
 
 		// set up a tween that tweens between scale 0.3 and 1 every second.
-		createjs.Tween.get(circle, {loop: -1, bounce:true}).to({x:stage.canvas.width-100}, 4000, createjs.Ease.quadInOut) // jump to the new scale properties (default duration of 0)
+		createjs.Tween.get(circle, {loop: -1, bounce:true})
+				.to({x:stage.canvas.width-100}, 4000, createjs.Ease.quadInOut) // jump to the new scale properties (default duration of 0)
 
 		createjs.Ticker.timingMode = createjs.Ticker.RAF;
 		createjs.Ticker.addEventListener("tick", stage);
@@ -43,7 +44,8 @@
 <header class="TweenJS">
 	<h1>SamplePlugin Example</h1>
 
-	<p>This example shows the SamplePlugin in use. The SamplePlugin simply sets `y` as a sinusoidal function of `x`.</p>
+	<p>This example shows the SamplePlugin in use. The SamplePlugin simply sets <code>y</code> as a sinusoidal function
+		of <code>x</code>.</p>
 </header>
 
 <canvas id="canvas1" width="960" height="350"></canvas>

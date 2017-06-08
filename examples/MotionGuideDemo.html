@@ -10,53 +10,50 @@
 
 	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
 	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
+
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
 <script id="editable">
-	var canvas;
 	var stage;
 
 	function init() {
 		createjs.MotionGuidePlugin.install(createjs.Tween);
+		stage = new createjs.Stage("testCanvas");
 
-		canvas = document.getElementById("testCanvas");
-		stage = new createjs.Stage(canvas);
-
-		var ball = makeBall(55, "#F24828");
-
-		// pass in a guide object with a path property
-		createjs.Tween.get(ball, {loop: true}, true)
-			.to({guide: {path: [100,100, 800,100, 800,300], orient: "fixed"}}, 4000);
+		var ball = new createjs.Shape();
+		ball.graphics.setStrokeStyle(5, "round", "round")
+				.beginStroke("#000000")
+				.beginFill("#F24828")
+				.drawCircle(0, 0, 55)
+				.setStrokeStyle(1, "round", "round")
+				.beginStroke("#000000")
+				.moveTo(0, 0)
+				.lineTo(55, 0);
 
 		// it doesn't matter where we put the ball it will snap to the path
 		stage.addChild(ball);
-		ball.x = -200;
-		ball.y = -200;
 
-		createjs.Ticker.setFPS(60);
-		createjs.Ticker.addEventListener("tick", stage);
+		// pass in a guide object with a path property
+		createjs.Tween.get(ball, {bounce: true, loop:3})
+				.to({guide: {path: [100,100, 700,100, 800,250], orient: "fixed"}}, 2000);
+
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		createjs.Ticker.addEventListener("tick", tick);
 	}
 
-	function makeBall(size, color) {
-		var shape = new createjs.Shape();
-		var g = shape.graphics;
+	var toggleGuide = false;
+	function tick(event) {
+		stage.update(event);
 
-		g.setStrokeStyle(5, 'round', 'round');
-		g.beginStroke('#000000');
-		g.beginFill(color).drawCircle(0, 0, size);
-		g.endStroke();
-		g.endFill();
-		g.setStrokeStyle(1, 'round', 'round');
-		g.beginStroke('#000000');
-		g.moveTo(0, 0);
-		g.lineTo(size, 0);
-		g.endStroke();
-
-		return shape;
+		if (toggleGuide) {
+			// Since we are drawing this separately, it gets put on top of the rendered stage.
+			createjs.MotionGuidePlugin.debug({path: [100,100, 700,100, 800,250]}, stage.canvas.getContext("2d"), [0,0.5,1]);
+		}
 	}
 
 </script>
+
 </head>
 <body onload="init();">
 
@@ -65,10 +62,16 @@
 	<header class="EaselJS">
 		<h1>Simple Motion Guide Demo</h1>
 
-		<p>This example shows a simple use of the MotionGuidePlugin.</p>
+		<p>This example shows a simple use of the MotionGuidePlugin. Click "Toggle Guide" to show the expected guide path.</p>
 	</header>
 
-	<canvas id="testCanvas" width="960" height="400"></canvas>
+	<canvas id="testCanvas" width="960" height="350"></canvas>
+	<div class="guide">
+		<input type="button" value="toggle guide"
+			   onclick="toggleGuide=!toggleGuide;">
+		<input type="button" value="toggle paused"
+			   onclick="createjs.Ticker.paused = !createjs.Ticker.paused;">
+	</div>
 
 </div>
 

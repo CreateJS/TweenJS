@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>TweenJS: Simple Motion Guide Demo</title>
+	<title>TweenJS: Multi Motion Guide Demo</title>
 
 	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
 	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
@@ -10,74 +10,93 @@
 
 	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
 	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
-	<script type="text/javascript" src="../src/tweenjs/plugins/MotionGuidePlugin.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
-<script id="editable">
-	var canvas;
-	var stage;
+	<script id="editable">
+		var stage;
 
-	function init() {
+		function init() {
 
-		createjs.MotionGuidePlugin.install(createjs.Tween);
+			createjs.MotionGuidePlugin.install(createjs.Tween);
+			stage = new createjs.Stage("testCanvas");
 
-		canvas = document.getElementById("testCanvas");
-		stage = new createjs.Stage(canvas);
+			var ball = new createjs.Shape();
+			ball.graphics.setStrokeStyle(5, "round", "round")
+					.beginStroke("#000000")
+					.beginFill("#FF0000")
+					.drawCircle(0, 0, 50)
+					.setStrokeStyle(1, "round", "round")
+					.beginStroke("#000000")
+					.moveTo(0, 0).lineTo(50, 0)
 
-		var ball = new createjs.Shape();
-		ball.graphics.setStrokeStyle(5, 'round', 'round')
-				.beginStroke('#000000')
-				.beginFill("#FF0000").drawCircle(0, 0, 50)
-				.endStroke()
-				.endFill()
-				.setStrokeStyle(1, 'round', 'round')
-				.beginStroke('#000000')
-				.moveTo(0, 0)
-				.lineTo(50, 0)
-				.endStroke();
+			ball.set({
+						 x: 100,
+						 y: 100
+					 });
 
-		ball.x = 150;
-		ball.y = 150;
-		/*var tween = createjs.Tween.get(ball, {loop:true}, true)
-		 .wait(1000)
-		 .to({x:300,y:300}, 5000)
-		 .wait(1000)
-		 .to({guide:{path:[100,100, 800,100, 800,300], orient:true}}, 5000)
-		 .wait(1000)
-		 .to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
-		 .to({x:300,y:300}, 5000)
-		 .to({guide:{path:[100,100, 800,100, 800,300], orient:true, start:1, end:0}}, 5000)
-		 ;*/
-		createjs.Tween.get(ball, {loop: false}, true)
-				//.to({x: 150, y: 150}, 2000)
-				//.to({rotation: -45}, 1000)
-				.to({guide: {path: [150, 150, 800, 100, 800, 300], orient: "auto"}}, 3000)
-				.to({x: 200, y: 300}, 5000)
-				//.wait(2000)
-				//.to({rotation: 360}, 2000)
-				//.to({guide: {path: [100, 100, 800, 100, 800, 300], start: 1, end: 0}}, 5000)
-				//.wait(2000)
-				//.to({x: 200, y: 200}, 1000)
-				//.to({rotation: -360, guide: {path: [100, 100, 800, 100, 800, 300]}}, 3000);
+			createjs.Tween.get(ball, {loop: -1, bounce: true}, true)
+					.wait(1000)
+					.to({x: 150, y: 150}, 1000)
+					.to({rotation: -45}, 1000)
+					.to({guide: {path: [150,150, 800,100, 800,280], orient: "auto"}}, 2000)
+					.to({x: 200}, 3000)
+					.wait(1000)
+					.to({rotation: 360}, 1000)
+					.to({guide: {path: [100, 100, 700, 100, 800, 280], start: 1, end: 0}}, 2000)
+					.wait(1000)
+					.to({x: 800, y: 280}, 1500)
+					.to({rotation: -360, guide: {path: [800,280, 200,280, 150,150]}}, 2000, createjs.Ease.bounceOut);
 
-		stage.addChild(ball);
+			var txt = new createjs.Text("Multi-Motion Demo", "bold 20px Arial");
+			txt.textAlign = "center";
+			txt.x = 450;
+			txt.y = 30;
 
-		createjs.Ticker.addEventListener("tick", stage);
-	}
+			// this tween just updates the text.
+			// note that it has ignoreGlobalPause set to true, so it will keep playing even when Ticker is paused.
+			createjs.Tween.get(txt, {loop: -1, bounce: true})
+					.wait(1000)
+					.to({text: "Move to 150,150"}).wait(1000)
+					.to({text: "Rotate -45"}).wait(1000)
+					.to({text: "Animate along the guide, align auto"}).wait(2000)
+					.to({text: "Set the x to 200"}).wait(3000)
+					.to({text: "Wait 1000"}).wait(1000)
+					.to({text: "Rotate 360"}).wait(1000)
+					.to({text: "Animate along a guide, from end to start (jumps to path)"}).wait(2000)
+					.to({text: "Wait 1000"}).wait(1000)
+					.to({text: "Move to 800,200"}).wait(1500)
+					.to({text: "Rotate -360 AND Animate along a guide"}).wait(2000);
 
-</script>
+			stage.addChild(ball, txt);
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF;
+			createjs.Ticker.addEventListener("tick", function (e) {
+				stage.update(event);
+			});
+		}
+
+	</script>
 </head>
 <body onload="init();">
 
 <div>
 	<header class="EaselJS">
-		<h1>Simple Tween Demo</h1>
+		<h1>Multi Motion Guide Demo</h1>
 
-		<p>This example shows a simple use of the MotionGuidePlugin.</p>
+		<p>
+			This example shows a more complex use of the MotionGuidePlugin, including the use of start/end, separate
+			concurrent rotation and "auto" path alignment (which orients the object rotation on the path), and easing
+			functions. Regular rotation & translate <code>to()</code> commands are used to show how the guide plays nice
+			with the rest of TweenJS. The tween will <code>bounce</code> back and forth, and <code>loop</code>
+			infinitely.
+		</p>
 	</header>
 
-	<canvas id="testCanvas" width="960" height="400"></canvas>
+	<canvas id="testCanvas" width="960" height="350"></canvas>
+	<br/>
+	<input type="button" value="toggle paused"
+		   onclick="createjs.Ticker.paused = !createjs.Ticker.paused;">
 </div>
 
 </body>
