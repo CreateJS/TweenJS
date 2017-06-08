@@ -41,7 +41,9 @@
 			
 		// and just for fun, lets make it spin and scale:
 		// comment this out if you want to focus on the color shifts.
-		createjs.Tween.get(star, {loop:-1, bounce:true}).to({alpha:0.3, scaleX:0.2, scaleY:0.2}).to({rotation:360, scaleX:3, scaleY:3}, 3300, createjs.Ease.quadInOut);
+		createjs.Tween.get(star, {loop:-1, bounce:true})
+				.to({alpha:0.3, scaleX:0.2, scaleY:0.2})
+				.to({rotation:360, scaleX:3, scaleY:3}, 3300, createjs.Ease.quadInOut);
 
 		createjs.Ticker.timingMode = createjs.Ticker.RAF;
 		createjs.Ticker.addEventListener("tick", stage);

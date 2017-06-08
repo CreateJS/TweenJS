@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>TweenJS: Canvas Tweening Example</title>
+	<title>TweenJS: Rotation Plugin Example</title>
 
 	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
 	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
@@ -24,8 +24,6 @@
 		arrow.x = stage.canvas.width/2;
 		arrow.y = stage.canvas.height/2;
 
-		stage.addChild(arrow);
-		
 		// install the sample plugin:
 		createjs.RotationPlugin.install();
 
@@ -40,7 +38,23 @@
 			.to({rotation: 0, rotationDir: -1}, 1000)// rotationDir=1 makes it rotate CCW
 			.wait(500)
 			.to({rotation: 1080, rotationDir: 0}, 1000)// setting rotationDir to 0 also lets you rotate more than 360 degrees
-			.wait(2000);
+			.wait(1000);
+
+		var txt = new createjs.Text("Rotation Plugin", "bold 20px Arial");
+		txt.textAlign = "center";
+		txt.x = 450;
+		txt.y = 30;
+
+		// this tween just updates the text.
+		// note that it has ignoreGlobalPause set to true, so it will keep playing even when Ticker is paused.
+		createjs.Tween.get(txt, {loop: -1})
+				.to({text: "Rotate (shortest distance) to 270"}).wait(1500)
+				.to({text: "Rotate (default) to 0"}).wait(1500)
+				.to({text: "Rotate (cw) to -1"}).wait(1500)
+				.to({text: "Rotate (ccw) to 0"}).wait(1500)
+				.to({text: "Rotate (default) to 1080"}).wait(2000)
+
+		stage.addChild(arrow, txt);
 
 		createjs.Ticker.timingMode = createjs.Ticker.RAF;
 		createjs.Ticker.addEventListener("tick", stage);

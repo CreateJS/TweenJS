@@ -95,7 +95,7 @@
 			}
 		}
 
-		createjs.Ticker.setFPS(60);
+		createjs.Ticker.framerate = 60;
 		createjs.Ticker.addEventListener("tick", tick);
 
 		prevPoint = new createjs.Point(rect.x, rect.y);

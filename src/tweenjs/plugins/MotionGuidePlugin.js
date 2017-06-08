@@ -137,36 +137,42 @@ this.createjs = this.createjs||{};
 			guideData.valid = !error;
 
 			var end = guideData.endData;
-			step.props.x = end.x;
-			step.props.y = end.y;
-			
-			console.log("SET X/Y", step.props);
+			tween._injectProp("x", end.x);
+			tween._injectProp("y", end.y);
 
 			if(error || !guideData.orient) { break; }
 
 			var initRot = step.prev.props.rotation === undefined ? (tween.target.rotation || 0) : step.prev.props.rotation;
-			var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
 
-			step.props.rotation = guideData.endAbsRot = finalRot;
 			guideData.startOffsetRot = initRot - guideData.startData.rotation;
 
-			var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
-			var modRot = deltaRot % 360;
+			if(guideData.orient == "fixed") {
+				// controlled rotation
+				guideData.endAbsRot = end.rotation + guideData.startOffsetRot;
+				guideData.deltaRotation = 0;
+			} else {
+				// interpreted rotation
 
-			switch(guideData.orient) {
-				case "fixed":
-					guideData.deltaRotation = 0;
-					break;
-				case "auto":
-					guideData.deltaRotation = deltaRot;
-					break;
-				case "cw":
-					guideData.deltaRotation = ((modRot + 360) % 360) + (360 * Math.abs((deltaRot/360) |0));
-					break;
-				case "ccw":
-					guideData.deltaRotation = ((modRot - 360) % 360) + (-360 * Math.abs((deltaRot/360) |0));
-					break;
+				var finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
+				var deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
+				var modRot = deltaRot % 360;
+
+				guideData.endAbsRot = finalRot;
+
+				switch(guideData.orient) {
+					case "auto":
+						guideData.deltaRotation = deltaRot;
+						break;
+					case "cw":
+						guideData.deltaRotation = ((modRot + 360) % 360) + (360 * Math.abs((deltaRot/360) |0));
+						break;
+					case "ccw":
+						guideData.deltaRotation = ((modRot - 360) % 360) + (-360 * Math.abs((deltaRot/360) |0));
+						break;
+				}
 			}
+
+			tween._injectProp("rotation", guideData.endAbsRot);
 		}
 	};
 
@@ -187,15 +193,15 @@ this.createjs = this.createjs||{};
 		var guideData = step.props.guide;
 
 		if(
-				!guideData ||
-				(step.props === step.prev.props) ||
-				(guideData === step.prev.props.guide)
+				!guideData ||							// Missing data
+				(step.props === step.prev.props) || 	// In a wait()
+				(guideData === step.prev.props.guide) 	// Guide hasn't changed
 		) {
-			return;
-		}						// have no business making decisions
+			return; // have no business making decisions
+		}
 		if(
 				(prop === "guide" && !guideData.valid) ||		// this data is broken
-				(prop == "x" || prop == "y") ||					// these always get over-written					// these always get over-written
+				(prop == "x" || prop == "y") ||					// these always get over-written
 				(prop === "rotation" && guideData.orient)		// currently over-written
 		){
 			return createjs.Tween.IGNORE;

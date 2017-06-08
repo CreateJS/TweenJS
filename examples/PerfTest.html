@@ -17,7 +17,7 @@
 
 <script id="editable">
 	var c=createjs, stage, stageW, stageH, fpsFld, g, ttl;
-	var duration=300, count=0, radius=480, displayTime=3000;
+	var duration=300, radius=480, displayTime=3000;
 
 	function init() {
 		fpsFld = document.getElementById("fps");
@@ -39,7 +39,7 @@
 		dot.y = Math.random()*stageH;
 		
 		c.Tween.get(dot, {loop:-1}).wait(Math.random() * duration )
-			.to({x:Math.cos(angle) * radius + stageW/2}, duration, c.Ease.cubicIn);
+				.to({x:Math.cos(angle) * radius + stageW/2}, duration, c.Ease.cubicIn);
 	}
 	
 	function tick(evt) {
@@ -67,9 +67,9 @@
 	30fps, which makes getting accurate results difficult for that browser.
 	<br/><br/>
 	It will update the stage for the first 3 seconds (to confirm functionality), then stop rendering to isolate tween performance.</p>
-	<p id="fps" style="font-family:monospace; font-weight: bold; opacity:0.5;">-- fps</p>
 </header>
 
-<canvas id="testCanvas" width="960" height="400"></canvas>
+<canvas id="testCanvas" width="960" height="350"></canvas>
+<span id="fps" style="font-family:monospace; font-weight: bold; opacity:0.5;">-- fps</span>
 </body>
 </html>
