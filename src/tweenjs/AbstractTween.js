@@ -228,34 +228,34 @@ this.createjs = this.createjs||{};
 // getter / setters:
 	
 	/**
-	 * A chainable method that has the same effect as the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}}
-	 * property.
-	 * @method _setPaused
+	 * Deprecated in favor of the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property.
+	 * @method setPaused
 	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-	 * @protected
-	 * @return {Tween} This tween instance (for chaining calls)
+	 * @deprecated
+	 * @return {AbstractTween} This tween instance (for chaining calls)
+	 * @chainable
 	 */
-	p._setPaused = function(value) {
+	p.setPaused = function(value) {
 		createjs.Tween._register(this, value);
 		return this;
 	};
 	
 	/**
-	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
-	 * @method _getPaused
-	 * @protected
+	 * Deprecated in favor of the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property.
+	 * @method getPaused
+	 * @deprecated
 	 */
-	p._getPaused = function() {
+	p.getPaused = function() {
 		return this._paused;
 	};
 	
 	/**
-	 * 
-	 * @method _getCurrentLabel
-	 * @protected
+	 * Deprecated in favor of the {{#crossLink "AbstractTween/currentLabel:property"}}{{/crossLink}} property.
+	 * @method getCurrentLabel
+	 * @deprecated
 	 * @return {String} The name of the current label or null if there is no label
 	 **/
-	p._getCurrentLabel = function(pos) {
+	p.getCurrentLabel = function(pos) {
 		var labels = this.getLabels();
 		if (pos == null) { pos = this.position; }
 		for (var i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
@@ -283,11 +283,11 @@ this.createjs = this.createjs||{};
 	 * @type String
 	 * @readonly
 	 **/
-	
+	 
 	try {
 		Object.defineProperties(p, {
-			paused: { set: p._setPaused, get: p._getPaused },
-			currentLabel: { get: p._getCurrentLabel }
+			paused: { set: p.setPaused, get: p.getPaused },
+			currentLabel: { get: p.getCurrentLabel }
 		});
 	} catch (e) {}
 
