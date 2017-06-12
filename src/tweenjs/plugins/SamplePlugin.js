@@ -188,13 +188,16 @@ this.createjs = this.createjs||{};
 		var startValue = step.prev.props.x;
 		
 		// you can modify this step's end value:
+		// this approach should only be used to modify a property value we are CERTAIN is already being tweened.
+		// we know x is being tweened, because we checked for its existence in `props` above.
 		// step.props.x = Math.max(0, Math.min(100, step.props.x));
+		
+		// or specify other properties that you'd like to include in the tween:
+		// this can be used to set the step's end value for a property we can't be certain it is already being tweened.
+		// tween._injectProp("y", 200);
 		
 		// if this was a plugin instance, you could store step specific data using step.index:
 		// this.steps[step.index] = {arbitraryData:foo};
-		
-		// or specify other properties that you'd like to include in the tween:
-		// tween._injectProp("y", 200);
 	};
 
 	/**
