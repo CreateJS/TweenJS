@@ -71,9 +71,7 @@
 			stage.addChild(ball, txt);
 
 			createjs.Ticker.timingMode = createjs.Ticker.RAF;
-			createjs.Ticker.addEventListener("tick", function (e) {
-				stage.update(event);
-			});
+			createjs.Ticker.addEventListener("tick", stage);
 		}
 
 	</script>
