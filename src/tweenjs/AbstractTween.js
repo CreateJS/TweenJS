@@ -228,39 +228,42 @@ this.createjs = this.createjs||{};
 // getter / setters:
 	
 	/**
-	 * Deprecated in favor of the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property.
-	 * @method setPaused
+	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
+	 * @method _setPaused
 	 * @param {Boolean} [value=true] Indicates whether the tween should be paused (`true`) or played (`false`).
-	 * @deprecated
 	 * @return {AbstractTween} This tween instance (for chaining calls)
+	 * @protected
 	 * @chainable
 	 */
-	p.setPaused = function(value) {
+	p._setPaused = function(value) {
 		createjs.Tween._register(this, value);
 		return this;
 	};
+	p.setPaused = createjs.deprecate(p._setPaused, "AbstractTween.setPaused");
 	
 	/**
-	 * Deprecated in favor of the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property.
-	 * @method getPaused
-	 * @deprecated
+	 * Use the {{#crossLink "AbstractTween/paused:property"}}{{/crossLink}} property instead.
+	 * @method _getPaused
+	 * @protected
 	 */
-	p.getPaused = function() {
+	p._getPaused = function() {
 		return this._paused;
 	};
+	p.getPaused = createjs.deprecate(p._getPaused, "AbstactTween.getPaused");
 	
 	/**
-	 * Deprecated in favor of the {{#crossLink "AbstractTween/currentLabel:property"}}{{/crossLink}} property.
-	 * @method getCurrentLabel
-	 * @deprecated
+	 * Use the {{#crossLink "AbstractTween/currentLabel:property"}}{{/crossLink}} property instead.
+	 * @method _getCurrentLabel
+	 * @protected
 	 * @return {String} The name of the current label or null if there is no label
 	 **/
-	p.getCurrentLabel = function(pos) {
+	p._getCurrentLabel = function(pos) {
 		var labels = this.getLabels();
 		if (pos == null) { pos = this.position; }
 		for (var i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
 		return (i===0) ? null : labels[i-1].label;
 	};
+	p.getCurrentLabel = createjs.deprecate(p._getCurrentLabel, "AbstractTween.getCurrentLabel");
 	
 	/**
 	 * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage
@@ -286,8 +289,8 @@ this.createjs = this.createjs||{};
 	 
 	try {
 		Object.defineProperties(p, {
-			paused: { set: p.setPaused, get: p.getPaused },
-			currentLabel: { get: p.getCurrentLabel }
+			paused: { set: p._setPaused, get: p._getPaused },
+			currentLabel: { get: p._getCurrentLabel }
 		});
 	} catch (e) {}
 
