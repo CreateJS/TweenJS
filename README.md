@@ -40,10 +40,11 @@ createjs.Tween.get(target, {loop:true, useTicks:true, css:true, ignoreGlobalPaus
 ```
 
 All configuration properties default to false. The properties are:
-loop - indicates whether the tween should loop when it reaches the end
-useTicks - the tween will use ticks for duration instead of milliseconds
-css - enables css mapping for some css properties
-ignoreGlobalPause - the tween will continue ticking even when Ticker is paused.
+
+* **loop** - indicates whether the tween should loop when it reaches the end
+* **useTicks** - the tween will use ticks for duration instead of milliseconds
+* **css** - enables css mapping for some css properties
+* **ignoreGlobalPause** - the tween will continue ticking even when Ticker is paused.
 
 When using Tween.get, you can also specify true as the third parameter to override any active tweens on the target.
 
