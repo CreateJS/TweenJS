@@ -1,7 +1,6 @@
-Version NEXT [not yet released]
+Version 1.0.0 (September 14, 2017)
 ****************************************************************************************************
 CRITICAL (may break existing content):
-
 - Plugin model has changed significantly. See SamplePlugin for information.
 - Second param of Tween/Timeline.setPosition() is now runActions boolean
 - Removed Tween.NONE, Tween.LOOP, and Tween.REVERSE constants
@@ -17,6 +16,8 @@ DEPRECATED (will break in the future):
 - to make a tween loop continuously, you should now use loop:-1, instead of loop:true
 - setPaused deprecated in favor of paused getter / setter
 - getCurrentLabel deprecated in favor of currentLabel getter / setter
+- Deprecated get/set methods are now protect with an underscore (eg _setEnabled)
+	The deprecated methods and properties will still work, but will display a console warning when used.
 
 *****
 OTHER:
@@ -40,7 +41,8 @@ OTHER:
 - added callback param to setPosition for MovieClip use
 - fixed a bug with Tween.set()
 - unit tests made somewhat more robust
-- removed old deprecated properties
+- added a shared createjs.deprecate() method, which wraps old methods and property getter/setters to display
+	a console warning when used.
 
 
 Version 0.6.2 [November 26, 2015]
