@@ -1,0 +1,42 @@
+{
+  "name": "tweenjs",
+  "npmName": "tweenjs",
+  "version": "1.0.0",
+  "description": "TweenJS is a simple tweening library for use in Javascript. It was developed to integrate well with the EaselJS library, but is not dependent on or specific to it (though it uses the same Ticker and Event classes by default). It supports tweening of both numeric object properties & CSS style properties.",
+  "main": "tweenjs.js",
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "lib": "lib",
+    "test": "tests"
+  },
+  "npmFileMap": [
+    {
+      "basePath": "lib",
+      "files": [
+        "**/*"
+      ]
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://lannymcnie@github.com/CreateJS/TweenJS.git"
+  },
+  "keywords": [
+    "createjs",
+    "tweenjs",
+    "gskinner",
+    "javascript",
+    "html5",
+    "tween",
+    "motion",
+    "ease",
+    "animate"
+  ],
+  "author": "gskinner.com, inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CreateJS/TweenJS/issues"
+  },
+  "homepage": "https://createjs.com/tweenjs/"
+}
