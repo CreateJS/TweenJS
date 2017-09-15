@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://lannymcnie@github.com/CreateJS/TweenJS.git"
+    "url": "git+https://github.com/CreateJS/TweenJS.git"
   },
   "keywords": [
     "createjs",
