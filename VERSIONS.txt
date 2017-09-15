@@ -9,6 +9,7 @@ CRITICAL (may break existing content):
 - Removed Tween.tick (instance) in favour of Tween.advance
 - Tween actions in a Timeline now run after all the tween properties are updated
 - added check for hasOwnProperty on tween properties to filter out inherited properties
+- Changed version naming to use tweenjs.js, instead of containing the version number
 
 *****
 DEPRECATED (will break in the future):
