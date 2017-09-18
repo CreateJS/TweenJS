@@ -6,7 +6,7 @@ module.exports = function (grunt) {
 				jasmine: {
 					run: {
 						src: [
-							'../lib/tweenjs-NEXT.combined.js'
+							'../lib/tweenjs-NEXT.js'
 						],
 
 						options: {
