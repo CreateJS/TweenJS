@@ -8,10 +8,11 @@ module.exports = function (grunt) {
 
 				// Default values
 				version: 'NEXT',
+				fileVersion: '-<%= version %>',
 				name: 'tweenjs',
 
 				// Setup doc names / paths.
-				docsName: '<%= pkg.name %>_docs-<%= version %>',
+				docsName: '<%= pkg.name %>_docs<%= fileVersion %>',
 				docsZip: "<%= docsName %>.zip",
 
 				// Setup Uglify for JS minification.
@@ -30,7 +31,7 @@ module.exports = function (grunt) {
 					},
 					build: {
 						files: {
-							'output/<%= pkg.name.toLowerCase() %>-<%= version %>.min.js': getConfigValue('source'),
+							'output/<%= pkg.name.toLowerCase() %><%= fileVersion %>.min.js': getConfigValue('source'),
 						}
 					}
 				},
@@ -69,7 +70,7 @@ module.exports = function (grunt) {
 					},
 					build: {
 						files: {
-							'output/<%= pkg.name.toLowerCase() %>-<%= version %>.combined.js': getCombinedSource()
+							'output/<%= pkg.name.toLowerCase() %><%= fileVersion %>.js': getCombinedSource()
 						}
 					}
 				},
@@ -125,7 +126,7 @@ module.exports = function (grunt) {
 					},
 					src: {
 						files: [
-							{expand: true, cwd:'./output/', src: '*<%=version %>*.js', dest: '../lib/'}
+							{expand: true, cwd:'./output/', src: '*<%=fileVersion %>*.js', dest: '../lib/'}
 						]
 					}
 				},
@@ -279,6 +280,7 @@ module.exports = function (grunt) {
 	 */
 	grunt.registerTask('setVersion', function () {
 		grunt.config.set('version', grunt.config.get('pkg').version);
+		grunt.config.set('fileVersion', '');
 	});
 
 	/**
