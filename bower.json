@@ -8,7 +8,7 @@
 		"wdamien"
 	],
 	"description": "A simple but powerful tweening / animation library for Javascript. Part of the CreateJS suite of libraries.",
-	"main": "lib/tweenjs-1.0.0.combined.js",
+	"main": "lib/tweenjs.js",
 	"keywords": [
 		"tween",
 		"tweening",
