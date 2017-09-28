@@ -270,7 +270,6 @@ this.createjs = this.createjs||{};
 	 * collection if no other references to it exist.
 	 * @property paused
 	 * @type Boolean
-	 * @readonly
 	 **/
 	 
 	/**
