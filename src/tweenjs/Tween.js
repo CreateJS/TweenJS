@@ -510,7 +510,7 @@ this.createjs = this.createjs||{};
 	 * // ...
 	 * tween.gotoAndPlay("myLabel"); // would play from 1000ms in.
 	 * 
-	 * @method addLabel
+	 * @method label
 	 * @param {String} label The label name.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
