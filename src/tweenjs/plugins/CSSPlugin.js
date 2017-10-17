@@ -248,7 +248,10 @@ this.createjs = this.createjs||{};
 			var component = [result[1]], compareComp = compare && compare[list.length];
 			
 			// check that the operation type matches (ex. "translate" vs "rotate"):
-			if (compare && (!compareComp || component[0] !== compareComp[0])) { console.log("transforms don't match: ",component[0],compareComp[0]); compare=null; } // component doesn't match
+			if (compare && (!compareComp || component[0] !== compareComp[0])) {
+				console.log("transforms don't match: ", component[0], compareComp&&compareComp[0]);
+				compare=null;
+			} // component doesn't match
 			
 			parseMulti(result[2], compareComp, component);
 
