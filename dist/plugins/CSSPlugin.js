@@ -26,7 +26,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function (exports) {
+var createjs = (function (exports) {
 'use strict';
 
 var classCallCheck = function (instance, Constructor) {
@@ -383,4 +383,6 @@ function writeSingleTransform (list) {
 
 exports.CSSPlugin = CSSPlugin;
 
-}((this.createjs = this.createjs || {})));
+return exports;
+
+}({}));

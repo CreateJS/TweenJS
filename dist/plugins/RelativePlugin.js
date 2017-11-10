@@ -26,7 +26,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function (exports) {
+var createjs = (function (exports) {
 'use strict';
 
 var classCallCheck = function (instance, Constructor) {
@@ -173,4 +173,6 @@ RelativePlugin.ID = "Relative";
 
 exports.RelativePlugin = RelativePlugin;
 
-}((this.createjs = this.createjs || {})));
+return exports;
+
+}({}));

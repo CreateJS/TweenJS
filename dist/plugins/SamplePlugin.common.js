@@ -159,11 +159,7 @@ var SamplePlugin = function () {
 		// note that it's also possible to create a plugin that doesn't add itself, but hooks into the "change" event instead.
 
 		// you can grab the current value on the target using:
-		var targetValue = tween.target[prop];
-
-		// this gets the current starting value for the property, using value from previous plugins if specified, or the target value if not:
-		// this is a bit of a pain, but it prevents accessing target values that aren't needed, which can be very expensive (ex. width on a HTMLElement, when we actually want to grab it from style)
-		var defaultValue = value === undefined ? targetValue : value;
+		
 
 		// this passes out a new initial value for the x property:
 		// if (prop === "x") { return Math.round(defaultValue); }
@@ -200,10 +196,7 @@ var SamplePlugin = function () {
 
 		// because other plugins may modify the end value for this step, you should access it
 		// via the step object, not the props object:
-		var endValue = _step.props.x;
-
-		// you can grab the start value from the previous step:
-		var startValue = _step.prev.props.x;
+		
 
 		// you can modify this step's end value:
 		// step.props.x = Math.max(0, Math.min(100, step.props.x));
@@ -251,18 +244,7 @@ var SamplePlugin = function () {
 		// NOTE: none of the code below actually does anything in this scenario, it's just to illustrate concepts:
 
 		// you can grab the end value for the step via its props object:
-		var endValue = step.props[prop];
-
-		// similarly, you can grab the start value from previous step:
-		var startValue = step.prev.props[prop];
-
-		// you could calculate the unmodified tweened value using the ratio:
-		// this will be the same as "value" unless a previous plugin returned a modified value
-		var unmodifiedValue = startValue + (endValue - startValue) * ratio;
-		if (value !== unmodifiedValue) {} /* a previous plugin modified the value */
-
-		// check if the tween is currently in a "wait" by comparing the props objects of this and the previous step:
-		var inWait = step.props === step.prev.props;
+		
 
 		// you can return a modified value to be set on the target:
 		// return Math.round(value);

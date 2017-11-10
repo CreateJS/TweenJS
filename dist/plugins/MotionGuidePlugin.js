@@ -26,7 +26,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function (exports) {
+var createjs = (function (exports) {
 'use strict';
 
 var classCallCheck = function (instance, Constructor) {
@@ -409,4 +409,6 @@ MotionGuidePlugin._rotNormE = undefined;
 
 exports.MotionGuidePlugin = MotionGuidePlugin;
 
-}((this.createjs = this.createjs || {})));
+return exports;
+
+}({}));

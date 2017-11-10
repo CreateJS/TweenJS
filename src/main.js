@@ -54,6 +54,5 @@ export { default as Tween } from "./Tween";
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";
 export { default as Ease } from "./Ease";
-// TODO: Review this version export.
 // version (templated in gulpfile, pulled from package).
 export const version = "<%= version %>";

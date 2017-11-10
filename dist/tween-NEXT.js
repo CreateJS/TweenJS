@@ -25,7 +25,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-(function(exports) {
+var createjs = function(exports) {
   "use strict";
   var classCallCheck = function(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -1422,11 +1422,6 @@
       this._labels[label] = position;
       var list = this._labelList;
       if (list) {
-        for (var _i = 0, l = list.length; _i < l; _i++) {
-          if (position < list[_i].position) {
-            break
-          }
-        }
         list.splice(i, 0, {
           label: label,
           position: position
@@ -1604,12 +1599,6 @@
       key: "currentLabel",
       get: function get() {
         var labels = this.getLabels();
-        var pos = this.position;
-        for (var _i2 = 0, l = labels.length; _i2 < l; _i2++) {
-          if (pos < labels[_i2].position) {
-            break
-          }
-        }
         return i === 0 ? null : labels[i - 1].label
       }
     }, {
@@ -2317,11 +2306,6 @@
       plugin.install(props);
       var priority = plugin.priority = plugin.priority || 0,
         arr = Tween._plugins = Tween._plugins || [];
-      for (var _i = 0, l = arr.length; _i < l; _i++) {
-        if (priority < arr[_i].priority) {
-          break
-        }
-      }
       arr.splice(i, 0, plugin)
     };
     /**
@@ -3078,5 +3062,7 @@
   exports.Tween = Tween;
   exports.AbstractTween = AbstractTween;
   exports.Timeline = Timeline;
-  exports.Ease = Ease
-})(this.createjs = this.createjs || {});
+  exports.Ease = Ease;
+  return exports
+}({});
+//# sourceMappingURL=tween-NEXT.js.map

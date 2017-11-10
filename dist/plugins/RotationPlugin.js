@@ -26,7 +26,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function (exports) {
+var createjs = (function (exports) {
 'use strict';
 
 var classCallCheck = function (instance, Constructor) {
@@ -210,4 +210,6 @@ RotationPlugin.ID = "Rotation";
 
 exports.RotationPlugin = RotationPlugin;
 
-}((this.createjs = this.createjs || {})));
+return exports;
+
+}({}));

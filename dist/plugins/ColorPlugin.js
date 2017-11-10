@@ -26,7 +26,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function (exports) {
+var createjs = (function (exports) {
 'use strict';
 
 var classCallCheck = function (instance, Constructor) {
@@ -354,4 +354,6 @@ function hue2rgb(p, q, t) {
 
 exports.ColorPlugin = ColorPlugin;
 
-}((this.createjs = this.createjs || {})));
+return exports;
+
+}({}));
