@@ -627,7 +627,7 @@ export default class Tween extends AbstractTween {
 		let n, i, l, value, initValue, inject;
 
 		let oldStep = step.prev, oldProps = oldStep.props;
-		let stepProps = step.props = this._cloneProps(oldProps);
+		let stepProps = step.props || (step.props = this._cloneProps(oldProps));
 		let cleanProps = {};
 
 		for (n in props) {

@@ -81,205 +81,412 @@ export class MotionGuidePlugin {
 	 * @static
 	 */
 	static init (tween, prop, value) {
-		let target = tween.target;
-		if (!target.hasOwnProperty("x")) { target.x = 0; }
-		if (!target.hasOwnProperty("y")) { target.y = 0; }
-		if (!target.hasOwnProperty("rotation")) { target.rotation = 0; }
-
-		if (prop === "rotation") { tween.__needsRot = true; }
-		return prop === "guide" ? null : value;
+		if (prop === "guide") {
+			tween._addPlugin(MotionGuidePlugin);
+		}
 	}
 
 	/**
+	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
 	 * @method step
-	 * @protected
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {Object} props
 	 * @static
 	 */
-	static step (tween, prop, startValue, endValue, injectProps) {
-		// other props
-		if (prop === "rotation") {
-			tween.__rotGlobalS = startValue;
-			tween.__rotGlobalE = endValue;
-			MotionGuidePlugin.testRotData(tween, injectProps);
-		}
-		if (prop !== "guide") { return endValue; }
+	static step (tween, step, props) {
+		for (let n in props) {
+			if (n !== "guide") { continue; }
 
-		// guide only information - Start -
-		let temp, data = endValue;
-		if (!data.hasOwnProperty("path")) { data.path = []; }
-		let path = data.path;
-		if (!data.hasOwnProperty("end")) { data.end = 1; }
-		if (!data.hasOwnProperty("start")) {
-			data.start = (startValue && startValue.hasOwnProperty("end") && startValue.path === path) ? startValue.end : 0;
-		}
+			let guideData = step.props.guide;
+			let error = MotionGuidePlugin._solveGuideData(props.guide, guideData);
+			guideData.valid = !error;
 
-		// Figure out subline information
-		if (data.hasOwnProperty("_segments") && data._length) { return endValue; }
-		let l = path.length;
-		let accuracy = 10; // Adjust to improve line following precision but sacrifice performance (# of seg)
-		if (l >= 6 && (l - 2) % 4 == 0) { // Enough points && contains correct number per entry ignoring start
-			data._segments = [];
-			data._length = 0;
-			for (let i = 2; i < l; i += 4) {
-				let sx = path[i - 2], sy = path[i - 1];
-				let cx = path[i + 0], cy = path[i + 1];
-				let ex = path[i + 2], ey = path[i + 3];
-				let oldX = sx, oldY = sy;
-				let tempX, tempY, total = 0;
-				let sublines = [];
-				for (let i = 1; i <= accuracy; i++) {
-					let t = i / accuracy;
-					let inv = 1 - t;
-					tempX = inv * inv * sx + 2 * inv * t * cx + t * t * ex;
-					tempY = inv * inv * sy + 2 * inv * t * cy + t * t * ey;
-					total += sublines[sublines.push(Math.sqrt((temp = tempX - oldX) * temp + (temp = tempY - oldY) * temp)) - 1];
-					oldX = tempX;
-					oldY = tempY;
-				}
-				data._segments.push(total, sublines);
-				data._length += total;
-			}
-		} else {
-			throw "invalid 'path' data, please see documentation for valid paths";
-		}
+			let end = guideData.endData;
+			tween._injectProp("x", end.x);
+			tween._injectProp("y", end.y);
 
-		// Setup x/y tweens
-		temp = data.orient;
-		data.orient = true;
-		let o = {};
-		MotionGuidePlugin.calc(data, data.start, o);
-		tween.__rotPathS = Number(o.rotation.toFixed(5));
-		MotionGuidePlugin.calc(data, data.end, o);
-		tween.__rotPathE = Number(o.rotation.toFixed(5));
-		data.orient = false;	//here and now we don't know if we need to
-		MotionGuidePlugin.calc(data, data.end, injectProps);
-		data.orient = temp;
+			if (error || !guideData.orient) { break; }
 
-		// Setup rotation properties
-		if (!data.orient) { return endValue; }
-		tween.__guideData = data;
-		MotionGuidePlugin.testRotData(tween, injectProps);
-		return endValue;
-	}
+			let initRot = step.prev.props.rotation === undefined ? (tween.target.rotation || 0) : step.prev.props.rotation;
+			guideData.startOffsetRot = initRot - guideData.startData.rotation;
 
-	/**
-	 * @method testRotData
-	 * @protected
-	 * @static
-	 */
-	static testRotData (tween, injectProps) {
-		// no rotation informat? if we need it come back, if we don't use 0 & ensure we have guide data
-		if (tween.__rotGlobalS === undefined || tween.__rotGlobalE === undefined) {
-			if (tween.__needsRot) { return; }
-			if (tween._curQueueProps.rotation !== undefined) {
-				tween.__rotGlobalS = tween.__rotGlobalE = tween._curQueueProps.rotation;
+			if (guideData.orient === "fixed") {
+				// controlled rotation
+				guideData.endAbsRot = end.rotation + guideData.startOffsetRot;
+				guideData.deltaRotation = 0;
 			} else {
-				tween.__rotGlobalS = tween.__rotGlobalE = injectProps.rotation = tween.target.rotation || 0;
+				// interpreted rotation
+				let finalRot = props.rotation === undefined ? (tween.target.rotation || 0) : props.rotation;
+				let deltaRot = (finalRot - guideData.endData.rotation) - guideData.startOffsetRot;
+				let modRot = deltaRot % 360;
+
+				guideData.endAbsRot = finalRot;
+
+				switch (guideData.orient) {
+					case "auto":
+						guideData.deltaRotation = deltaRot;
+						break;
+					case "cw":
+						guideData.deltaRotation = ((modRot + 360) % 360) + (360 * Math.abs((deltaRot/360) |0));
+						break;
+					case "ccw":
+						guideData.deltaRotation = ((modRot - 360) % 360) + (-360 * Math.abs((deltaRot/360) |0));
+						break;
+				}
 			}
+
+			tween._injectProp("rotation", guideData.endAbsRot);
 		}
-		if (tween.__guideData === undefined) { return; }
-
-		// Process rotation properties
-		let data = tween.__guideData;
-		let rotGlobalD = tween.__rotGlobalE - tween.__rotGlobalS;
-		let rotPathD = tween.__rotPathE - tween.__rotPathS;
-		let rot = rotGlobalD - rotPathD;
-
-		switch (data.orient) {
-			case "auto":
-				if (rot > 180) { rot -= 360; }
-				else if (rot < -180) { rot += 360; }
-				break;
-			case "cw":
-				while (rot < 0) { rot += 360; }
-				if (rot === 0 && rotGlobalD > 0 && rotGlobalD !== 180) { rot += 360; }
-				break;
-			case "ccw":
-				rot = rotGlobalD - (rotPathD > 180 ? 360 - rotPathD : rotPathD);	// sign flipping on path
-				while (rot > 0) { rot -= 360; }
-				if (rot === 0 && rotGlobalD < 0 && rotGlobalD !== -180) { rot -= 360; }
-				break;
-		}
-
-		data.rotDelta = rot;
-		data.rotOffS = tween.__rotGlobalS - tween.__rotPathS;
-
-		// reset
-		tween.__rotGlobalS = tween.__rotGlobalE = tween.__guideData = tween.__needsRot = undefined;
-	};
-
-	/**
-	 * @method tween
-	 * @protected
-	 * @static
-	 */
-	static tween (tween, prop, value, startValues, endValues, ratio, wait, end) {
-		let data = endValues.guide;
-		if (data === undefined || data === startValues.guide) { return value; }
-		if (data.lastRatio !== ratio) {
-			// first time through so calculate what I need to
-			let t = (data.end - data.start) * (wait ? data.end : ratio) + data.start;
-			MotionGuidePlugin.calc(data, t, tween.target);
-			switch (data.orient) {
-				case "cw": // mix in the original rotation
-				case "ccw":
-				case "auto": tween.target.rotation += data.rotOffS + data.rotDelta * ratio; break;
-				case "fixed":	// follow fixed behaviour to solve potential issues
-				default: tween.target.rotation += data.rotOffS; break;
-			}
-			data.lastRatio = ratio;
-		}
-		if (prop === "rotation" && (!data.orient || data.orient === "false")) { return value; }
-		return tween.target[prop];
 	}
 
 	/**
-	 * Determine the appropriate x/y/rotation information about a path for a given ratio along the path.
-	 * Assumes a path object with all optional parameters specified.
-	 * @param {Object} data Data object you would pass to the "guide:" property in a Tween
-	 * @param {Number} ratio Distance along path, values outside 0-1 are "best guess"
-	 * @param {Object} [target=false] to copy the results onto, will use a new object if not supplied.
-	 * @return {Object} The target object or a new object w/ the tweened properties
+	 * Called before a property is updated by the tween.
+	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
+	 * @method change
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {String} prop
+	 * @param {any} value
+	 * @param {Number} ratio
+	 * @param {Boolean} end
+	 * @return {any}
 	 * @static
 	 */
-	static calc (data, ratio, target = { x: 0, y: 0, rotation: 0 }) {
-		if (data._segments === undefined) { MotionGuidePlugin.validate(data); }
-		let seg = data._segments;
-		let path = data.path;
+	static change (tween, step, prop, value, ratio, end) {
+			let guideData = step.props.guide;
+			if (
+				!guideData ||													// missing data
+				(step.props === step.prev.props) ||		// in a wait()
+				(guideData === step.prev.props.guide)	// guide hasn't changed
+			) {
+				// have no business making decisions
+				return;
+			}
+			if (
+				(prop === "guide" && !guideData.valid) || // this data is broken
+				(prop === "x" || prop === "y") ||         // these always get over-written
+				(prop === "rotation" && guideData.orient) // currently over-written
+			) {
+				return createjs.Tween.IGNORE;
+			}
 
-		// find segment
-		let pos = data._length * ratio;
-		let cap = seg.length - 2;
-		let n = 0;
-		while (pos > seg[n] && n < cap) {
-			pos -= seg[n];
-			n += 2;
+			MotionGuidePlugin._ratioToPositionData(ratio, guideData, tween.target);
+	}
+
+	/**
+	 * Provide potentially useful debugging information, like running the error detection system, and rendering the path
+	 * defined in the guide data.
+	 *
+	 * NOTE: you will need to transform your context 2D to the local space of the guide if you wish to line it up.
+	 * @param {Object} guideData All the information describing the guide to be followed.
+	 * @param {DrawingContext2D} [ctx=undefined] The context to draw the object into.
+	 * @param {Array} [higlight=undefined] Array of ratio positions to highlight
+	 * @returns {undefined|String}
+	 */
+	static debug (guideData, ctx, higlight) {
+		guideData = guideData.guide || guideData;
+
+		// errors
+		let err = MotionGuidePlugin._findPathProblems(guideData);
+		if (err) {
+			console.error(`MotionGuidePlugin Error found:\n${err}`);
 		}
 
-		// find subline
-		let sublines = seg[n + 1];
-		let i = 0;
-		cap = sublines.length - 1;
-		while (pos > sublines[i] && i < cap) {
-			pos -= sublines[i++];
-		}
-		let t = (i / ++cap) + (pos / (cap * sublines[i]));
+		// drawing
+		if (!ctx) { return err; }
 
-		// find x/y
-		n += n + 2;
-		let inv = 1 - t;
-		target.x = inv * inv * path[n - 2] + 2 * inv * t * path[n + 0] + t * t * path[n + 2];
-		target.y = inv * inv * path[n - 1] + 2 * inv * t * path[n + 1] + t * t * path[n + 3];
+		let i;
+		let path = guideData.path;
+		let pathLength = path.length;
+		let width = 3;
+		let length = 9;
 
-		// orientation
-		if (data.orient) {
-			target.rotation = 57.2957795 * Math.atan2(
-				(path[n + 1] - path[n - 1]) * inv + (path[n + 3] - path[n + 1]) * t,
-				(path[n + 0] - path[n - 2]) * inv + (path[n + 2] - path[n + 0]) * t
+		ctx.save();
+		//ctx.resetTransform();
+
+		ctx.lineCap = "round";
+		ctx.lineJoin = "miter";
+		ctx.beginPath();
+
+		// curve
+		ctx.moveTo(path[0], path[1]);
+		for (i = 2; i < pathLength; i += 4) {
+			ctx.quadraticCurveTo(
+				path[i], path[i + 1],
+				path[i + 2], path[i + 3]
 			);
 		}
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = width * 1.5;
+		ctx.stroke();
+		ctx.strokeStyle = "white";
+		ctx.lineWidth = width;
+		ctx.stroke();
+		ctx.closePath();
 
-		return target;
+		// highlights
+		let hiCount = higlight.length;
+		if (higlight && hiCount) {
+			let tempStore = {};
+			let tempLook = {};
+			MotionGuidePlugin._solveGuideData(guideData, tempStore);
+
+			for (let i = 0; i < hiCount; i++) {
+				tempStore.orient = "fixed";
+				MotionGuidePlugin._ratioToPositionData(higlight[i], tempStore, tempLook);
+
+				ctx.beginPath();
+				ctx.moveTo(tempLook.x, tempLook.y);
+				ctx.lineTo(
+					tempLook.x + Math.cos(tempLook.rotation * 0.0174533) * length,
+					tempLook.y + Math.sin(tempLook.rotation * 0.0174533) * length
+				);
+				ctx.strokeStyle = "black";
+				ctx.lineWidth = width * 1.5;
+				ctx.stroke();
+				ctx.strokeStyle = "red";
+				ctx.lineWidth = width;
+				ctx.stroke();
+				ctx.closePath();
+			}
+		}
+		// end draw
+		ctx.restore();
+
+		return err;
+	}
+// private methods
+	/**
+	 * Calculate and store optimization data about the desired path to improve performance and accuracy of positions.
+	 * @param {Object} source The guide data provided to the tween call
+	 * @param {Object} storage the guide data used by the step calls and plugin to do the job, will be overwritten
+	 * @returns {undefined|String} Can return an error if unable to generate the data.
+	 * @private
+	 */
+	static _solveGuideData (source, storage) {
+		let err = MotionGuidePlugin.debug(source);
+		if (err) { return err; }
+
+		let path = storage.path = source.path;
+		let orient = storage.orient = source.orient;
+		storage.subLines = [];
+		storage.totalLength = 0;
+		storage.startOffsetRot = 0;
+		storage.deltaRotation = 0;
+		storage.startData = { ratio: 0 };
+		storage.endData = { ratio: 1 };
+		storage.animSpan = 1;
+
+		let pathLength = path.length;
+
+		let precision = 10;
+		let temp = {};
+		let sx, sy, cx, cy, ex, ey, i, j, len;
+
+		sx = path[0];
+		sy = path[1];
+
+		// get the data for each curve
+		for (i = 2; i < pathLength; i += 4) {
+			cx = path[i];
+			cy = path[i + 1];
+			ex = path[i + 2];
+			ey = path[i + 3];
+
+			let subLine = {
+				weightings: [],
+				estLength: 0,
+				portion: 0
+			};
+
+			let subX = sx,
+					subY = sy;
+			// get the distance data for each point
+			for (j = 1; j <= precision; j++) { // we need to evaluate t = 1 not t = 0
+				MotionGuidePlugin._getParamsForCurve(sx, sy, cx, cy, ex, ey, j / precision, false, temp);
+
+				let dx = temp.x - subX,
+						dy = temp.y - subY;
+				len = Math.sqrt(dx * dx + dy * dy);
+				subLine.weightings.push(len);
+				subLine.estLength += len;
+
+				subX = temp.x;
+				subY = temp.y;
+			}
+
+			// figure out full lengths
+			storage.totalLength += subLine.estLength;
+
+			// use length to figure out proportional weightings
+			for (j = 0; j < precision; j++) {
+				len = subLine.estLength;
+				subLine.weightings[j] = subLine.weightings[j] / len;
+			}
+
+			storage.subLines.push(subLine);
+			sx = ex;
+			sy = ey;
+		}
+
+		// use length to figure out proportional weightings
+		len = storage.totalLength;
+		let l = storage.subLines.length;
+		for (i = 0; i < l; i++) {
+			storage.subLines[i].portion = storage.subLines[i].estLength / len;
+		}
+
+		// determine start and end data
+		let startRatio = isNaN(source.start) ? 0 : source.start;
+		let endRatio = isNaN(source.end) ? 1 : source.end;
+		MotionGuidePlugin._ratioToPositionData(startRatio, storage, storage.startData);
+		MotionGuidePlugin._ratioToPositionData(endRatio, storage, storage.endData);
+
+		// this has to be done last else the prev ratios will be out of place
+		storage.startData.ratio = startRatio;
+		storage.endData.ratio = endRatio;
+		storage.animSpan = storage.endData.ratio - storage.startData.ratio;
+	}
+
+	/**
+	 * Convert a percentage along the line into, a local line (start, control, end) t-value for calculation.
+	 * @param {Number} ratio The (euclidean distance) percentage into the whole curve.
+	 * @param {Object} guideData All the information describing the guide to be followed.
+	 * @param {Object} output Object to save output properties of x,y, and rotation onto.
+	 * @returns {Object} The output object, useful for isolated calls.
+	 * @private
+	 */
+	static _ratioToPositionData (ratio, guideData, output) {
+		let lineSegments = guideData.subLines;
+
+		let i, l, t, test, target;
+
+		let look = 0;
+		let precision = 10;
+		let effRatio = (ratio * guideData.animSpan) + guideData.startData.ratio;
+
+		// find subline
+		l = lineSegments.length;
+		for (i = 0; i < l; i++) {
+			test = lineSegments[i].portion;
+			if (look + test >= effRatio) { target = i; break; }
+			look += test;
+		}
+
+		if (target === undefined) {
+			target = l - 1;
+			look -= test;
+		}
+
+		// find midline weighting
+		let subLines = lineSegments[target].weightings;
+		let portion = test;
+		l = subLines.length;
+		for (i = 0; i < l; i++) {
+			test = subLines[i] * portion;
+			if (look + test >= effRatio) { break; }
+			look += test;
+		}
+
+		// translate the subline index into a position in the path data
+		target = (target * 4) + 2;
+		// take the distance we've covered in our ratio, and scale it to distance into the weightings
+		t = (i / precision) + (((effRatio - look) / test) * (1 / precision));
+
+		// position
+		let pathData = guideData.path;
+		MotionGuidePlugin._getParamsForCurve(
+			pathData[target - 2], pathData[target - 1],
+			pathData[target], pathData[target + 1],
+			pathData[target + 2], pathData[target + 3],
+			t,
+			guideData.orient,
+			output
+		);
+
+		if (guideData.orient) {
+			if (ratio >= 0.99999 && ratio <= 1.00001 && guideData.endAbsRot !== undefined) {
+				output.rotation = guideData.endAbsRot;
+			} else {
+				output.rotation += guideData.startOffsetRot + (ratio * guideData.deltaRotation);
+			}
+		}
+
+		return output;
+	}
+
+	/**
+	 * For a given quadratic bezier t-value, what is the position and rotation. Save it onto the output object.
+	 * @param {Number} sx Start x.
+	 * @param {Number} sy Start y.
+	 * @param {Number} cx Control x.
+	 * @param {Number} cy Control y.
+	 * @param {Number} ex End x.
+	 * @param {Number} ey End y.
+	 * @param {Number} t T value (parametric distance into curve).
+	 * @param {Boolean} orient Save rotation data.
+	 * @param {Object} output Object to save output properties of x,y, and rotation onto.
+	 * @private
+	 */
+	_getParamsForCurve (sx, sy, cx, cy, ex, ey, t, orient, output) {
+		let inv = 1 - t;
+
+		// finding a point on a bezier curve
+		output.x = inv * inv * sx + 2 * inv * t * cx + t * t * ex;
+		output.y = inv * inv * sy + 2 * inv * t * cy + t * t * ey;
+
+		// finding an angle on a bezier curve
+		if (orient) {
+			// convert from radians back to degrees
+			output.rotation = 57.2957795 * Math.atan2(
+				(cy - sy) * inv + (ey - cy) * t,
+				(cx - sx) * inv + (ex - cx) * t
+			);
+		}
+	}
+
+	/**
+	 * Perform a check to validate path information so plugin can avoid later error checking.
+	 * @param {Object} guideData All the information describing the guide to be followed.
+	 * @returns {undefined|String} The problem found, or undefined if no problems.
+	 * @private
+	 */
+	static _findPathProblems (guideData) {
+		let path = guideData.path;
+		let valueCount = (path && path.length) || 0; // ensure this is a number to simplify later logic
+		if (valueCount < 6 || (valueCount - 2) % 4) {
+			return `
+				Cannot parse 'path' array due to invalid number of entries in path.
+				There should be an odd number of points, at least 3 points, and 2 entries per point (x & y).
+				See 'CanvasRenderingContext2D.quadraticCurveTo' for details as 'path' models a quadratic bezier.
+
+				Only ${valueCount} values found. Expected: ${Math.max(Math.ceil((valueCount - 2) / 4) * 4 + 2, 6)}.
+			`;
+		}
+
+		if (!path.every(data => !isNaN(data))) {
+			return "All data in path array must be numeric";
+		}
+
+		let start = guideData.start;
+		if (isNaN(start) && !(start === undefined) /* || start < 0 || start > 1*/ ) { // outside 0-1 is unpredictable, but not breaking
+			return `'start' out of bounds. Expected 0 to 1, got: ${start}`;
+		}
+		let end = guideData.end;
+		if (isNaN(end) && (end !== undefined) /* || end < 0 || end > 1*/ ) { // outside 0-1 is unpredictable, but not breaking
+			return `'end' out of bounds. Expected 0 to 1, got: ${end}`;
+		}
+
+		let orient = guideData.orient;
+		if (orient) { // mirror the check used elsewhere
+			if (orient != "fixed" && orient != "auto" && orient != "cw" && orient != "ccw") {
+				return `Invalid orientation value. Expected ["fixed", "auto", "cw", "ccw", undefined], got: ${orient}`;
+			}
+		}
+
+		return undefined;
 	}
 
 }
@@ -292,27 +499,12 @@ export class MotionGuidePlugin {
  * @static
  */
 MotionGuidePlugin.priority = 0; // high priority, should run sooner
+
 /**
- * @property _rotOffS
- * @private
+ * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
+ * @property ID
+ * @type {String}
  * @static
+ * @readonly
  */
-MotionGuidePlugin._rotOffS = undefined;
-/**
- * @property _rotOffE
- * @private
- * @static
- */
-MotionGuidePlugin._rotOffE = undefined;
-/**
- * @property _rotNormS
- * @private
- * @static
- */
-MotionGuidePlugin._rotNormS = undefined;
-/**
- * @property _rotNormE
- * @private
- * @static
- */
-MotionGuidePlugin._rotNormE = undefined;
+MotionGuidePlugin.ID = "MotionGuide";

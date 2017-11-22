@@ -107,7 +107,7 @@ export class CSSPlugin {
 
     let cssData = data.CSS || (data.CSS = {});
     if (prop === "transform") {
-      cssData[prop] = "";
+      cssData[prop] = "_t";
       return parseTransform(initVal);
     }
 
@@ -154,9 +154,11 @@ export class CSSPlugin {
 		let sfx = tween.pluginData.CSS[prop];
 		if (sfx === undefined) { return; }
     if (prop === "transform") {
-      value = writeTransform(step.prev.props.transform, step.props.transform, ratio);
-    }
-		tween.target.style[prop] = value + sfx;
+			value = writeTransform(step.prev.props[prop], step.props[prop], ratio);
+    } else {
+			value += sfx;
+		}
+		tween.target.style[prop] = value;
 		return Tween.IGNORE;
 	}
 
@@ -195,7 +197,7 @@ CSSPlugin.VALUE_RE = /^(-?[\d.]+)([a-z%]*)$/;
  * @static
  * @readonly
  */
-CSSPlugin.TRANSFORM_VALUE_RE = /(-?[\d.]+)([a-z%]*),?\s*/g;
+CSSPlugin.TRANSFORM_VALUE_RE = /(?:^| |,)(-?[\d.]+)([a-z%]*)/g;
 
 /**
  * Extracts the components of a transform.
@@ -204,8 +206,15 @@ CSSPlugin.TRANSFORM_VALUE_RE = /(-?[\d.]+)([a-z%]*),?\s*/g;
  * @static
  * @readonly
  */
-CSSPlugin.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^|\s)(\*)(?:$|\s)/g;
+CSSPlugin.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^| )(\*)(?:$| )/g;
 
+/**
+ * Matches CSS values that consist of two or more values with suffixes.
+ * @type {RegExp}
+ * @static
+ * @readonly
+ */
+CSSPlugin.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/;
 
 /**
  * By default, CSSPlugin uses only inline styles on the target element (ie. set via the style attribute, `style` property, or `cssText`)
@@ -245,7 +254,7 @@ function getStyle (target, prop, compute) {
 }
 
 function parseTransform (str, compare) {
-  let result, valStr, list = [false, str];
+  let result, list = [false, str];
   do {
     // pull out the next "component" of the transform (ex. "translate(10px, 20px)")
     result = CSSPlugin.TRANSFORM_RE.exec(str);
@@ -258,18 +267,13 @@ function parseTransform (str, compare) {
     let component = [result[1]], compareComp = compare && compare[list.length];
 
     // check that the operation type matches (ex. "translate" vs "rotate"):
-    if (compare && (!compareComp || component[0] !== compareComp[0])) { compare = null; console.log("transforms don't match: ", component[0], compareComp[0]); } // component doesn't match
+		if (compare && (!compareComp || component[0] !== compareComp[0])) {
+			// component doesn't match
+			console.log("Transforms don't match: ", component[0], compareComp && compareComp[0]);
+			compare = null;
+		}
 
-    valStr = result[2];
-    do {
-      // pull out the next value (ex. "20px", "12.4rad"):
-      result = CSSPlugin.TRANSFORM_VALUE_RE.exec(valStr);
-      if (!result) { break; }
-      component.push(+result[1], result[2]);
-
-      // chack that the units match (ex. "px" vs "em"):
-      if (compare && (compareComp[component.length-1] !== result[2])) { compare = null; console.log("transform units don't match: ", component[0], compareComp[component.length-1], result[2]); } // unit doesn't match
-    } while (true);
+		parseMulti(result[2], compareComp, component);
 
     list.push(component);
   } while (true);
@@ -278,9 +282,29 @@ function parseTransform (str, compare) {
   return list;
 }
 
+// this was separated so that it can be used for other multi element styles in the future
+// ex. transform-origin, border, etc.
+function parseMulti (str, compare, arr) {
+	// TODO: add logic to deal with "0" values? Troublesome because the browser automatically appends a unit for some 0 values.
+	do {
+		// pull out the next value (ex. "20px", "12.4rad"):
+		let result = CSSPlugin.TRANSFORM_VALUE_RE.exec(str);
+		if (!result) { return arr; }
+		if (!arr) { arr = []; }
+		arr.push(+result[1], result[2]);
+
+		// check that the units match (ex. "px" vs "em"):
+		if (compare && (compare[arr.length-1] !== result[2])) {
+			// unit doesn't match
+			console.log("Transform units don't match: ", arr[0], compare[arr.length-1], result[2]);
+			compare = null;
+		}
+	} while(true);
+}
+
+
 function writeTransform (list0, list1, ratio) {
   // check if we should just use the original transform strings:
-  // TODO: do we want to worry about how this works with bounce eases & ratio>1?
   if (ratio === 1) { return list1[1]; }
   if (ratio === 0 || !list1[0]) { return list0[1]; }
 
@@ -290,13 +314,27 @@ function writeTransform (list0, list1, ratio) {
     let component0 = list0[i], component1 = list1[i];
     str += `${component0[0]}(`;
     for (let i = 1, l = component0.length; i < l; i += 2) {
-      str += component0[i]+(component1[i]-component0[i])*ratio+component0[i+1];
+			str += component0[j]+(component1[j]-component0[j])*ratio; // value
+			str += component1[j+1] || component0[j+1]; // unit
       if (i < l-2) { str += ", "; }
     }
     str += ")";
     if (i < l-1) { str += " "; }
   }
   return str;
+}
+
+// this was part of an attempt to handle multi element css values, ex. margin="10px 10px 20px 30px"
+// discarded because the browser likes to collapse values, which makes a generic solution infeasible.
+// for example, margin="10px 10px 10px 10px" will collapse to just "10px"
+// requires custom logic to handle each scenario.
+function writeMulti(arr0, arr1, ratio) {
+	let str = "", l = arr0.length, i;
+	for (i = 0; i < l; i += 2) {
+		str += arr0[i]+(arr1[i]-arr0[i])*ratio+arr0[i+1];
+		if (i < l-2) { str += " "; }
+	}
+	return str;
 }
 
 /*
