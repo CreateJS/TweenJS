@@ -1,5 +1,5 @@
 {
-  "name": "tweenjs",
+  "name": "@createjs/tweenjs",
   "version": "2.0.0",
   "description": "A simple but powerful tweening / animation library for Javascript. Part of the CreateJS suite of libraries.",
   "keywords": [
@@ -40,10 +40,10 @@
     "docs": "cd node_modules/createjs && npm run docs"
   },
   "dependencies": {
-    "createjs": "2.0.0"
+
   },
   "devDependencies": {
-		"easeljs": "2.0.0"
+
   },
   "engine": "node >= 7.10.1"
 }
