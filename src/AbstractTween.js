@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import EventDispatcher from "createjs/src/events/EventDispatcher";
+import EventDispatcher from "@createjs/core/src/events/EventDispatcher";
 import Tween from "./Tween";
 
 /**

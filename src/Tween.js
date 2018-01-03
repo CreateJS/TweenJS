@@ -28,7 +28,7 @@
 
 import AbstractTween from "./AbstractTween";
 import Ease from "./Ease";
-import Ticker from "createjs/src/utils/Ticker";
+import Ticker from "@createjs/core/src/utils/Ticker";
 
 /**
  * Tweens properties for a single target. Methods can be chained to create complex animation sequences:

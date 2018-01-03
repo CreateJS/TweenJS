@@ -46,13 +46,14 @@
  */
 
 // re-export shared classes
-export { default as EventDispatcher } from "createjs/src/events/EventDispatcher";
-export { default as Event } from "createjs/src/events/Event";
-export { default as Ticker } from "createjs/src/utils/Ticker";
+export { default as EventDispatcher } from "@createjs/core/src/events/EventDispatcher";
+export { default as Event } from "@createjs/core/src/events/Event";
+export { default as Ticker } from "@createjs/core/src/utils/Ticker";
 // core
 export { default as Tween } from "./Tween";
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";
 export { default as Ease } from "./Ease";
-// version (templated in gulpfile, pulled from package).
-export const version = "<%= version %>";
+// inject version into window
+const v = (window.createjs = window.createjs || { v: {} });
+v.t = "<%= version %>";
