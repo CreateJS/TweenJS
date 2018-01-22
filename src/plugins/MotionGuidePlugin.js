@@ -59,7 +59,7 @@
  * @module TweenJS
  * @static
  */
-export class MotionGuidePlugin {
+class MotionGuidePlugin {
 
 	constructor () {
 		throw "MotionGuidePlugin is static and cannot be instantiated.";
@@ -508,3 +508,5 @@ MotionGuidePlugin.priority = 0; // high priority, should run sooner
  * @readonly
  */
 MotionGuidePlugin.ID = "MotionGuide";
+
+export { MotionGuidePlugin };

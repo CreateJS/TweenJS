@@ -48,7 +48,7 @@
  * @module TweenJS
  * @static
  */
-export class RotationPlugin {
+class RotationPlugin {
 
 // constructor:
 	/**
@@ -158,3 +158,5 @@ RotationPlugin.props = { rotation: 1, rotationX: 1, rotationY: 1, rotationZ: 1 }
  * @readonly
  */
 RotationPlugin.ID = "Rotation";
+
+export { RotationPlugin };

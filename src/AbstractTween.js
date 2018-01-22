@@ -26,8 +26,8 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import EventDispatcher from "@createjs/core/src/events/EventDispatcher";
-import Tween from "./Tween";
+import { EventDispatcher } from "@createjs/core/src/events/EventDispatcher";
+import { Tween } from "./Tween";
 
 /**
  * Base class that both {{#crossLink "Tween"}}{{/crossLink}} and {{#crossLink "Timeline"}}{{/crossLink}} extend. Should not be instantiated directly.
@@ -37,7 +37,7 @@ import Tween from "./Tween";
  * @module TweenJS
  * @constructor
  */
-export default class AbstractTween extends EventDispatcher {
+class AbstractTween extends EventDispatcher {
 
 // constructor:
   /**
@@ -512,3 +512,5 @@ export default class AbstractTween extends EventDispatcher {
  * tweens that loop continuously will never fire a complete event.
  * @event complete
  */
+
+export { AbstractTween };

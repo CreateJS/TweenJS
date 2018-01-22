@@ -37,7 +37,7 @@ const RGB = "rgb";
  * @module TweenJS
  * @static
  */
-export class ColorPlugin {
+class ColorPlugin {
 
 // constructor:
 	/**
@@ -256,3 +256,5 @@ function hue2rgb (p, q, t) {
 	if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
 	return p;
 }
+
+export { ColorPlugin };

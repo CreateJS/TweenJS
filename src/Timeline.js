@@ -26,7 +26,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import AbstractTween from "./AbstractTween";
+import { AbstractTween } from "./AbstractTween";
 
 /**
  * The Timeline class synchronizes multiple tweens and allows them to be controlled as a group. Please note that if a
@@ -52,7 +52,7 @@ import AbstractTween from "./AbstractTween";
  * @extends AbstractTween
  * @module TweenJS
  */
-export default class Timeline extends AbstractTween {
+class Timeline extends AbstractTween {
 
 // constructor
 	/**
@@ -186,3 +186,5 @@ export default class Timeline extends AbstractTween {
 	}
 
 }
+
+export { Timeline };
