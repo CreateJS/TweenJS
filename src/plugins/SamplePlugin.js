@@ -38,7 +38,7 @@
  * @module TweenJS
  * @static
  */
-class SamplePlugin {
+export class SamplePlugin {
 
 // constructor:
 	/**
@@ -242,5 +242,3 @@ SamplePlugin.priority = 0;
  * @static
  */
 SamplePlugin.prototype.ID = SamplePlugin.ID = "Sample";
-
-export { SamplePlugin };

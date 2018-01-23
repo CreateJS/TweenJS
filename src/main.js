@@ -46,11 +46,14 @@
  */
 
 // re-export shared classes
-export { EventDispatcher } from "@createjs/core/src/events/EventDispatcher";
-export { Event } from "@createjs/core/src/events/Event";
-export { Ticker } from "@createjs/core/src/utils/Ticker";
+export { default as EventDispatcher } from "@createjs/core/src/events/EventDispatcher";
+export { default as Event } from "@createjs/core/src/events/Event";
+export { default as Ticker } from "@createjs/core/src/utils/Ticker";
 // core
-export { Tween } from "./Tween";
-export { AbstractTween } from "./AbstractTween";
-export { Timeline } from "./Timeline";
-export { Ease } from "./Ease";
+export { default as Tween } from "./Tween";
+export { default as AbstractTween } from "./AbstractTween";
+export { default as Timeline } from "./Timeline";
+export { default as Ease } from "./Ease";
+// inject version into window
+const v = (window.createjs = window.createjs || { v: {} });
+v.t = "<%= version %>";

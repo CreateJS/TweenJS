@@ -31,12 +31,13 @@
     "url": "https://github.com/createjs/tweenjs.git"
   },
   "scripts": {
-    "test": "jest -c ./tests/jest.config.js",
-    "lint": "cd node_modules/@createjs/build && gulp lint",
-    "dev": "cd node_modules/@createjs/build && gulp dev",
-    "build": "cd node_modules/@createjs/build && gulp build",
-    "plugins": "cd node_modules/@createjs/build && gulp plugins",
-    "docs": "cd node_modules/@createjs/docs && npm run gen"
+    "test": "cd node_modules/createjs && npm run test",
+    "test:headless": "cd node_modules/createjs && npm run test:headless",
+    "dev": "cd node_modules/createjs && npm run dev",
+    "build": "cd node_modules/createjs && npm run build",
+    "build:next": "cd node_modules/createjs && npm run build:next",
+    "plugins": "cd node_modules/createjs && npm run plugins",
+    "docs": "cd node_modules/createjs && npm run docs"
   },
   "dependencies": {},
   "devDependencies": {

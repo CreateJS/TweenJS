@@ -67,7 +67,7 @@ const TRANSFORM = "transform";
  * @module TweenJS
  * @static
  */
-class CSSPlugin {
+export class CSSPlugin {
 
 // constructor:
 	/**
@@ -354,5 +354,3 @@ function writeSingleTransform (list) {
   return str;
 }
 */
-
-export { CSSPlugin };

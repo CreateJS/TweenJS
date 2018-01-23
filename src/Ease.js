@@ -46,7 +46,7 @@
  * @static
  * @module TweenJS
  */
-class Ease {
+export default class Ease {
 
 	constructor () {
 		throw "Ease is static and cannot be instantiated.";
@@ -449,5 +449,3 @@ Ease.elasticOut = Ease.getElasticOut(1, 0.3);
  * @return {Number}
  */
 Ease.elasticInOut = Ease.getElasticInOut(1, 0.3 * 1.5);
-
-export { Ease };

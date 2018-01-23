@@ -42,7 +42,7 @@
  * @module TweenJS
  * @static
  */
-class RelativePlugin {
+export class RelativePlugin {
 
 // constructor:
   /**
@@ -124,5 +124,3 @@ class RelativePlugin {
  * @readonly
  */
 RelativePlugin.ID = "Relative";
-
-export { RelativePlugin };

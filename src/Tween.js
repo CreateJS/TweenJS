@@ -26,9 +26,9 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import { AbstractTween } from "./AbstractTween";
-import { Ease } from "./Ease";
-import { Ticker } from "@createjs/core/src/utils/Ticker";
+import AbstractTween from "./AbstractTween";
+import Ease from "./Ease";
+import Ticker from "@createjs/core/src/utils/Ticker";
 
 /**
  * Tweens properties for a single target. Methods can be chained to create complex animation sequences:
@@ -58,7 +58,7 @@ import { Ticker } from "@createjs/core/src/utils/Ticker";
  * @extends AbstractTween
  * @module TweenJS
  */
-class Tween extends AbstractTween {
+export default class Tween extends AbstractTween {
 
 // constructor:
 	/**
@@ -827,5 +827,3 @@ class TweenAction {
 	}
 
 }
-
-export { Tween };
