@@ -54,6 +54,3 @@ export { default as Tween } from "./Tween";
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";
 export { default as Ease } from "./Ease";
-// inject version into window
-const v = (window.createjs = window.createjs || { v: {} });
-v.t = "<%= version %>";
