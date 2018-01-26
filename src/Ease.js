@@ -1,30 +1,30 @@
-/*
-* Ease
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license Ease
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 /**
  * The Ease class provides a collection of easing functions for use with TweenJS. It does not use the standard 4 param
@@ -42,410 +42,364 @@
  * overview of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
  *
  * <em>Equations derived from work by Robert Penner.</em>
- * @class Ease
- * @static
- * @module TweenJS
+ *
+ * @memberof tweenjs
+ * @module tweenjs/Ease
  */
-export default class Ease {
 
-	constructor () {
-		throw "Ease is static and cannot be instantiated.";
-	}
-
-// static methods:
-	/**
-	 * @method linear
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static linear (t) {
-		return t;
-	}
-
-	/**
-	 * Mimics the simple -100 to 100 easing in Flash Pro.
-	 * @method get
-	 * @param {Number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
-	 * @static
-	 * @return {Function}
-	 */
-	static get (amount) {
-		if (amount < -1) { amount = -1; }
-		else if (amount > 1) { amount = 1; }
-		return function (t) {
-			if (amount == 0) { return t; }
-			if (amount < 0) { return t * (t * -amount + 1 + amount); }
-			return t * ((2 - t) * amount + (1 - amount));
-		};
-	}
-
-	/**
-	 * Configurable exponential ease.
-	 * @method getPowIn
-	 * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
-	 * @static
-	 * @return {Function}
-	 */
-	static getPowIn (pow) {
-		return function (t) {
-			return Math.pow(t, pow);
-		};
-	}
-
-	/**
-	 * Configurable exponential ease.
-	 * @method getPowOut
-	 * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
-	 * @static
-	 * @return {Function}
-	 */
-	static getPowOut (pow) {
-		return function (t) {
-			return 1 - Math.pow(1 - t, pow);
-		};
-	}
-
-	/**
-	 * Configurable exponential ease.
-	 * @method getPowInOut
-	 * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
-	 * @static
-	 * @return {Function}
-	 */
-	static getPowInOut (pow) {
-		return function (t) {
-			if ((t *= 2) < 1) return 0.5 * Math.pow(t, pow);
-			return 1 - 0.5 * Math.abs(Math.pow(2 - t, pow));
-		};
-	}
-
-	/**
-	 * @method sineIn
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static sineIn (t) {
-		return 1 - Math.cos(t * Math.PI / 2);
-	}
-
-	/**
-	 * @method sineOut
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static sineOut (t) {
-		return Math.sin(t * Math.PI / 2);
-	}
-
-	/**
-	 * @method sineInOut
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static sineInOut (t) {
-		return -0.5 * (Math.cos(Math.PI * t) - 1);
-	}
-
-	/**
-	 * Configurable "back in" ease.
-	 * @method getBackIn
-	 * @param {Number} amount The strength of the ease.
-	 * @static
-	 * @return {Function}
-	 */
-	static getBackIn (amount) {
-		return function (t) {
-			return t * t * ((amount + 1) * t - amount);
-		};
-	}
-
-	/**
-	 * Configurable "back out" ease.
-	 * @method getBackOut
-	 * @param {Number} amount The strength of the ease.
-	 * @static
-	 * @return {Function}
-	 */
-	static getBackOut (amount) {
-		return function (t) {
-			return (--t * t * ((amount + 1) * t + amount) + 1);
-		};
-	}
-
-	/**
-	 * Configurable "back in out" ease.
-	 * @method getBackInOut
-	 * @param {Number} amount The strength of the ease.
-	 * @static
-	 * @return {Function}
-	 */
-	static getBackInOut (amount) {
-		amount *= 1.525;
-		return function (t) {
-			if ((t *= 2) < 1) return 0.5 * (t * t * ((amount + 1) * t - amount));
-			return 0.5 * ((t -= 2) * t * ((amount + 1) * t + amount) + 2);
-		};
-	}
-
-	/**
-	 * @method circIn
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static circIn (t) {
-		return -(Math.sqrt(1 - t * t) - 1);
-	}
-
-	/**
-	 * @method circOut
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static circOut (t) {
-		return Math.sqrt(1 - --t * t);
-	}
-
-	/**
-	 * @method circInOut
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static circInOut (t) {
-		if ((t *= 2) < 1) return -0.5 * (Math.sqrt(1 - t * t) - 1);
-		return 0.5 * (Math.sqrt(1 - (t -= 2) * t) + 1);
-	}
-
-	/**
-	 * @method bounceIn
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static bounceIn (t) {
-		return 1 - Ease.bounceOut(1 - t);
-	}
-
-	/**
-	 * @method bounceOut
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static bounceOut (t) {
-		if (t < 1 / 2.75) {
-			return 7.5625 * t * t;
-		} else if (t < 2 / 2.75) {
-			return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
-		} else if (t < 2.5 / 2.75) {
-			return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
-		} else {
-			return 7.5625 * ( t-= 2.625 / 2.75) * t + 0.984375;
-		}
-	}
-
-	/**
-	 * @method bounceInOut
-	 * @param {Number} t
-	 * @static
-	 * @return {Number}
-	 */
-	static bounceInOut (t) {
-		if (t < 0.5) return Ease.bounceIn(t * 2) * 0.5;
-		return Ease.bounceOut(t * 2 - 1) * 0.5 + 0.5;
-	}
-
-	/**
-	 * Configurable elastic ease.
-	 * @method getElasticIn
-	 * @param {Number} amplitude
-	 * @param {Number} period
-	 * @static
-	 * @return {Function}
-	 */
-	static getElasticIn (amplitude, period) {
-		let pi2 = Math.PI * 2;
-		return function (t) {
-			if (t === 0 || t === 1) return t;
-			let s = period / pi2 * Math.asin(1 / amplitude);
-			return -(amplitude * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * pi2 / period));
-		};
-	}
-
-	/**
-	 * Configurable elastic ease.
-	 * @method getElasticOut
-	 * @param {Number} amplitude
-	 * @param {Number} period
-	 * @static
-	 * @return {Function}
-	 */
-	static getElasticOut (amplitude, period) {
-		let pi2 = Math.PI * 2;
-		return function (t) {
-			if (t === 0 || t === 1) return t;
-			let s = period / pi2 * Math.asin(1 / amplitude);
-			return amplitude * Math.pow(2, -10 * t) * Math.sin((t - s) * pi2 / period) + 1;
-		};
-	}
-
-	/**
-	 * Configurable elastic ease.
-	 * @method getElasticInOut
-	 * @param {Number} amplitude
-	 * @param {Number} period
-	 * @static
-	 * @return {Function}
-	 */
-	static getElasticInOut (amplitude, period) {
-		let pi2 = Math.PI * 2;
-		return function (t) {
-			let s = period / pi2 * Math.asin(1 / amplitude);
-			if ((t *= 2) < 1) return -0.5 * (amplitude * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * pi2 / period));
-			return amplitude * Math.pow(2, -10 * (t -= 1)) * Math.sin((t - s) * pi2 / period) * 0.5 + 1;
-		};
-	}
-
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function linear (t) {
+	return t;
 }
 
-// static properties
+/**
+ * Mimics the simple -100 to 100 easing in Flash Pro.
+ * @param {number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
+ * @return {Function}
+ */
+function get (amount) {
+	if (amount < -1) { amount = -1; } else if (amount > 1) { amount = 1; }
+	return function (t) {
+		if (amount == 0) { return t; }
+		if (amount < 0) { return t * (t * -amount + 1 + amount); }
+		return t * ((2 - t) * amount + (1 - amount));
+	};
+}
+
+/**
+ * Configurable exponential ease.
+ * @param {number} pow The exponent to use (ex. 3 would return a cubic ease).
+ * @return {Function}
+ */
+function getPowIn (pow) {
+	return function (t) {
+		return Math.pow(t, pow);
+	};
+}
+
+/**
+ * Configurable exponential ease.
+ * @param {number} pow The exponent to use (ex. 3 would return a cubic ease).
+ * @return {Function}
+ */
+function getPowOut (pow) {
+	return function (t) {
+		return 1 - Math.pow(1 - t, pow);
+	};
+}
+
+/**
+ * Configurable exponential ease.
+ * @param {number} pow The exponent to use (ex. 3 would return a cubic ease).
+ * @return {Function}
+ */
+function getPowInOut (pow) {
+	return function (t) {
+		if ((t *= 2) < 1) return 0.5 * Math.pow(t, pow);
+		return 1 - 0.5 * Math.abs(Math.pow(2 - t, pow));
+	};
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function sineIn (t) {
+	return 1 - Math.cos(t * Math.PI / 2);
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function sineOut (t) {
+	return Math.sin(t * Math.PI / 2);
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function sineInOut (t) {
+	return -0.5 * (Math.cos(Math.PI * t) - 1);
+}
+
+/**
+ * Configurable "back in" ease.
+ * @param {number} amount The strength of the ease.
+ * @return {Function}
+ */
+function getBackIn (amount) {
+	return function (t) {
+		return t * t * ((amount + 1) * t - amount);
+	};
+}
+
+/**
+ * Configurable "back out" ease.
+ * @param {number} amount The strength of the ease.
+ * @return {Function}
+ */
+function getBackOut (amount) {
+	return function (t) {
+		return (--t * t * ((amount + 1) * t + amount) + 1);
+	};
+}
+
+/**
+ * Configurable "back in out" ease.
+ * @param {number} amount The strength of the ease.
+ * @return {Function}
+ */
+function getBackInOut (amount) {
+	amount *= 1.525;
+	return function (t) {
+		if ((t *= 2) < 1) return 0.5 * (t * t * ((amount + 1) * t - amount));
+		return 0.5 * ((t -= 2) * t * ((amount + 1) * t + amount) + 2);
+	};
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function circIn (t) {
+	return -(Math.sqrt(1 - t * t) - 1);
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function circOut (t) {
+	return Math.sqrt(1 - --t * t);
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function circInOut (t) {
+	if ((t *= 2) < 1) return -0.5 * (Math.sqrt(1 - t * t) - 1);
+	return 0.5 * (Math.sqrt(1 - (t -= 2) * t) + 1);
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function bounceIn (t) {
+	return 1 - Ease.bounceOut(1 - t);
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function bounceOut (t) {
+	if (t < 1 / 2.75) {
+		return 7.5625 * t * t;
+	} else if (t < 2 / 2.75) {
+		return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+	} else if (t < 2.5 / 2.75) {
+		return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+	} else {
+		return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+	}
+}
+
+/**
+ * @param {number} t
+ * @return {number}
+ */
+function bounceInOut (t) {
+	if (t < 0.5) return Ease.bounceIn(t * 2) * 0.5;
+	return Ease.bounceOut(t * 2 - 1) * 0.5 + 0.5;
+}
+
+/**
+ * Configurable elastic ease.
+ * @param {number} amplitude
+ * @param {number} period
+ * @return {Function}
+ */
+function getElasticIn (amplitude, period) {
+	let pi2 = Math.PI * 2;
+	return function (t) {
+		if (t === 0 || t === 1) return t;
+		let s = period / pi2 * Math.asin(1 / amplitude);
+		return -(amplitude * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * pi2 / period));
+	};
+}
+
+/**
+ * Configurable elastic ease.
+ * @param {number} amplitude
+ * @param {number} period
+ * @return {Function}
+ */
+function getElasticOut (amplitude, period) {
+	let pi2 = Math.PI * 2;
+	return function (t) {
+		if (t === 0 || t === 1) return t;
+		let s = period / pi2 * Math.asin(1 / amplitude);
+		return amplitude * Math.pow(2, -10 * t) * Math.sin((t - s) * pi2 / period) + 1;
+	};
+}
+
+/**
+ * Configurable elastic ease.
+ * @param {number} amplitude
+ * @param {number} period
+ * @return {Function}
+ */
+function getElasticInOut (amplitude, period) {
+	let pi2 = Math.PI * 2;
+	return function (t) {
+		let s = period / pi2 * Math.asin(1 / amplitude);
+		if ((t *= 2) < 1) return -0.5 * (amplitude * Math.pow(2, 10 * (t -= 1)) * Math.sin((t - s) * pi2 / period));
+		return amplitude * Math.pow(2, -10 * (t -= 1)) * Math.sin((t - s) * pi2 / period) * 0.5 + 1;
+	};
+}
+
 /**
  * Identical to linear.
- * @method none
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.none = Ease.linear;
+const none = linear;
 /**
- * @method quadIn
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quadIn = Ease.getPowIn(2);
+const quadIn = getPowIn(2);
 /**
- * @method quadOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quadOut = Ease.getPowOut(2);
+const quadOut = getPowOut(2);
 /**
- * @method quadInOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quadInOut = Ease.getPowInOut(2);
+const quadInOut = getPowInOut(2);
 /**
- * @method cubicIn
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.cubicIn = Ease.getPowIn(3);
+const cubicIn = getPowIn(3);
 /**
- * @method cubicOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.cubicOut = Ease.getPowOut(3);
+const cubicOut = getPowOut(3);
 /**
- * @method cubicInOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.cubicInOut = Ease.getPowInOut(3);
+const cubicInOut = getPowInOut(3);
 /**
- * @method quartIn
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quartIn = Ease.getPowIn(4);
+const quartIn = getPowIn(4);
 /**
- * @method quartOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quartOut = Ease.getPowOut(4);
+const quartOut = getPowOut(4);
 /**
- * @method quartInOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quartInOut = Ease.getPowInOut(4);
+const quartInOut = getPowInOut(4);
 /**
- * @method quintIn
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quintIn = Ease.getPowIn(5);
+const quintIn = getPowIn(5);
 /**
- * @method quintOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quintOut = Ease.getPowOut(5);
+const quintOut = getPowOut(5);
 /**
- * @method quintInOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.quintInOut = Ease.getPowInOut(5);
+const quintInOut = getPowInOut(5);
 /**
- * @method backIn
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.backIn = Ease.getBackIn(1.7);
+const backIn = getBackIn(1.7);
 /**
- * @method backOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.backOut = Ease.getBackOut(1.7);
+const backOut = getBackOut(1.7);
 /**
- * @method backInOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.backInOut = Ease.getBackInOut(1.7);
+const backInOut = getBackInOut(1.7);
 /**
- * @method elasticIn
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.elasticIn = Ease.getElasticIn(1, 0.3);
+const elasticIn = getElasticIn(1, 0.3);
 /**
- * @method elasticOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.elasticOut = Ease.getElasticOut(1, 0.3);
+const elasticOut = getElasticOut(1, 0.3);
 /**
- * @method elasticInOut
- * @param {Number} t
- * @static
- * @return {Number}
+ * @param {number} t
+ * @return {number}
  */
-Ease.elasticInOut = Ease.getElasticInOut(1, 0.3 * 1.5);
+const elasticInOut = getElasticInOut(1, 0.3 * 1.5);
+
+export {
+	get,
+	getPowIn,
+	getPowOut,
+	getPowInOut,
+	sineIn,
+	sineOut,
+	sineInOut,
+	getBackIn,
+	getBackOut,
+	getBackInOut,
+	circIn,
+	circOut,
+	circInOut,
+	bounceIn,
+	bounceOut,
+	bounceInOut,
+	getElasticIn,
+	getElasticOut,
+	getElasticInOut,
+
+	none,
+	quadIn,
+	quadOut,
+	quadInOut,
+	cubicIn,
+	cubicOut,
+	cubicInOut,
+	quartIn,
+	quartOut,
+	quartInOut,
+	quintIn,
+	quintOut,
+	quintInOut,
+	backIn,
+	backOut,
+	backInOut,
+	elasticIn,
+	elasticOut,
+	elasticInOut
+};

@@ -34,8 +34,23 @@ import AbstractTween from "./AbstractTween";
  *
  * NOTE: Timeline currently also accepts a param list in the form: `tweens, labels, props`. This is for backwards
  * compatibility only and will be removed in the future. Include tweens and labels as properties on the props object.
- * @class Timeline
+ *
+ * @memberof tweenjs
+ * @extends AbstractTween
+ *
  * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
+ * @param {boolean} [props.useTicks=false] See the {@link tweenjs.AbstractTween#useTicks} property for more information.
+ * @param {boolean} [props.ignoreGlobalPause=false] See the {@link tweenjs.AbstractTween#ignoreGlobalPause} for more information.
+ * @param {number|boolean} [props.loop=0] See the {@link tweenjs.AbstractTween#loop} for more information.
+ * @param {boolean} [props.reversed=false] See the {@link tweenjs.AbstractTween#reversed} for more information.
+ * @param {boolean} [props.bounce=false] See the {@link tweenjs.AbstractTween#bounce} for more information.
+ * @param {number} [props.timeScale=1] See the {@link tweenjs.AbstractTween#timeScale} for more information.
+ * @param {boolean} [props.paused=false] See the {@link tweenjs.AbstractTween#paused} for more information.
+ * @param {number} [props.position] See the {@link tweenjs.AbstractTween#position} for more information.
+ * @param {boolean} [props.tweens]
+ * @param {number} [props.labels]
+ * @param {Function} [props.onChange] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:change} event.
+ * @param {Function} [props.onComplete] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:complete} event.
  * Supported props are listed below. These props are set on the corresponding instance properties except where
  * specified.<UL>
  *    <LI> `useTicks`</LI>
@@ -49,26 +64,17 @@ import AbstractTween from "./AbstractTween";
  *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
  *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
  * </UL>
- * @extends AbstractTween
- * @module TweenJS
  */
-export default class Timeline extends AbstractTween {
+class Timeline extends AbstractTween {
 
-// constructor
-	/**
-	 * @constructor
-	 * @param {Object} props
-	 */
 	constructor (props = {}) {
 		super(props);
 
-	// private properties:
 		/**
 		 * The array of tweens in the timeline. It is *strongly* recommended that you use
-		 * {{#crossLink "Tween/addTween"}}{{/crossLink}} and {{#crossLink "Tween/removeTween"}}{{/crossLink}},
+		 * {@link tweenjs.Tween#addTween} and {@link tweenjs.Tween#removeTween},
 		 * rather than accessing this directly, but it is included for advanced uses.
-		 * @property tweens
-		 * @type Array
+		 * @type {Tween[]}
 		 */
 		this.tweens = [];
 
@@ -78,20 +84,18 @@ export default class Timeline extends AbstractTween {
 		this._init(props);
 	}
 
-
-// public methods:
 	/**
 	 * Adds one or more tweens (or timelines) to this timeline. The tweens will be paused (to remove them from the
 	 * normal ticking system) and managed by this timeline. Adding a tween to multiple timelines will result in
 	 * unexpected behaviour.
-	 * @method addTween
-	 * @param {Tween} ...tween The tween(s) to add. Accepts multiple arguments.
+	 *
+	 * @param {Tween} ...tweens The tween(s) to add. Accepts multiple arguments.
 	 * @return {Tween} The first tween that was passed in.
 	 */
-	addTween (...args) {
-		let l = args.length;
+	addTween (...tweens) {
+		const l = tweens.length;
 		if (l === 1) {
-			let tween = args[0];
+			const tween = tweens[0];
 			this.tweens.push(tween);
 			tween._parent = this;
 			tween.paused = true;
@@ -102,26 +106,27 @@ export default class Timeline extends AbstractTween {
 			return tween;
 		}
 		if (l > 1) {
-			for (let i = 0; i < l; i++) { this.addTween(args[i]); }
-			return args[l - 1];
+			for (let i = 0; i < l; i++) { this.addTween(tweens[i]); }
+			return tweens[l - 1];
 		}
 		return null;
 	}
 
 	/**
 	 * Removes one or more tweens from this timeline.
-	 * @method removeTween
-	 * @param {Tween} ...args The tween(s) to remove. Accepts multiple arguments.
-	 * @return Boolean Returns `true` if all of the tweens were successfully removed.
+	 *
+	 * @param {Tween} ...tweens The tween(s) to remove. Accepts multiple arguments.
+	 * @return {boolean} Returns `true` if all of the tweens were successfully removed.
 	 */
-	removeTween (...args) {
-		let l = args.length;
+	removeTween (...tweens) {
+		const l = tweens.length;
 		if (l === 1) {
-			let tweens = this.tweens;
-			let i = tweens.length;
+			const tw = this.tweens;
+			const tween = tweens[0];
+			let i = tw.length;
 			while (i--) {
-				if (tweens[i] === tween) {
-					tweens.splice(i, 1);
+				if (tw[i] === tween) {
+					tw.splice(i, 1);
 					tween._parent = null;
 					if (tween.duration >= this.duration) { this.updateDuration(); }
 					return true;
@@ -131,7 +136,7 @@ export default class Timeline extends AbstractTween {
 		}
 		if (l > 1) {
 			let good = true;
-			for (let i = 0; i < l; i++) { good = good && this.removeTween(args[i]); }
+			for (let i = 0; i < l; i++) { good = good && this.removeTween(tweens[i]); }
 			return good;
 		}
 		return true;
@@ -140,7 +145,6 @@ export default class Timeline extends AbstractTween {
 	/**
 	 * Recalculates the duration of the timeline. The duration is automatically updated when tweens are added or removed,
 	 * but this method is useful if you modify a tween after it was added to the timeline.
-	 * @method updateDuration
 	 */
 	updateDuration () {
 		this.duration = 0;
@@ -153,32 +157,28 @@ export default class Timeline extends AbstractTween {
 	}
 
 	/**
-	 * @method clone
-	 * @protected
+	 * @throws Timeline cannot be cloned.
 	 */
 	clone () {
-		throw("Timeline can not be cloned.")
+		throw "Timeline can not be cloned.";
 	}
 
-// private methods:
 	/**
-	 * @method _updatePosition
-	 * @override
+	 * @private
 	 */
 	_updatePosition (jump, end) {
-		let t = this.position;
+		const t = this.position;
 		for (let i = 0, l = this.tweens.length; i < l; i++) {
 			this.tweens[i].setPosition(t, true, jump); // actions will run after all the tweens update.
 		}
 	}
 
 	/**
-	 * @method _runActionsRange
-	 * @override
+	 * @private
 	 */
 	_runActionsRange (startPos, endPos, jump, includeStart) {
 		//console.log("	range", startPos, endPos, jump, includeStart);
-		let t = this.position;
+		const t = this.position;
 		for (let i = 0, l = this.tweens.length; i < l; i++) {
 			this.tweens[i]._runActions(startPos, endPos, jump, includeStart);
 			if (t !== this.position) { return true; } // an action changed this timeline's position.
@@ -186,3 +186,5 @@ export default class Timeline extends AbstractTween {
 	}
 
 }
+
+export default Timeline;

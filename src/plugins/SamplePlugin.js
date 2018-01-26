@@ -1,30 +1,30 @@
-/*
-* SamplePlugin
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license SamplePlugin
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 /**
  * A sample TweenJS plugin. This plugin is purely for demonstration, and contains documentation and helpful tips on
@@ -34,24 +34,18 @@
  *
  * A TweenJS plugin is simply an object that exposes two properties (id, priority), and three methods (init, step, and change).
  * Generally a plugin will also expose an <code>install</code> method as well, though this is not strictly necessary.
- * @class SamplePlugin
- * @module TweenJS
+ *
+ * @memberof tweenjs
  * @static
  */
-export class SamplePlugin {
+class SamplePlugin {
 
-// constructor:
-	/**
-	 * @constructor
-	 */
 	constructor () {
 		throw "SamplePlugin is static and cannot be instantiated.";
 	}
 
-// static methods:
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
 	 * @static
 	 */
 	static install (props) {
@@ -71,14 +65,14 @@ export class SamplePlugin {
 	 * 		.to({x:20}) // init is NOT called, since x was already inited
 	 * 		.to({y:200}) // init called with prop = "y", value = 100
 	 *
-	 * @method init
+	 * @static
+	 *
 	 * @param {Tween} tween The related tween instance.
 	 * @param {String} prop The name of the property that is being initialized.
 	 * @param {any} value If another plugin has modified the starting value, it will be passed in. Otherwise value will be undefined.
 	 * @return {any} The modified starting tween value for the property. In most cases, you would simply wouldn't return anything,
 	 * but some plugins may need to modify the starting value. You can also return `Tween.IGNORE` to prevent this prop
 	 * from being added to the tween at all.
-	 * @static
 	 */
 	static init (tween, prop, value) {
 		console.log("init: ", prop, value);
@@ -131,11 +125,11 @@ export class SamplePlugin {
 	 * 		.to({y:100}) // step NOT called
 	 * 		.to({x:20, y:200}) // step called
 	 *
-	 * @method step
+	 * @static
+	 *
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {Object} props The props object that was passed in for this step.
-	 * @static
 	 */
 	static step (tween, step, props) {
 		// the function of this plugin doesn't require us to react or modify new steps, so we'll just log it out for reference:
@@ -169,7 +163,9 @@ export class SamplePlugin {
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * @method change
+	 *
+	 * @static
+	 *
 	 * @param {Tween} tween The related tween instance.
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {String} prop The name of the property being tweened.
@@ -178,7 +174,6 @@ export class SamplePlugin {
 	 * though some eases will generate values outside this range.
 	 * @param {Boolean} end Indicates that the tween has reached the end and is about to deregister itself.
 	 * @return {any} Return the value that should be assigned to the target property.
-	 * @static
 	 */
 	static change (tween, step, prop, value, ratio, end) {
 		// console.log("tween", step, prop, value, ratio, end);
@@ -219,7 +214,6 @@ export class SamplePlugin {
 
 }
 
-// static properties:
 /**
  * Used by TweenJS to determine when to call this plugin relative to others.
  * Plugins with higher priority read first, and write last.
@@ -227,8 +221,7 @@ export class SamplePlugin {
  * For example, if plugin A has `priority=0`, and plugin B has `priority=9` then B's `init` and `step` methods would
  * be called before A's, but B's `change` method would be called *after* A's.
  *
- * @property priority
- * @type {Number}
+ * @type {number}
  * @default 0
  * @static
  */
@@ -237,8 +230,9 @@ SamplePlugin.priority = 0;
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
  * If you're going to be installing instances of this plugin, you should ensure they have the same id as the class.
- * @property ID
- * @type {String}
+ * @type {string}
  * @static
  */
-SamplePlugin.prototype.ID = SamplePlugin.ID = "Sample";
+SamplePlugin.ID = "Sample";
+
+export default SamplePlugin;

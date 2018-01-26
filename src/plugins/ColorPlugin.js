@@ -1,58 +1,52 @@
-/*
-* ColorPlugin
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license ColorPlugin
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 const RGB = "rgb";
 
 /**
  * The ColorPlugin enables tweening of almost any CSS color values. This includes 3 or 6 digit hex colors (`#00FF00`),
  * rgb, rgba, hsl, and hsla colors (but not named colors, such as `red`).
- *
  * It can operate in either `rgb` or `hsl` mode. It will convert all colors into that mode, and output them accordingly.
- * @class ColorPlugin
- * @module TweenJS
+ *
+ * @memberof tweenjs/plugins
  * @static
  */
-export class ColorPlugin {
+class ColorPlugin {
 
-// constructor:
-	/**
-	 * @constructor
-	 */
 	constructor () {
 		throw "ColorPlugin is static and cannot be instantiated.";
 	}
 
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
+	 * @static
 	 * @param {String} mode A string equalling either "rgb" or "hsl" indicating what color mode should be used for calculations
 	 * and output. You can input any color type regardless of the mode setting.
-	 * @static
 	 */
 	static install (props) {
 		if (props && props.mode) { ColorPlugin._mode = props.mode; }
@@ -60,13 +54,14 @@ export class ColorPlugin {
 
 	/**
 	 * Called by TweenJS when a new property initializes on a tween.
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method init
+	 *
+	 * @see tweenjs.SamplePlugin#init
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {String} prop
 	 * @param {any} value
 	 * @return {any}
-	 * @static
 	 */
 	static init (tween, prop, value) {
 		let data = tween.pluginData;
@@ -81,12 +76,13 @@ export class ColorPlugin {
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
-	 * @method step
+	 *
+	 * @see tweenjs.SamplePlug#step
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {Object} props
-	 * @static
 	 */
 	static step (tween, step, props) {
 		let n, colorData = tween.pluginData.Color;
@@ -98,8 +94,10 @@ export class ColorPlugin {
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
-	 * @method change
+	 *
+	 * @see tweenjs.SamplePlugin#change
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {String} prop
@@ -107,7 +105,6 @@ export class ColorPlugin {
 	 * @param {Number} ratio
 	 * @param {Boolean} end
 	 * @return {any}
-	 * @static
 	 */
 	static change (tween, step, prop, value, ratio, end) {
 		if (!tween.pluginData.Color[prop]) { return; }
@@ -125,10 +122,8 @@ export class ColorPlugin {
 
 }
 
-// static properties:
 /**
  * RegExp pattern that detects CSS color values.
- * @property COLOR_RE
  * @type {RegExp}
  * @static
  * @readonly
@@ -137,7 +132,6 @@ ColorPlugin.COLOR_RE = /^#[0-9a-fA-F]{3}|^hsla?\(|^rgba?\(/
 
 /**
  * The RegExp pattern that matches rgb color strings, with groups for each value.
- * @property RGB_HSL_RE
  * @type {RegExp}
  * @static
  * @readonly
@@ -146,7 +140,6 @@ ColorPlugin.RGB_HSL_RE = /^(?:rgb|hsl)a?\((\d{1,3})%?, ?(\d{1,3})%?, ?(\d{1,3})%
 
 /**
  * The RegExp pattern that matches a 3 or 6 digit RGB string with a preceding #.
- * @property HEX_RE
  * @type {RegExp}
  * @static
  * @readonly
@@ -155,24 +148,23 @@ ColorPlugin.HEX_RE = /^#((?:[a-f0-9]{3}){1,2})$/i;
 
 /**
  * The color tween mode. Supported values are "rgb" and "hsl".
- * @property _mode
  * @type {string}
+ * @private
  * @static
  * @default rgb
- * @protected
  */
 ColorPlugin._mode = RGB;
 
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
  * @property ID
- * @type {String}
+ * @type {string}
  * @static
  * @readonly
  */
 ColorPlugin.ID = "Color";
 
-// private helper methods:
+// private helper methods
 function getColorObj (value) {
 	if (value[0] === "#") { return parseHex(value); }
 	else { return parseRgbOrHsl(value); }
@@ -256,3 +248,5 @@ function hue2rgb (p, q, t) {
 	if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
 	return p;
 }
+
+export default ColorPlugin;

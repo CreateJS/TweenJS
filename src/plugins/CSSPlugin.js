@@ -1,30 +1,30 @@
-/*
-* CSSPlugin
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license CSSPlugin
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 const TRANSFORM = "transform";
 
@@ -63,24 +63,18 @@ const TRANSFORM = "transform";
  *         .to({transform: "* rotate(90deg)"}, 900) // would copy the "translate" operation
  *
  * Please note that the CSS Plugin is not included in the TweenJS minified file.
- * @class CSSPlugin
- * @module TweenJS
+ *
+ * @memberof tweenjs
  * @static
  */
-export class CSSPlugin {
+class CSSPlugin {
 
-// constructor:
-	/**
-	 * @constructor
-	 */
 	constructor () {
 		throw "CSSPlugin is static and cannot be instanitated.";
 	}
 
-// static methods
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
 	 * @static
 	 */
 	static install (props) {
@@ -89,13 +83,14 @@ export class CSSPlugin {
 
 	/**
 	 * Called by TweenJS when a new property initializes on a tween.
-   * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-   * @method init
-   * @param {Tween} tween
-   * @param {String} prop
-   * @param {any} value
-   * @return {any}
-   * @static
+	 *
+	 * @see tweenjs.SamplePlugin#init
+	 * @static
+	 *
+	 * @param {Tween} tween
+	 * @param {String} prop
+	 * @param {any} value
+	 * @return {any}
 	 */
 	static init (tween, prop, value) {
 		let data = tween.pluginData;
@@ -123,13 +118,14 @@ export class CSSPlugin {
 	}
 
 	/**
-   * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-   * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
-   * @method step
-   * @param {Tween} tween
-   * @param {TweenStep} step
-   * @param {Object} props
+	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
+	 *
+	 * @see tweenjs.SamplePlug#step
 	 * @static
+	 *
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {Object} props
 	 */
 	static step (tween, step, props) {
     if (props.transform) {
@@ -138,17 +134,18 @@ export class CSSPlugin {
 	}
 
 	/**
-   * Called before a property is updated by the tween.
-   * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
-   * @method change
-   * @param {Tween} tween
-   * @param {TweenStep} step
-   * @param {String} prop
-   * @param {any} value
-   * @param {Number} ratio
-   * @param {Boolean} end
-   * @return {any}
+	 * Called before a property is updated by the tween.
+	 *
+	 * @see tweenjs.SamplePlugin#change
 	 * @static
+	 *
+	 * @param {Tween} tween
+	 * @param {TweenStep} step
+	 * @param {String} prop
+	 * @param {any} value
+	 * @param {Number} ratio
+	 * @param {Boolean} end
+	 * @return {any}
 	 */
 	static change (tween, step, prop, value, ratio, end) {
 		let sfx = tween.pluginData.CSS[prop];
@@ -164,18 +161,16 @@ export class CSSPlugin {
 
 }
 
-// static properties
 /**
- * @property priority
- * @protected
+ * @type {number}
+ * @readonly
  * @static
  */
 CSSPlugin.priority = 100; // high priority, should read first and write last
 
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
- * @property ID
- * @type {String}
+ * @type {string}
  * @static
  * @readonly
  */
@@ -183,7 +178,6 @@ CSSPlugin.ID = "CSS";
 
 /**
  * Extracts the numeric value and suffix from a single CSS value.
- * @property VALUE_RE
  * @type {RegExp}
  * @static
  * @readonly
@@ -192,7 +186,6 @@ CSSPlugin.VALUE_RE = /^(-?[\d.]+)([a-z%]*)$/;
 
 /**
  * Extracts the numeric value and suffix from comma delimited lists.
- * @property TRANSFORM_VALUE_RE
  * @type {RegExp}
  * @static
  * @readonly
@@ -201,7 +194,6 @@ CSSPlugin.TRANSFORM_VALUE_RE = /(?:^| |,)(-?[\d.]+)([a-z%]*)/g;
 
 /**
  * Extracts the components of a transform.
- * @property TRANSFORM_RE
  * @type {RegExp}
  * @static
  * @readonly
@@ -221,14 +213,15 @@ CSSPlugin.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/;
  * to determine which properties should be tweened via CSS, and what units to use.
  *
  * Setting `compute` to `true` causes CSSPlugin to use `getComputedStyle` for this purpose. This has the advantage of
- * including all styles that effect the target element, however there are some important considerations for its use:<UL>
+ * including all styles that effect the target element, however there are some important considerations for its use:
+ * <UL>
  *     <LI> `getComputedStyle` is computationally expensive, which could lead to performance issues if you are creating a large
  *     number of tweens at once.
  *     <LI> styles are normalized. For example, a width value specified as a `%` may be computed as `px`, which CSSPlugin will
  *     use for the tween. Different browsers _may_ normalize values differently.
  *     <LI> there are a large number of computed styles, which increases the chance that a property will be identified as a style.
  *     <LI> does not work with IE8 or below.
- *     </UL>
+ * </UL>
  *
  *     The `compute` setting can be overridden on a per-tween basis by setting `tween.pluginData.CSS_compute`. For example,
  *     to enable computed styles for a new tween, you could use:
@@ -237,14 +230,13 @@ CSSPlugin.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/;
  *
  *     Given the considerations for `compute`, it is recommended that you keep the default global setting of `false` and override it
  *     in specific cases via `pluginData`.
- * @property compute
- * @type {Boolean}
+ * @type {boolean}
  * @default false
  * @static
  */
 CSSPlugin.compute = false;
 
-// private helper methods:
+// private helper methods
 function getStyle (target, prop, compute) {
 	if (compute || (compute == null && CSSPlugin.compute)) {
 		return window.getComputedStyle(target)[prop];
@@ -354,3 +346,5 @@ function writeSingleTransform (list) {
   return str;
 }
 */
+
+export default CSSPlugin;

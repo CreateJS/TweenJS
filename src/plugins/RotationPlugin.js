@@ -1,30 +1,30 @@
-/*
-* RotationPlugin
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license RotationPlugin
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 /**
  * The RotationPlugin for TweenJS modifies tweens of rotation properties. These properties can be changed using the
@@ -44,16 +44,11 @@
  *
  * You can also disable the plugin completely for a tween by setting `tween.pluginData.Rotation_disabled=true`.
  *
- * @class RotationPlugin
- * @module TweenJS
+ * @memberof tweenjs
  * @static
  */
-export class RotationPlugin {
+class RotationPlugin {
 
-// constructor:
-	/**
-	 * @constructor
-	 */
 	constructor () {
 		throw "RotationPlugin is static and cannot be instantiated.";
 	}
@@ -61,7 +56,6 @@ export class RotationPlugin {
 // static methods:
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
 	 * @static
 	 */
 	static install (props) {
@@ -70,13 +64,14 @@ export class RotationPlugin {
 
 	/**
 	 * Called by TweenJS when a new property initializes on a tween.
-	 * See {{#crossLink "SamplePlugin/init"}}{{/crossLink}} for more info.
-	 * @method init
+	 *
+	 * @see tweenjs.SamplePlugin#init
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {String} prop
 	 * @param {any} value
 	 * @return {any}
-	 * @static
 	 */
 	static init (tween, prop, value) {
 		if (RotationPlugin.props[prop] && !tween.pluginData.Rotation_disabled) {
@@ -88,13 +83,13 @@ export class RotationPlugin {
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
-	 * @method step
+	 *
+	 * @see tweenjs.SamplePlug#step
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
-	 * @param {Object} prop
-	 * @return {any}
-	 * @static
+	 * @param {Object} props
 	 */
 	static step (tween, step, props) {
 		for (let n in RotationPlugin.props) {
@@ -121,8 +116,10 @@ export class RotationPlugin {
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
-	 * @method change
+	 *
+	 * @see tweenjs.SamplePlugin#change
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {String} prop
@@ -130,7 +127,6 @@ export class RotationPlugin {
 	 * @param {Number} ratio
 	 * @param {Boolean} end
 	 * @return {any}
-	 * @static
 	 */
 	static change (tween, step, prop, value, ratio, end) {
 		if (prop === "rotationDir") { return Tween.IGNORE; }
@@ -139,12 +135,10 @@ export class RotationPlugin {
 
 }
 
-// static properties:
 /**
  * An object defining the properties this tween acts on. For example, setting `RotationPlugin.props = {angle:true}`
  * will cause the plugin to only act on the `angle` property. By default the properties are `rotation`
  * `rotationX`, `rotationY`, and `rotationZ`.
- * @property props
  * @type {Object}
  * @static
  */
@@ -152,9 +146,10 @@ RotationPlugin.props = { rotation: 1, rotationX: 1, rotationY: 1, rotationZ: 1 }
 
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
- * @property ID
- * @type {String}
+ * @type {string}
  * @static
  * @readonly
  */
 RotationPlugin.ID = "Rotation";
+
+export default RotationPlugin;

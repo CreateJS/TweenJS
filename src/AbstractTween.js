@@ -1,78 +1,67 @@
-/*
-* TweenJS
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license AbstractTween
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2017 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 import EventDispatcher from "@createjs/core/src/events/EventDispatcher";
 import Tween from "./Tween";
 
 /**
- * Base class that both {{#crossLink "Tween"}}{{/crossLink}} and {{#crossLink "Timeline"}}{{/crossLink}} extend. Should not be instantiated directly.
- * @class AbstractTween
- * @param {Object} [props]
+ * Base class that both {@link tweenjs.Tween} and {@link tweenjs.Timeline} extend. Should not be instantiated directly.
+ *
+ * @memberof tweenjs
  * @extends EventDispatcher
- * @module TweenJS
- * @constructor
+ *
+ * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
+ * @param {boolean} [props.useTicks=false] See the {@link tweenjs.AbstractTween#useTicks} property for more information.
+ * @param {boolean} [props.ignoreGlobalPause=false] See the {@link tweenjs.AbstractTween#ignoreGlobalPause} for more information.
+ * @param {number|boolean} [props.loop=0] See the {@link tweenjs.AbstractTween#loop} for more information.
+ * @param {boolean} [props.reversed=false] See the {@link tweenjs.AbstractTween#reversed} for more information.
+ * @param {boolean} [props.bounce=false] See the {@link tweenjs.AbstractTween#bounce} for more information.
+ * @param {number} [props.timeScale=1] See the {@link tweenjs.AbstractTween#timeScale} for more information.
+ * @param {Function} [props.onChange] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:change} event.
+ * @param {Function} [props.onComplete] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:complete} event.
  */
-export default class AbstractTween extends EventDispatcher {
+class AbstractTween extends EventDispatcher {
 
-// constructor:
-  /**
-   * @constructor
-	 * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
-	 * Supported props are listed below. These props are set on the corresponding instance properties except where
-	 * specified.
-	 * @param {boolean} [props.useTicks=false]  See the {{#crossLink "AbstractTween/useTicks:property"}}{{/crossLink}} property for more information.
-	 * @param {boolean} [props.ignoreGlobalPause=false] See the {{#crossLink "AbstractTween/ignoreGlobalPause:property"}}{{/crossLink}} for more information.
-	 * @param {number|boolean} [props.loop=0] See the {{#crossLink "AbstractTween/loop:property"}}{{/crossLink}} for more information.
-	 * @param {boolean} [props.reversed=false] See the {{#crossLink "AbstractTween/reversed:property"}}{{/crossLink}} for more information.
-	 * @param {boolean} [props.bounce=false] See the {{#crossLink "AbstractTween/bounce:property"}}{{/crossLink}} for more information.
-	 * @param {number} [props.timeScale=1] See the {{#crossLink "AbstractTween/timeScale:property"}}{{/crossLink}} for more information.
-	 * @param {Function} [props.onChange] Adds the specified function as a listener to the {{#crossLink "AbstractTween/change:event"}}{{/crossLink}} event
-	 * @param {Function} [props.onComplete] Adds the specified function as a listener to the {{#crossLink "AbstractTween/complete:event"}}{{/crossLink}} event
-   */
   constructor (props) {
     super();
 
-  // public properties:
 		/**
-		 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {{#crossLink "Ticker"}}{{/crossLink}},
+		 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {@link core.Ticker},
 		 * then setting this to false (the default) will cause this tween to be paused when `Ticker.setPaused(true)`
-		 * is called. See the {{#crossLink "Tween/tick"}}{{/crossLink}} method for more info. Can be set via the `props`
-		 * parameter.
-		 * @property ignoreGlobalPause
-		 * @type Boolean
+		 * is called. See the {@link tweenjs.Tween#tick} method for more info. Can be set via the `props` parameter.
+		 * @type {boolean}
 		 * @default false
 		 */
 		this.ignoreGlobalPause = false;
 
 		/**
 		 * Indicates the number of times to loop. If set to -1, the tween will loop continuously.
-		 * @property loop
-		 * @type {Number}
+		 * @type {number}
 		 * @default 0
 		 */
 		this.loop = 0;
@@ -80,8 +69,7 @@ export default class AbstractTween extends EventDispatcher {
 		/**
 		 * Uses ticks for all durations instead of milliseconds. This also changes the behaviour of some actions (such as `call`).
 		 * Changing this value on a running tween could have unexpected results.
-		 * @property useTicks
-		 * @type {Boolean}
+		 * @type {boolean}
 		 * @default false
 		 * @readonly
 		 */
@@ -89,16 +77,14 @@ export default class AbstractTween extends EventDispatcher {
 
 		/**
 		 * Causes the tween to play in reverse.
-		 * @property reversed
-		 * @type {Boolean}
+		 * @type {boolean}
 		 * @default false
 		 */
 		this.reversed = false;
 
 		/**
 		 * Causes the tween to reverse direction at the end of each loop.
-		 * @property bounce
-		 * @type {Boolean}
+		 * @type {boolean}
 		 * @default false
 		 */
 		this.bounce = false;
@@ -106,8 +92,7 @@ export default class AbstractTween extends EventDispatcher {
 		/**
 		 * Changes the rate at which the tween advances. For example, a `timeScale` value of `2` will double the
 		 * playback speed, a value of `0.5` would halve it.
-		 * @property timeScale
-		 * @type {Number}
+		 * @type {number}
 		 * @default 1
 		 */
 		this.timeScale = 1;
@@ -116,8 +101,7 @@ export default class AbstractTween extends EventDispatcher {
 		 * Indicates the duration of this tween in milliseconds (or ticks if `useTicks` is true), irrespective of `loops`.
 		 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
 		 * behaviour.
-		 * @property duration
-		 * @type {Number}
+		 * @type {number}
 		 * @default 0
 		 * @readonly
 		 */
@@ -125,8 +109,7 @@ export default class AbstractTween extends EventDispatcher {
 
 		/**
 		 * The current normalized position of the tween. This will always be a value between 0 and `duration`.
-		 * Changing this property directly will have unexpected results, use {{#crossLink "Tween/setPosition"}}{{/crossLink}}.
-		 * @property position
+		 * Changing this property directly will have unexpected results, use {@link tweenjs.Tween#setPosition}.
 		 * @type {Object}
 		 * @default 0
 		 * @readonly
@@ -135,58 +118,48 @@ export default class AbstractTween extends EventDispatcher {
 
 		/**
 		 * The raw tween position. This value will be between `0` and `loops * duration` while the tween is active, or -1 before it activates.
-		 * @property rawPosition
-		 * @type {Number}
+		 * @type {number}
 		 * @default -1
 		 * @readonly
 		 */
 		this.rawPosition = -1;
 
-
-	// private properties:
 		/**
-		 * @property _paused
-		 * @type {Boolean}
+		 * @private
 		 * @default false
-		 * @protected
 		 */
 		this._paused = true;
 
 		/**
-		 * @property _next
+		 * @private
 		 * @type {Tween}
 		 * @default null
-		 * @protected
 		 */
 		this._next = null;
 
 		/**
-		 * @property _prev
+		 * @private
 		 * @type {Tween}
 		 * @default null
-		 * @protected
 		 */
 		this._prev = null;
 
 		/**
-		 * @property _parent
+		 * @private
 		 * @type {Object}
 		 * @default null
-		 * @protected
 		 */
 		this._parent = null;
 
 		/**
-		 * @property _labels
-		 * @type Object
-		 * @protected
+		 * @private
+		 * @type {Object}
 		 */
 		this._labels = null;
 
 		/**
-		 * @property _labelList
-		 * @type Array[Object]
-		 * @protected
+		 * @private
+		 * @type {Object[]}
 		 */
 		this._labelList = null;
 
@@ -204,11 +177,9 @@ export default class AbstractTween extends EventDispatcher {
 		// while `position` is shared, it needs to happen after ALL props are set, so it's handled in _init()
   }
 
-// accessor properties:
 	/**
 	 * Returns a list of the labels defined on this tween sorted by position.
-	 * @property labels
-	 * @type {Array[Object]}
+	 * @type {Object[]}
 	 */
 	get labels () {
 		let list = this._labelList;
@@ -230,29 +201,27 @@ export default class AbstractTween extends EventDispatcher {
 
   /**
    * Returns the name of the label on or immediately before the current position. For example, given a tween with
-   * two labels, "first" on frame index 4, and "second" on frame 8, getCurrentLabel would return:
-   * <UL>
-   *         <LI>null if the current position is 2.</LI>
-   *         <LI>"first" if the current position is 4.</LI>
-   *         <LI>"first" if the current position is 7.</LI>
-   *         <LI>"second" if the current position is 15.</LI>
-   * </UL>
-   * @property currentLabel
-   * @type {String}
+   * two labels, "first" on frame index 4, and "second" on frame 8, currentLabel would return:
+   * <ul>
+   *   <li>null if the current position is 2.</li>
+   *   <li>"first" if the current position is 4.</li>
+   *   <li>"first" if the current position is 7.</li>
+   *   <li>"second" if the current position is 15.</li>
+   * </ul>
+   * @type {string}
    * @readonly
    */
   get currentLabel () {
-    let labels = this.getLabels();
+    let labels = this.labels;
     let pos = this.position;
-    for (let i = 0, l = labels.length; i<l; i++) { if (pos < labels[i].position) { break; } }
-    return (i===0) ? null : labels[i-1].label;
+    for (let i = 0, l = labels.length; i < l; i++) { if (pos < labels[i].position) { break; } }
+    return (i === 0) ? null : labels[i-1].label;
   }
 
   /**
    * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage collection
    * if no other references to it exist.
-   * @property paused
-   * @type {Boolean}
+   * @type {boolean}
 	 */
 	get paused () {
 		return this._paused;
@@ -263,28 +232,30 @@ export default class AbstractTween extends EventDispatcher {
 		this._paused = paused;
   }
 
-// public methods:
 	/**
 	 * Advances the tween by a specified amount.
-	 * @method advance
-	 * @param {Number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
-	 * @param {Boolean} [ignoreActions=false] If true, actions will not be executed due to this change in position.
+	 *
+	 * @param {number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
+	 * @param {boolean} [ignoreActions=false] If true, actions will not be executed due to this change in position.
 	 */
 	advance (delta, ignoreActions = false) {
-		this.setPosition(this.rawPosition+delta*this.timeScale, ignoreActions);
+		this.setPosition(this.rawPosition + delta * this.timeScale, ignoreActions);
 	}
 
 	/**
 	 * Advances the tween to a specified position.
-	 * @method setPosition
-	 * @param {Number} rawPosition The raw position to seek to in milliseconds (or ticks if useTicks is true).
-	 * @param {Boolean} [ignoreActions=false] If true, do not run any actions that would be triggered by this operation.
-	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
+	 *
+	 * @emits tweenjs.AbstractTween#event:change
+	 * @emits tweenjs.AbstractTween#event:complete
+	 *
+	 * @param {number} rawPosition The raw position to seek to in milliseconds (or ticks if useTicks is true).
+	 * @param {boolean} [ignoreActions=false] If true, do not run any actions that would be triggered by this operation.
+	 * @param {boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
 	 * @param {Function} [callback] Primarily for use with MovieClip, this callback is called after properties are updated, but before actions are run.
 	 */
 	setPosition (rawPosition, ignoreActions = false, jump = false, callback) {
-		let d = this.duration, loopCount = this.loop, prevRawPos = this.rawPosition;
-		let loop = 0, t = 0, end = false;
+		const d = this.duration, loopCount = this.loop, prevRawPos = this.rawPosition;
+    let loop = 0, t = 0, end = false;
 
 		// normalize position:
 		if (rawPosition < 0) { rawPosition = 0; }
@@ -301,8 +272,8 @@ export default class AbstractTween extends EventDispatcher {
 			if (end) { rawPosition = (t = d) * (loop = loopCount) + d; }
 			if (rawPosition === prevRawPos) { return end; } // no need to update
 
-			let rev = !this.reversed !== !(this.bounce && loop % 2); // current loop is reversed
-			if (rev) { t = d - t; }
+			// current loop is reversed
+			if (!this.reversed !== !(this.bounce && loop % 2)) { t = d - t; }
 		}
 
 		// set this in advance in case an action modifies position:
@@ -321,34 +292,43 @@ export default class AbstractTween extends EventDispatcher {
 	}
 
 	/**
-	 * Calculates a normalized position based on a raw position. For example, given a tween with a duration of 3000ms set to loop:
-	 * 	console.log(myTween.calculatePosition(3700); // 700
-	 * @method calculatePosition
-	 * @param {Number} rawPosition A raw position.
+	 * Calculates a normalized position based on a raw position.
+	 *
+	 * @example
+	 * // given a tween with a duration of 3000ms set to loop:
+	 * console.log(myTween.calculatePosition(3700); // 700
+	 *
+	 * @param {number} rawPosition A raw position.
 	 */
 	calculatePosition (rawPosition) {
 		// largely duplicated from setPosition, but necessary to avoid having to instantiate generic objects to pass values (end, loop, position) back.
-		let d = this.duration, loopCount = this.loop, loop = 0, t = 0;
+		const d = this.duration, loopCount = this.loop;
+    let loop = 0, t = 0;
 
 		if (d === 0) { return 0; }
-		if (loopCount !== -1 && rawPosition >= loopCount * d + d) { t = d; loop = loopCount } // end
-		else if (rawPosition < 0) { t = 0; }
-		else { loop = rawPosition /d | 0; t = rawPosition - loop * d; }
+		if (loopCount !== -1 && rawPosition >= loopCount * d + d) {
+      t = d;
+      loop = loopCount
+    } else if (rawPosition < 0) {
+      t = 0;
+    } else {
+      loop = rawPosition / d | 0;
+      t = rawPosition - loop * d;
+    }
 
-		let rev = !this.reversed !== !(this.bounce && loop % 2); // current loop is reversed
-		return rev ? d - t : t;
+		return (!this.reversed !== !(this.bounce && loop % 2)) ? d - t : t;
 	}
 
 	/**
-	 * Adds a label that can be used with {{#crossLink "Timeline/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Timeline/gotoAndStop"}}{{/crossLink}}.
-	 * @method addLabel
-	 * @param {String} label The label name.
-	 * @param {Number} position The position this label represents.
+	 * Adds a label that can be used with {@link tweenjs.Timeline#gotoAndPlay}/{@link tweenjs.Timeline#gotoAndStop}.
+	 *
+	 * @param {string} label The label name.
+	 * @param {number} position The position this label represents.
 	 */
 	addLabel (label, position) {
 		if (!this._labels) { this._labels = {}; }
 		this._labels[label] = position;
-		let list = this._labelList;
+		const list = this._labelList;
 		if (list) {
 			for (let i = 0, l = list.length; i < l; i++) { if (position < list[i].position) { break; } }
 			list.splice(i, 0, { label, position });
@@ -357,8 +337,8 @@ export default class AbstractTween extends EventDispatcher {
 
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
-	 * @method gotoAndPlay
-	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
+	 *
+	 * @param {string|number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
 	 * or label to jump to.
 	 */
 	gotoAndPlay (positionOrLabel) {
@@ -368,8 +348,8 @@ export default class AbstractTween extends EventDispatcher {
 
 	/**
 	 * Pauses this timeline and jumps to the specified position or label.
-	 * @method gotoAndStop
-	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`) or label
+	 *
+	 * @param {string|number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`) or label
 	 * to jump to.
 	 */
 	gotoAndStop (positionOrLabel) {
@@ -380,37 +360,36 @@ export default class AbstractTween extends EventDispatcher {
 	/**
 	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
 	 * corresponding frame label will be returned, or `null` if a matching label is not defined.
-	 * @method resolve
-	 * @param {String|Number} positionOrLabel A numeric position value or label string.
+	 *
+	 * @param {string|number} positionOrLabel A numeric position value or label string.
 	 */
 	resolve (positionOrLabel) {
-		let pos = Number(positionOrLabel);
-		if (isNaN(pos)) { pos = this._labels && this._labels[positionOrLabel]; }
-		return pos;
+		const pos = Number(positionOrLabel);
+    return isNaN(pos) ? this._labels && this._labels[positionOrLabel] : pos;
 	}
 
 	/**
 	 * Returns a string representation of this object.
-	 * @method toString
-	 * @return {String} a string representation of the instance.
+	 *
+	 * @return {string} a string representation of the instance.
 	 */
 	toString () {
 		return `[${this.constructor.name}${this.name ? ` (name=${this.name})` : ""}]`;
 	}
 
 	/**
-	 * @method clone
-	 * @protected
+	 * @throws AbstractTween cannot be cloned.
 	 */
 	clone () {
-		throw("AbstractTween can not be cloned.")
+		throw "AbstractTween cannot be cloned.";
 	}
 
-// private methods:
 	/**
 	 * Shared logic that executes at the end of the subclass constructor.
-	 * @method _init
-	 * @protected
+	 *
+	 * @private
+	 *
+	 * @param {Object} [props]
 	 */
 	_init (props) {
 		if (!props || !props.paused) { this.paused = false; }
@@ -418,18 +397,23 @@ export default class AbstractTween extends EventDispatcher {
 	}
 
 	/**
-	 * @method _goto
-	 * @protected
+	 * @private
+	 * @param {string|number} positionOrLabel
 	 */
 	_goto (positionOrLabel) {
-		let pos = this.resolve(positionOrLabel);
+		const pos = this.resolve(positionOrLabel);
 		if (pos != null) { this.setPosition(pos, false, true); }
 	}
 
 	/**
    * Runs actions between startPos & endPos. Separated to support action deferral.
-	 * @method _runActions
-	 * @protected
+   *
+	 * @private
+	 *
+	 * @param {number} startRawPos
+	 * @param {number} endRawPos
+	 * @param {boolean} jump
+	 * @param {boolean} includeStart
 	 */
 	_runActions (startRawPos, endRawPos, jump, includeStart) {
 	  // console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
@@ -437,7 +421,8 @@ export default class AbstractTween extends EventDispatcher {
 		// TODO: a cleaner way to handle this would be to override this method in Tween, but I'm not sure it's worth the overhead.
 		if (!this._actionHead && !this.tweens) { return; }
 
-		let d = this.duration, reversed = this.reversed, bounce = this.bounce, loopCount = this.loop;
+		const d = this.duration, loopCount = this.loop;
+    let reversed = this.reversed, bounce = this.bounce;
 		let loop0, loop1, t0, t1;
 
 		if (d === 0) {
@@ -462,10 +447,9 @@ export default class AbstractTween extends EventDispatcher {
     else if (loop0 === loop1 && t0 === t1 && !jump && !includeStart) { return; } // no actions if the position is identical and we aren't including the start
 		else if (loop0 === -1) { loop0 = t0 = 0; } // correct the -1 value for first advance, important with useTicks.
 
-		let dir = (startRawPos <= endRawPos), loop = loop0;
+		const dir = (startRawPos <= endRawPos), loop = loop0;
 		do {
 			let rev = !reversed !== !(bounce && loop % 2);
-
 			let start = (loop === loop0) ? t0 : dir ? 0 : d;
 			let end = (loop === loop1) ? t1 : dir ? d : 0;
 
@@ -482,33 +466,34 @@ export default class AbstractTween extends EventDispatcher {
 	}
 
   /**
-	 * @method _runActionsRange
+   * @private
    * @abstract
-	 * @protected
+   * @throws Must be overridden by a subclass.
 	 */
 	_runActionsRange (startPos, endPos, jump, includeStart) {
-		// throw("_runActionsRange is abstract and must be overridden by a subclass");
+		throw "_runActionsRange is abstract and must be overridden by a subclass.";
 	}
 
   /**
-	 * @method _updatePosition
+	 * @private
    * @abstract
-	 * @protected
+   * @throws Must be overridden by a subclass.
 	 */
 	_updatePosition (jump, end) {
-    // throw("_updatePosition is abstract and must be overridden by a subclass");
+    throw "_updatePosition is abstract and must be overridden by a subclass.";
 	}
 
 }
 
-// events:
 /**
  * Dispatched whenever the tween's position changes. It occurs after all tweened properties are updated and actions
  * are executed.
- * @event change
+ * @event tweenjs.AbstractTween#change
  */
 /**
  * Dispatched when the tween reaches its end and has paused itself. This does not fire until all loops are complete;
  * tweens that loop continuously will never fire a complete event.
- * @event complete
+ * @event tweenjs.AbstractTween#complete
  */
+
+export default AbstractTween;

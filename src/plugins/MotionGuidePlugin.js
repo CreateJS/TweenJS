@@ -1,8 +1,8 @@
-/*
- * MotionGuidePlugin
+/**
+ * @license MotionGuidePlugin
  * Visit http://createjs.com/ for documentation, updates and examples.
  *
- * Copyright (c) 2010 gskinner.com, inc.
+ * Copyright (c) 2017 gskinner.com, inc.
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -55,11 +55,10 @@
  * information on these objects in the background and sharing them can cause unexpected behaviour. Values
  * outside 0-1 range of tweens will be a "best guess" from the appropriate part of the defined curve.
  *
- * @class MotionGuidePlugin
- * @module TweenJS
+ * @memberof tweenjs
  * @static
  */
-export class MotionGuidePlugin {
+class MotionGuidePlugin {
 
 	constructor () {
 		throw "MotionGuidePlugin is static and cannot be instantiated.";
@@ -68,7 +67,6 @@ export class MotionGuidePlugin {
 // static methods
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
-	 * @method install
 	 * @static
 	 */
 	static install (props) {
@@ -76,9 +74,15 @@ export class MotionGuidePlugin {
 	}
 
 	/**
-	 * @method init
-	 * @protected
+	 * Called by TweenJS when a new property initializes on a tween.
+	 *
+	 * @see tweenjs.SamplePlugin#init
 	 * @static
+	 *
+	 * @param {Tween} tween
+	 * @param {String} prop
+	 * @param {any} value
+	 * @return {any}
 	 */
 	static init (tween, prop, value) {
 		if (prop === "guide") {
@@ -88,12 +92,13 @@ export class MotionGuidePlugin {
 
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
-	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
-	 * @method step
+	 *
+	 * @see tweenjs.SamplePlug#step
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {Object} props
-	 * @static
 	 */
 	static step (tween, step, props) {
 		for (let n in props) {
@@ -143,8 +148,10 @@ export class MotionGuidePlugin {
 
 	/**
 	 * Called before a property is updated by the tween.
-	 * See {{#crossLink "SamplePlugin/change"}}{{/crossLink}} for more info.
-	 * @method change
+	 *
+	 * @see tweenjs.SamplePlugin#change
+	 * @static
+	 *
 	 * @param {Tween} tween
 	 * @param {TweenStep} step
 	 * @param {String} prop
@@ -152,7 +159,6 @@ export class MotionGuidePlugin {
 	 * @param {Number} ratio
 	 * @param {Boolean} end
 	 * @return {any}
-	 * @static
 	 */
 	static change (tween, step, prop, value, ratio, end) {
 			let guideData = step.props.guide;
@@ -508,3 +514,5 @@ MotionGuidePlugin.priority = 0; // high priority, should run sooner
  * @readonly
  */
 MotionGuidePlugin.ID = "MotionGuide";
+
+export default MotionGuidePlugin;
