@@ -81,7 +81,13 @@
  * // foo() is called.
  */
 
-/*
+/**
+ * @module tweenjs/plugins
+ *
+ * @type {[type]}
+ */
+
+/**
  * README: Export Order
  *
  * Due to some classes having circular import bindings (whether at the top of the import chain or deeper in),
@@ -89,12 +95,8 @@
  * This is explained here: https://github.com/rollup/rollup/issues/845#issuecomment-240277194
  */
 
-// re-export core classes
-export { default as EventDispatcher } from "@createjs/core/src/events/EventDispatcher";
-export { default as Event } from "@createjs/core/src/events/Event";
-export { default as Ticker } from "@createjs/core/src/utils/Ticker";
-// tween
 export { default as Tween } from "./Tween";
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";
-export * as Ease from "./Ease";
+import * as Ease from "./Ease";
+export { Ease };

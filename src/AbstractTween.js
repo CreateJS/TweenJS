@@ -447,7 +447,8 @@ class AbstractTween extends EventDispatcher {
     else if (loop0 === loop1 && t0 === t1 && !jump && !includeStart) { return; } // no actions if the position is identical and we aren't including the start
 		else if (loop0 === -1) { loop0 = t0 = 0; } // correct the -1 value for first advance, important with useTicks.
 
-		const dir = (startRawPos <= endRawPos), loop = loop0;
+		const dir = (startRawPos <= endRawPos);
+		let loop = loop0;
 		do {
 			let rev = !reversed !== !(bounce && loop % 2);
 			let start = (loop === loop0) ? t0 : dir ? 0 : d;

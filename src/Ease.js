@@ -363,6 +363,7 @@ const elasticOut = getElasticOut(1, 0.3);
 const elasticInOut = getElasticInOut(1, 0.3 * 1.5);
 
 export {
+	linear,
 	get,
 	getPowIn,
 	getPowOut,
