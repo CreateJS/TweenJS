@@ -279,6 +279,15 @@ this.createjs = this.createjs||{};
 	 */
 	Tween._tweenTail = null;
 
+	/**
+	 * 0 if not in tick, otherwise a tick ID (currently just a timestamp).
+	 * @property _inTick
+	 * @type Number
+	 * @static
+	 * @protected
+	 */
+	Tween._inTick = 0;
+
 
 // static methods	
 	/**
@@ -326,12 +335,17 @@ this.createjs = this.createjs||{};
 	 */
 	Tween.tick = function(delta, paused) {
 		var tween = Tween._tweenHead;
+		var t = Tween._inTick = Date.now();
 		while (tween) {
-			var next = tween._next; // in case it completes and wipes its _next property
-			if ((paused && !tween.ignoreGlobalPause) || tween._paused) { /* paused */ }
+			var next = tween._next, status=tween._status;
+			tween._lastTick = t;
+			if (status === 1) { tween._status = 0; } // new, ignore
+			else if (status === -1) { Tween._delist(tween); } // removed, delist
+			else if ((paused && !tween.ignoreGlobalPause) || tween._paused) { /* paused */ }
 			else { tween.advance(tween.useTicks?1:delta); }
 			tween = next;
 		}
+		Tween._inTick = 0;
 	};
 
 	/**
@@ -436,20 +450,25 @@ this.createjs = this.createjs||{};
 				Tween._tweenTail = tail._next = tween;
 				tween._prev = tail;
 			}
+			tween._status = Tween._inTick ? 1 : 0;
 			if (!Tween._inited && createjs.Ticker) { createjs.Ticker.addEventListener("tick", Tween); Tween._inited = true; }
 		} else if (paused && !tween._paused) {
 			if (target) { target.tweenjs_count--; }
-			var next = tween._next, prev = tween._prev;
-			
-			if (next) { next._prev = prev; }
-			else { Tween._tweenTail = prev; } // was tail
-			if (prev) { prev._next = next; }
-			else { Tween._tweenHead = next; } // was head.
-			
-			tween._next = tween._prev = null;
+			// tick handles delist if we're in a tick stack and the tween hasn't advanced yet:
+			if (!Tween._inTick || tween._lastTick === Tween._inTick) { Tween._delist(tween); }
+			tween._status = -1;
 		}
 		tween._paused = paused;
 	};
+
+	Tween._delist = function(tween) {
+		var next = tween._next, prev = tween._prev;
+		if (next) { next._prev = prev; }
+		else { Tween._tweenTail = prev; } // was tail
+		if (prev) { prev._next = next; }
+		else { Tween._tweenHead = next; } // was head.
+		tween._next = tween._prev = null;
+	}
 
 
 // events:

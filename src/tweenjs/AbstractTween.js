@@ -195,6 +195,27 @@ this.createjs = this.createjs||{};
 		 * @protected
 		 **/
 		this._labelList = null;
+		
+		/**
+		 * Status in tick list:
+		 * 0 = in list
+		 * 1 = added to list in the current tick stack
+		 * -1 = remvoed from list (or to be removed in this tick stack)
+		 * @property _status
+		 * @type Number
+		 * @default -1
+		 * @protected
+		 */
+		this._status = -1;
+		
+		/**
+		 * Tick id compared to Tween._inTick when removing tweens from the tick list in a tick stack.
+		 * @property _lastTick
+		 * @type Number
+		 * @default 0
+		 * @protected
+		 */
+		this._lastTick = 0;
 
 		if (props) {
 			this.useTicks = !!props.useTicks;
