@@ -92,7 +92,7 @@ describe("TweenJS", function () {
 			setTimeout(function () {
 				expect(func.hitEnd.calls.count()).toBe(3);
 				done();
-			}, 200);
+			}, 300);
 		});
 	});
 	
