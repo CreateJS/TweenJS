@@ -42,11 +42,11 @@ this.createjs = this.createjs||{};
 	 *
 	 * Most methods on Ease can be passed directly as easing functions:
 	 *
-	 *      Tween.get(target).to({x:100}, 500, Ease.linear);
+	 *      Tween.get(target).to({x:100}, 500, createjs.Ease.linear);
 	 *
 	 * However, methods beginning with "get" will return an easing function based on parameter values:
 	 *
-	 *      Tween.get(target).to({y:200}, 500, Ease.getPowIn(2.2));
+	 *      Tween.get(target).to({y:200}, 500, createjs.Ease.getPowIn(2.2));
 	 *
 	 * Please see the <a href="http://www.createjs.com/Demos/TweenJS/Tween_SparkTable">spark table demo</a> for an
 	 * overview of the different ease types on <a href="http://tweenjs.com">TweenJS.com</a>.
