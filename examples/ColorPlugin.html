@@ -3,14 +3,17 @@
 <head>
 	<title>TweenJS: Canvas Tweening Example</title>
 
-	<link href="../node_modules/createjs/assets/css/shared.css" rel="stylesheet" type="text/css"/>
-	<link href="../node_modules/createjs/assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/examples.css" rel="stylesheet" type="text/css"/>
 	<link href="../assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
-	<script src="../node_modules/createjs/assets/js/examples.js" type="text/javascript"></script>
+	<script src="../node_modules/@createjs/build/assets/js/examples.js"></script>
 
-	<script type="text/javascript" src="../node_modules/easeljs/dist/easel-NEXT.js"></script>
-	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
-	<script type="text/javascript" src="../src/tweenjs/plugins/ColorPlugin.js"></script>
+	<!--<script type="text/javascript" src="../node_modules/easeljs/dist/easel-NEXT.js"></script>-->
+	<!--<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>-->
+	<script src="/libs/easeljs/dist/easeljs-NEXT.js"></script>
+	<script src="../dist/tweenjs-NEXT.js"></script>
+
+	<script type="text/javascript" src="../dist/plugins/ColorPlugin.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
@@ -27,7 +30,7 @@
 		star.y = stage.canvas.height/2;
 
 		stage.addChild(star);
-		
+
 		// install the sample plugin:
 		createjs.ColorPlugin.install();
 
@@ -38,7 +41,7 @@
 			.to({style:"rgb(255,128,0)"}, 1000) // rgb and rgba colors
 			.to({style:"hsl(295, 100%, 50%)"}, 1000) // hsl & hsla colors
 			.to({style:"rgb(0%,100%,100%)"}, 1000) // and percentage based rgb / rgba
-			
+
 		// and just for fun, lets make it spin and scale:
 		// comment this out if you want to focus on the color shifts.
 		createjs.Tween.get(star, {loop:-1, bounce:true}).to({alpha:0.3, scaleX:0.2, scaleY:0.2}).to({rotation:360, scaleX:3, scaleY:3}, 3300, createjs.Ease.quadInOut);
