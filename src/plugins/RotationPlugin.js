@@ -152,4 +152,4 @@ RotationPlugin.props = { rotation: 1, rotationX: 1, rotationY: 1, rotationZ: 1 }
  */
 RotationPlugin.ID = "Rotation";
 
-export default RotationPlugin;
+export { RotationPlugin };

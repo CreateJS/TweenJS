@@ -119,4 +119,4 @@ class RelativePlugin {
  */
 RelativePlugin.ID = "Relative";
 
-export default RelativePlugin;
+export { RelativePlugin };

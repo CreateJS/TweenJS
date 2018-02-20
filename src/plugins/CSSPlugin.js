@@ -68,8 +68,7 @@ const TRANSFORM = "transform";
  * @static
  */
 class CSSPlugin {
-
-	constructor () {
+	constructor() {
 		throw "CSSPlugin is static and cannot be instanitated.";
 	}
 
@@ -77,9 +76,7 @@ class CSSPlugin {
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @static
 	 */
-	static install (props) {
-
-	}
+	static install(props) {}
 
 	/**
 	 * Called by TweenJS when a new property initializes on a tween.
@@ -92,21 +89,25 @@ class CSSPlugin {
 	 * @param {any} value
 	 * @return {any}
 	 */
-	static init (tween, prop, value) {
+	static init(tween, prop, value) {
 		let data = tween.pluginData;
-		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
+		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) {
+			return;
+		}
 		let initVal = value || getStyle(tween.target, prop, data.CSS_compute);
-		if (initVal === undefined) { return; }
+		if (initVal === undefined) {
+			return;
+		}
 
 		tween._addPlugin(CSSPlugin);
 
-    let cssData = data.CSS || (data.CSS = {});
-    if (prop === "transform") {
-      cssData[prop] = "_t";
-      return parseTransform(initVal);
-    }
+		let cssData = data.CSS || (data.CSS = {});
+		if (prop === "transform") {
+			cssData[prop] = "_t";
+			return parseTransform(initVal);
+		}
 
-    let result = s.VALUE_RE.exec(initVal);
+		let result = s.VALUE_RE.exec(initVal);
 		if (result === null) {
 			// a string we can't handle numerically, so add it to the CSSData without a suffix.
 			cssData[prop] = "";
@@ -127,10 +128,13 @@ class CSSPlugin {
 	 * @param {TweenStep} step
 	 * @param {Object} props
 	 */
-	static step (tween, step, props) {
-    if (props.transform) {
-      step.props.transform = parseTransform(step.props.transform, step.prev.props.transform);
-    }
+	static step(tween, step, props) {
+		if (props.transform) {
+			step.props.transform = parseTransform(
+				step.props.transform,
+				step.prev.props.transform
+			);
+		}
 	}
 
 	/**
@@ -147,18 +151,19 @@ class CSSPlugin {
 	 * @param {Boolean} end
 	 * @return {any}
 	 */
-	static change (tween, step, prop, value, ratio, end) {
+	static change(tween, step, prop, value, ratio, end) {
 		let sfx = tween.pluginData.CSS[prop];
-		if (sfx === undefined) { return; }
-    if (prop === "transform") {
+		if (sfx === undefined) {
+			return;
+		}
+		if (prop === "transform") {
 			value = writeTransform(step.prev.props[prop], step.props[prop], ratio);
-    } else {
+		} else {
 			value += sfx;
 		}
 		tween.target.style[prop] = value;
 		return Tween.IGNORE;
 	}
-
 }
 
 /**
@@ -237,7 +242,7 @@ CSSPlugin.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/;
 CSSPlugin.compute = false;
 
 // private helper methods
-function getStyle (target, prop, compute) {
+function getStyle(target, prop, compute) {
 	if (compute || (compute == null && CSSPlugin.compute)) {
 		return window.getComputedStyle(target)[prop];
 	} else {
@@ -245,75 +250,100 @@ function getStyle (target, prop, compute) {
 	}
 }
 
-function parseTransform (str, compare) {
-  let result, list = [false, str];
-  do {
-    // pull out the next "component" of the transform (ex. "translate(10px, 20px)")
-    result = CSSPlugin.TRANSFORM_RE.exec(str);
-    if (!result) { break; }
-    if (result[3] === "*") {
-      // reuse previous value:
-      list.push(compare[list.length]);
-      continue;
-    }
-    let component = [result[1]], compareComp = compare && compare[list.length];
+function parseTransform(str, compare) {
+	let result,
+		list = [false, str];
+	do {
+		// pull out the next "component" of the transform (ex. "translate(10px, 20px)")
+		result = CSSPlugin.TRANSFORM_RE.exec(str);
+		if (!result) {
+			break;
+		}
+		if (result[3] === "*") {
+			// reuse previous value:
+			list.push(compare[list.length]);
+			continue;
+		}
+		let component = [result[1]],
+			compareComp = compare && compare[list.length];
 
-    // check that the operation type matches (ex. "translate" vs "rotate"):
+		// check that the operation type matches (ex. "translate" vs "rotate"):
 		if (compare && (!compareComp || component[0] !== compareComp[0])) {
 			// component doesn't match
-			console.log("Transforms don't match: ", component[0], compareComp && compareComp[0]);
+			console.log(
+				"Transforms don't match: ",
+				component[0],
+				compareComp && compareComp[0]
+			);
 			compare = null;
 		}
 
 		parseMulti(result[2], compareComp, component);
 
-    list.push(component);
-  } while (true);
+		list.push(component);
+	} while (true);
 
-  list[0] = !!compare;
-  return list;
+	list[0] = !!compare;
+	return list;
 }
 
 // this was separated so that it can be used for other multi element styles in the future
 // ex. transform-origin, border, etc.
-function parseMulti (str, compare, arr) {
+function parseMulti(str, compare, arr) {
 	// TODO: add logic to deal with "0" values? Troublesome because the browser automatically appends a unit for some 0 values.
 	do {
 		// pull out the next value (ex. "20px", "12.4rad"):
 		let result = CSSPlugin.TRANSFORM_VALUE_RE.exec(str);
-		if (!result) { return arr; }
-		if (!arr) { arr = []; }
+		if (!result) {
+			return arr;
+		}
+		if (!arr) {
+			arr = [];
+		}
 		arr.push(+result[1], result[2]);
 
 		// check that the units match (ex. "px" vs "em"):
-		if (compare && (compare[arr.length-1] !== result[2])) {
+		if (compare && compare[arr.length - 1] !== result[2]) {
 			// unit doesn't match
-			console.log("Transform units don't match: ", arr[0], compare[arr.length-1], result[2]);
+			console.log(
+				"Transform units don't match: ",
+				arr[0],
+				compare[arr.length - 1],
+				result[2]
+			);
 			compare = null;
 		}
-	} while(true);
+	} while (true);
 }
 
+function writeTransform(list0, list1, ratio) {
+	// check if we should just use the original transform strings:
+	if (ratio === 1) {
+		return list1[1];
+	}
+	if (ratio === 0 || !list1[0]) {
+		return list0[1];
+	}
 
-function writeTransform (list0, list1, ratio) {
-  // check if we should just use the original transform strings:
-  if (ratio === 1) { return list1[1]; }
-  if (ratio === 0 || !list1[0]) { return list0[1]; }
-
-  // they match, we want to apply the ratio:
-  let str = "";
-  for (let i = 2, l = list0.length; i < l; i++) {
-    let component0 = list0[i], component1 = list1[i];
-    str += `${component0[0]}(`;
-    for (let i = 1, l = component0.length; i < l; i += 2) {
-			str += component0[j]+(component1[j]-component0[j])*ratio; // value
-			str += component1[j+1] || component0[j+1]; // unit
-      if (i < l-2) { str += ", "; }
-    }
-    str += ")";
-    if (i < l-1) { str += " "; }
-  }
-  return str;
+	// they match, we want to apply the ratio:
+	let str = "";
+	for (let i = 2, l = list0.length; i < l; i++) {
+		let component0 = list0[i],
+			component1 = list1[i];
+		str += `${component0[0]}(`;
+		for (let i = 1, l = component0.length; i < l; i += 2) {
+			str += component0[j] + (component1[j] - component0[j]) * ratio; // value
+			str += component1[j + 1] || component0[j + 1]; // unit
+			if (i < l - 2) {
+				str += ", ";
+			}
+		}
+		str += ")";
+		if (i < l - 1) {
+			str += " ";
+		}
+	}
+	return str;
 }
 
 // this was part of an attempt to handle multi element css values, ex. margin="10px 10px 20px 30px"
@@ -321,10 +351,14 @@ function writeTransform (list0, list1, ratio) {
 // for example, margin="10px 10px 10px 10px" will collapse to just "10px"
 // requires custom logic to handle each scenario.
 function writeMulti(arr0, arr1, ratio) {
-	let str = "", l = arr0.length, i;
+	let str = "",
+		l = arr0.length,
+		i;
 	for (i = 0; i < l; i += 2) {
-		str += arr0[i]+(arr1[i]-arr0[i])*ratio+arr0[i+1];
-		if (i < l-2) { str += " "; }
+		str += arr0[i] + (arr1[i] - arr0[i]) * ratio + arr0[i + 1];
+		if (i < l - 2) {
+			str += " ";
+		}
 	}
 	return str;
 }
@@ -347,4 +381,4 @@ function writeSingleTransform (list) {
 }
 */
 
-export default CSSPlugin;
+export { CSSPlugin };

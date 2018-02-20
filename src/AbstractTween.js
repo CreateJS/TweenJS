@@ -235,6 +235,11 @@ class AbstractTween extends EventDispatcher {
 	/**
 	 * Advances the tween by a specified amount.
 	 *
+	 * @example
+	 * `var a = 2 + 2;`
+	 * Some words
+	 * `var b = 5;`
+	 *
 	 * @param {number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
 	 * @param {boolean} [ignoreActions=false] If true, actions will not be executed due to this change in position.
 	 */

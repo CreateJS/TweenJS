@@ -235,4 +235,4 @@ SamplePlugin.priority = 0;
  */
 SamplePlugin.ID = "Sample";
 
-export default SamplePlugin;
+export { SamplePlugin };

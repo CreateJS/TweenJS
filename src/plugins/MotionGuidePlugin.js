@@ -515,4 +515,4 @@ MotionGuidePlugin.priority = 0; // high priority, should run sooner
  */
 MotionGuidePlugin.ID = "MotionGuide";
 
-export default MotionGuidePlugin;
+export { MotionGuidePlugin };

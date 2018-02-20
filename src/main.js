@@ -84,7 +84,6 @@
 /**
  * @module tweenjs/plugins
  *
- * @type {[type]}
  */
 
 /**

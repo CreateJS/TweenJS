@@ -1,3 +1,3 @@
 const preset = require("@createjs/build/tests/jest.config");
-preset.setupTestFrameworkScriptFile = "./setup";
+preset.setupTestFrameworkScriptFile = "./tests/setup";
 module.exports = preset;

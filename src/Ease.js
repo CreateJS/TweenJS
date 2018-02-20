@@ -44,7 +44,7 @@
  * <em>Equations derived from work by Robert Penner.</em>
  *
  * @memberof tweenjs
- * @module tweenjs/Ease
+ * @module Ease
  */
 
 /**
