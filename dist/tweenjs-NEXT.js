@@ -1,5 +1,6 @@
 /**
- * @license TweenJS
+ * @license
+ * TweenJS
  * Visit https://createjs.com for documentation, updates and examples.
  *
  * Copyright (c) 2017 gskinner.com, inc.

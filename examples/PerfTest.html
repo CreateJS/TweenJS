@@ -3,16 +3,14 @@
 <head>
 	<title>TweenJS: Performance Test</title>
 
-	<link href="../node_modules/createjs/assets/css/shared.css" rel="stylesheet" type="text/css"/>
-	<link href="../node_modules/createjs/assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/examples.css" rel="stylesheet" type="text/css"/>
 	<link href="../assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
-	<script src="../node_modules/createjs/assets/js/examples.js" type="text/javascript"></script>
+	<script src="../node_modules/@createjs/build/assets/js/examples.js"></script>
 
-	<script type="text/javascript" src="../node_modules/easeljs/dist/easel-NEXT.js"></script>
-	<script src="../src/tweenjs/AbstractTween.js"></script>
-	<script src="../src/tweenjs/Tween.js"></script>
-	<script src="../src/tweenjs/Ease.js"></script>
-	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	<script src="/libs/easeljs/dist/easeljs-NEXT.js"></script>
+	<script src="../dist/tweenjs-NEXT.js"></script>
+
 	  http://code.createjs.com -->
 
 <script id="editable">
@@ -22,32 +20,32 @@
 	function init() {
 		fpsFld = document.getElementById("fps");
 		stage = new c.Stage("testCanvas");
-		
+
 		stageW = stage.canvas.width;
 		stageH = stage.canvas.height;
 		g = new c.Graphics().f("#012").dc(0,0,1);
 		ttl = 0;
-		
+
 		c.Ticker.framerate = 60;
 		c.Ticker.timingMode = c.Ticker.RAF;
 		c.Ticker.on("tick",tick);
 	}
-	
+
 	function tween(dot) {
 		var angle = Math.random() * Math.PI * 2;
 		dot.x = stageW/2;
 		dot.y = Math.random()*stageH;
-		
+
 		c.Tween.get(dot, {loop:-1}).wait(Math.random() * duration )
 			.to({x:Math.cos(angle) * radius + stageW/2}, duration, c.Ease.cubicIn);
 	}
-	
+
 	function tick(evt) {
 		var render = (displayTime -= evt.delta) > 0;
 		if (render) { stage.update(); }
-		var fps = c.Ticker.getMeasuredFPS(120), t = c.Ticker.getMeasuredTickTime(20);;
+		var fps = c.Ticker.getMeasuredFPS(120), t = c.Ticker.getMeasuredTickTime(20);
 		fpsFld.innerHTML = ttl+" @ "+fps.toFixed(0)+"fps ("+t.toFixed(0)+"ms) "+(render ? "" : " RENDERING DISABLED");
-		
+
 		var count = (t>15) ? 0 : Math.max(1,Math.ceil(Math.pow(15-t, 3)/250))*250;
 		for (var i= 0; i<count; i++) {
 			tween(stage.addChild(new c.Shape(g)));

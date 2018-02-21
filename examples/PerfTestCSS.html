@@ -3,24 +3,24 @@
 <head>
 	<title>TweenJS: CSS Tweening Example</title>
 
-	<link href="../node_modules/createjs/assets/css/shared.css" rel="stylesheet" type="text/css"/>
-	<link href="../node_modules/createjs/assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/examples.css" rel="stylesheet" type="text/css"/>
 	<link href="../assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
-	<script src="../node_modules/createjs/assets/js/examples.js" type="text/javascript"></script>
+	<script src="../node_modules/@createjs/build/assets/js/examples.js"></script>
 
-	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
-	<script type="text/javascript" src="../node_modules/easeljs/dist/easel-NEXT.js"></script>
-	<script type="text/javascript" src="../src/tweenjs/plugins/CSSPlugin.js"></script>
+	<script src="/libs/easeljs/dist/easeljs-NEXT.js"></script>
+	<script src="../dist/tweenjs-NEXT.js"></script>
+	<script type="text/javascript" src="../dist/plugins/CSSPlugin.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
 <style>
 	.dot {
-		position:absolute; 
+		position:absolute;
 		width: 1px;
 		height: 1px;
 	}
-	
+
 </style>
 
 <script id="editable">
@@ -30,16 +30,16 @@
 	function init() {
 		createjs.CSSPlugin.install();
 		createjs.CSSPlugin.compute = true;
-		
+
 		fpsFld = document.getElementById("fps");
 		stage = document.body;
 		stage.style.overflow = "hidden";
-		
+
 		centerX = window.innerWidth/2;
 		centerY = window.innerHeight/2;
-		
+
 		radius = Math.sqrt(centerX*centerX + centerY*centerY);
-		
+
 		var t = performance.now();
 		var i = 0;
 		while (i++ < count) {
@@ -48,18 +48,18 @@
 			tween(dot);
 		}
 		console.log("time to create tweens:",performance.now()-t,"ms");
-		
+
 		c.Ticker.timingMode = c.Ticker.RAF;
 		c.Ticker.on("tick",tick);
 	}
-	
+
 	function getDot() {
 		var dot = document.createElement("img");
 		dot.className = "dot";
 		dot.src = "../assets/art/dot.png";
 		return dot;
 	}
-	
+
 	function tween(dot) {
 		cssText = "left:" + centerX + "px; top:" + centerY + "px;";
 		if (!createjs.CSSPlugin.compute) {
@@ -67,22 +67,22 @@
 			cssText += " width: 1px; height: 1px";
 		}
 		dot.style.cssText = cssText;
-		
+
 		var angle = Math.random() * Math.PI * 2;
 		c.Tween.get(dot, {loop:-1}).wait( Math.random() * duration ).to({
 				left:Math.cos(angle) * radius + centerX,
 				top:Math.sin(angle) * radius + centerY,
 				width:32, height:32
 			}, duration, c.Ease.cubicIn);
-		
+
 		return dot;
 	}
-	
+
 	function tick(evt) {
 		fpsFld.innerHTML = count+" @ "+c.Ticker.getMeasuredFPS(120).toFixed(1)+"fps";
 	}
-	
-	
+
+
 </script>
 </head>
 
@@ -90,7 +90,7 @@
 
 <header class="TweenJS">
 	<h1>CSS Performance Test</h1>
-	
+
 	<p id="fps">-- fps</p>
 </header>
 </body>

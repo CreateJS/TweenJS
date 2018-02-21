@@ -3,14 +3,16 @@
 <head>
 	<title>TweenJS: Canvas Tweening Example</title>
 
-	<link href="../node_modules/createjs/assets/css/shared.css" rel="stylesheet" type="text/css"/>
-	<link href="../node_modules/createjs/assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../node_modules/@createjs/build/assets/css/examples.css" rel="stylesheet" type="text/css"/>
 	<link href="../assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
-	<script src="../node_modules/createjs/assets/js/examples.js" type="text/javascript"></script>
+	<script src="../node_modules/@createjs/build/assets/js/examples.js"></script>
 
-	<script type="text/javascript" src="../node_modules/easeljs/dist/easel-NEXT.js"></script>
-	<script type="text/javascript" src="../lib/tweenjs-NEXT.combined.js"></script>
-	<script type="text/javascript" src="../src/tweenjs/plugins/RelativePlugin.js"></script>
+
+	<script src="/libs/easeljs/dist/easeljs-NEXT.js"></script>
+	<script src="../dist/tweenjs-NEXT.js"></script>
+
+	<script type="text/javascript" src="../dist/plugins/RelativePlugin.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
@@ -25,7 +27,7 @@
 		circle.y = stage.canvas.height/2;
 
 		stage.addChild(circle);
-		
+
 		// install the sample plugin:
 		createjs.RelativePlugin.install();
 
@@ -35,7 +37,7 @@
 			.to({alpha:"-0.5", y:"-50"}, 1000); // fade out 50% and move 50px up
 
 		createjs.Ticker.timingMode = createjs.Ticker.RAF;
-		createjs.Ticker.addEventListener("tick", stage);
+		createjs.Ticker.on("tick", stage);
 	}
 </script>
 </head>
