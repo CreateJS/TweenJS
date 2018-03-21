@@ -14,35 +14,55 @@
     "animation"
   ],
   "homepage": "https://createjs.com/tweenjs",
-  "url": "https://npmjs.com/package/tweenjs",
+  "url": "https://npmjs.com/package/@createjs/tweenjs",
   "bugs": "https://github.com/createjs/tweenjs/issues",
   "license": "MIT",
   "contributors": [
     "Grant Skinner <grant@gskinner.com> (https://github.com/gskinner)",
     "Lanny McNie <lanny@gskinner.com> (https://github.com/lannymcnie)",
     "Wes Gorgichuk <wes@gskinner.com> (https://github.com/wdamien)",
-    "Patrick McGuckin <patrick@gskinner.com> (https://github.com/tehvgg)"
+    "Patrick McGuckin <p.mcgooks@gmail.com> (https://github.com/tehvgg)"
   ],
-  "main": "dist/tween.common.js",
-  "jsnext:main": "dist/tween.es6.js",
-  "logo": "icon.png",
+  "main": "dist/tweenjs.common.js",
+  "module": "dist/tweenjs.module.js",
+  "browser": "dist/tweenjs.min.js",
+  "logo": "assets/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/createjs/tweenjs.git"
   },
+  "npmName": "tweenjs",
+  "npmFileMap": [
+    {
+      "basePath": "dist",
+      "files": [
+        "**/*"
+      ]
+    }
+  ],
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "lib": "dist",
+    "test": "tests"
+  },
   "scripts": {
-    "pretest": "npm run build -- --format=module",
     "test": "jest -c ./tests/jest.config.js",
     "lint": "cd node_modules/@createjs/build && gulp lint",
     "dev": "cd node_modules/@createjs/build && gulp dev --format=global",
     "build": "cd node_modules/@createjs/build && gulp build",
     "plugins": "cd node_modules/@createjs/build && gulp plugins",
-    "docs": "cd node_modules/@createjs/docs && npm run gen"
+    "docs": "cd node_modules/@createjs/docs && npm run gen",
+    "prepublishOnly": "npm test; npm run build -- --production;"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@createjs/core": "github:createjs/core"
+	},
   "devDependencies": {
+    "@createjs/build": "github:createjs/build",
+    "@createjs/easeljs": "github:createjs/easeljs#2.0",
     "babel-jest": "^22.0.4",
     "jest": "^22.0.4"
   },
-  "engine": "node >= 7.10.1"
+  "engine": "node >= 8.9.4"
 }
