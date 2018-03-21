@@ -1,37 +1,39 @@
-describe("TweenJS", function () {
-	beforeEach(function () {
+// TODO: Update to Jest.
+
+describe("TweenJS", () => {
+	beforeEach(() => {
 		jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
 	});
 
-	afterEach(function () {
+	afterEach(() => {
 		createjs.Tween.removeAllTweens();
 	});
 
-	describe("Basics", function () {
-		it("should complete in ~500ms.", function (done) {
+	describe("Basics", () => {
+		it("should complete in ~500ms.", done => {
 			var obj = {x: 0};
 			var startTime = Date.now();
 			createjs.Tween.get(obj)
 				.to({x: 50}, 500)
-				.call(function () {
+				.call(() => {
 						  expect(Date.now() - startTime).toBeInRange(490, 510);
 						  done();
 					  });
 		});
 
-		it("hasActiveTweens())", function () {
+		it("hasActiveTweens())", () => {
 			var obj = {x: 0};
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(false);
 			createjs.Tween.get(obj).to({x: 50}, 500);
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(true);
 		});
 
-		it("paused", function (done) {
+		it("paused", done => {
 			var obj = {x: 0};
 			var tween = createjs.Tween.get(obj);
 
 			var func = {
-				change: function () {
+				change: () => {
 				}
 			};
 
@@ -41,24 +43,24 @@ describe("TweenJS", function () {
 			tween.to({x: 200}, 2000);
 			tween.paused = true;
 
-			setTimeout(function () {
+			setTimeout(() => {
 				tween.paused = false;
-				tween.on("change", function () {
+				tween.on("change", () => {
 					expect(func.change.calls.count()).toBe(1);
 					done();
 				});
 			}, 250);
 		});
 
-		it("wait()", function (done) {
+		it("wait()", done => {
 			var startTime = Date.now();
-			createjs.Tween.get({}).wait(500).call(function () {
+			createjs.Tween.get({}).wait(500).call(() => {
 				expect(Date.now() - startTime).toBeInRange(490, 510);
 				done();
 			});
 		});
 
-		it("removeAllTweens()", function () {
+		it("removeAllTweens()", () => {
 			var obj = {};
 
 			createjs.Tween.get(obj).to({x: 50}, 100);
@@ -68,7 +70,7 @@ describe("TweenJS", function () {
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(false);
 		});
 
-		it("removeTweens()", function () {
+		it("removeTweens()", () => {
 			var obj = {};
 
 			createjs.Tween.get(obj).to({x: 50}, 100);
@@ -78,18 +80,18 @@ describe("TweenJS", function () {
 			expect(createjs.Tween.hasActiveTweens(obj)).toBe(false);
 		});
 
-		it("loop", function (done) {
+		it("loop", done => {
 			var obj = {};
 
 			var func = {
-				hitEnd: function () {}
+				hitEnd: () => {}
 			};
 
 			spyOn(func, "hitEnd");
 
 			createjs.Tween.get(obj, {loop: 2}).to({x: 50}, 50).call(func.hitEnd);
 
-			setTimeout(function () {
+			setTimeout(() => {
 				expect(func.hitEnd.calls.count()).toBe(3);
 				done();
 			}, 200);
@@ -98,36 +100,36 @@ describe("TweenJS", function () {
 
 
 
-	describe("Events", function () {
-		it("change", function (done) {
+	describe("Events", () => {
+		it("change", done => {
 			var obj = {x: 0};
 			var tween = createjs.Tween.get(obj);
 
 			var func =  {
-				change: function() { }
+				change: () => { }
 			};
 
 			spyOn(func, "change");
 
 			tween.on("change", func.change);
 			tween.to({x: 50});
-			setTimeout(function() {
+			setTimeout(() => {
 				expect(func.change).toHaveBeenCalled();
 				done();
 			}, 50);
 		});
 
-		it("complete", function (done) {
+		it("complete", done => {
 			var tween = createjs.Tween.get({}, {loop:2}).wait(50);
 
 			var func =  {
-				complete: function() { }
+				complete: () => { }
 			};
 
 			spyOn(func, "complete");
 
 			tween.on("complete", func.complete);
-			setTimeout(function() {
+			setTimeout(() => {
 				expect(func.complete.calls.count()).toBe(1);
 				done();
 			}, 200);
@@ -136,38 +138,38 @@ describe("TweenJS", function () {
 
 
 
-	describe("Tweening Props", function () {
-		it("numeric", function (done) {
+	describe("Tweening Props", () => {
+		it("numeric", done => {
 			var obj = {x: 0};
 			createjs.Tween.get(obj)
 				.to({x: 50}, 200)
-				.call(function () {
+				.call(() => {
 					expect(obj.x).toBe(50);
 					done();
 				});
 		});
 
-		it("string", function (done) {
+		it("string", done => {
 			var obj = {x: "one"};
 			createjs.Tween.get(obj)
 				.to({x: "two"}, 200)
-				.call(function () {
+				.call(() => {
 					expect(obj.x).toBe("two");
 					done();
 				});
 		});
 
-		it("boolean", function (done) {
+		it("boolean", done => {
 			var obj = {x: true};
 			createjs.Tween.get(obj)
 				.to({x: false}, 200)
-				.call(function () {
+				.call(() => {
 					expect(obj.x).toBe(false);
 					done();
 				});
 		});
 
-		it("setPosition()", function () {
+		it("setPosition()", () => {
 			var obj = {x: 0, y: "one"};
 			var tween = createjs.Tween.get(obj);
 
@@ -180,7 +182,7 @@ describe("TweenJS", function () {
 
 
 
-	describe("Actions", function () {
+	describe("Actions", () => {
 		var useTicks=false, m=useTicks?1:20, timeline;
 		g = function(o, p) {
 			p = p||{};
@@ -263,7 +265,7 @@ describe("TweenJS", function () {
 		function addTest(test) {
 			test.tween.test = test;
 			test.tween.paused = true; // needs to be here for timeline tests.
-			it (test.name, function(done) {
+			it(test.name, function(done) {
 				var tween = test.tween;
 				tween.paused = false;
 				if (test.gotoAndStop != null) {
