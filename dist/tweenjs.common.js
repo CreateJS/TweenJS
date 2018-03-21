@@ -1,5 +1,6 @@
 /**
- * @license TweenJS
+ * @license
+ * TweenJS
  * Visit https://createjs.com for documentation, updates and examples.
  *
  * Copyright (c) 2017 gskinner.com, inc.
@@ -951,7 +952,6 @@ var Ticker = function(_EventDispatcher) {
   Ticker.toString = function toString() {
     return _instance.toString();
   };
-  Ticker._dispatchEvent = function _dispatchEvent(eventObj, eventPhase) {};
   Ticker.init = function init() {
     _instance.init();
   };
@@ -975,24 +975,6 @@ var Ticker = function(_EventDispatcher) {
   };
   Ticker.getTicks = function getTicks(pauseable) {
     return _instance.getTicks(pauseable);
-  };
-  Ticker._handleSynch = function _handleSynch() {
-    _instance._handleSynch();
-  };
-  Ticker._handleRAF = function _handleRAF() {
-    _instance._handleRAF();
-  };
-  Ticker._handleTimeout = function _handleTimeout() {
-    _instance._handleTimeout();
-  };
-  Ticker._setupTick = function _setupTick() {
-    _instance._setupTick();
-  };
-  Ticker._tick = function _tick() {
-    _instance._tick();
-  };
-  Ticker._getTime = function _getTime() {
-    return _instance._getTime();
   };
   createClass(Ticker, [ {
     key: "interval",
@@ -1029,6 +1011,38 @@ var Ticker = function(_EventDispatcher) {
     },
     set: function set(framerate) {
       _instance.framerate = framerate;
+    }
+  }, {
+    key: "name",
+    get: function get() {
+      return _instance.name;
+    },
+    set: function set(name) {
+      _instance.name = name;
+    }
+  }, {
+    key: "timingMode",
+    get: function get() {
+      return _instance.timingMode;
+    },
+    set: function set(timingMode) {
+      _instance.timingMode = timingMode;
+    }
+  }, {
+    key: "maxDelta",
+    get: function get() {
+      return _instance.maxDelta;
+    },
+    set: function set(maxDelta) {
+      _instance.maxDelta = maxDelta;
+    }
+  }, {
+    key: "paused",
+    get: function get() {
+      return _instance.paused;
+    },
+    set: function set(paused) {
+      _instance.paused = paused;
     }
   } ]);
   return Ticker;
@@ -1532,9 +1546,15 @@ exports.AbstractTween = AbstractTween;
 
 exports.Timeline = Timeline;
 
+exports.Event = Event;
+
+exports.EventDispatcher = EventDispatcher;
+
+exports.Ticker = Ticker;
+
 var cjs = window.createjs = window.createjs || {};
 
 var v = cjs.v = cjs.v || {};
 
-v.tweenjs = "NEXT";
+v.tweenjs = "2.0.0";
 //# sourceMappingURL=maps/tweenjs.common.js.map

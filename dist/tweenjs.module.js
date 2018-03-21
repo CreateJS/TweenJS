@@ -1,5 +1,6 @@
 /**
- * @license TweenJS
+ * @license
+ * TweenJS
  * Visit https://createjs.com for documentation, updates and examples.
  *
  * Copyright (c) 2017 gskinner.com, inc.
@@ -866,19 +867,6 @@ class Ticker extends EventDispatcher {
   static toString() {
     return _instance.toString();
   }
-  static _dispatchEvent(eventObj, eventPhase) {}
-  static get interval() {
-    return _instance.interval;
-  }
-  static set interval(interval) {
-    _instance.interval = interval;
-  }
-  static get framerate() {
-    return _instance.framerate;
-  }
-  static set framerate(framerate) {
-    _instance.framerate = framerate;
-  }
   static init() {
     _instance.init();
   }
@@ -903,23 +891,41 @@ class Ticker extends EventDispatcher {
   static getTicks(pauseable) {
     return _instance.getTicks(pauseable);
   }
-  static _handleSynch() {
-    _instance._handleSynch();
+  static get interval() {
+    return _instance.interval;
   }
-  static _handleRAF() {
-    _instance._handleRAF();
+  static set interval(interval) {
+    _instance.interval = interval;
   }
-  static _handleTimeout() {
-    _instance._handleTimeout();
+  static get framerate() {
+    return _instance.framerate;
   }
-  static _setupTick() {
-    _instance._setupTick();
+  static set framerate(framerate) {
+    _instance.framerate = framerate;
   }
-  static _tick() {
-    _instance._tick();
+  static get name() {
+    return _instance.name;
   }
-  static _getTime() {
-    return _instance._getTime();
+  static set name(name) {
+    _instance.name = name;
+  }
+  static get timingMode() {
+    return _instance.timingMode;
+  }
+  static set timingMode(timingMode) {
+    _instance.timingMode = timingMode;
+  }
+  static get maxDelta() {
+    return _instance.maxDelta;
+  }
+  static set maxDelta(maxDelta) {
+    _instance.maxDelta = maxDelta;
+  }
+  static get paused() {
+    return _instance.paused;
+  }
+  static set paused(paused) {
+    _instance.paused = paused;
   }
 }
 
@@ -1398,9 +1404,11 @@ class Timeline extends AbstractTween {
 
 export { Ease as Ease, Tween, AbstractTween, Timeline };
 
+export { Event, EventDispatcher, Ticker };
+
 var cjs = window.createjs = window.createjs || {};
 
 var v = cjs.v = cjs.v || {};
 
-v.tweenjs = "NEXT";
+v.tweenjs = "2.0.0";
 //# sourceMappingURL=maps/tweenjs.module.js.map
