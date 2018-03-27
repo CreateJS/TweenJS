@@ -1,6 +1,6 @@
 {
   "name": "@createjs/tweenjs",
-  "version": "2.0.0",
+  "version": "2.0.0-beta.1",
   "description": "A simple but powerful tweening / animation library for Javascript. Part of the CreateJS suite of libraries.",
   "keywords": [
     "html5",
