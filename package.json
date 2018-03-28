@@ -52,15 +52,14 @@
     "dev": "cd node_modules/@createjs/build && gulp dev --format=global",
     "build": "cd node_modules/@createjs/build && gulp build",
     "plugins": "cd node_modules/@createjs/build && gulp plugins",
-    "docs": "cd node_modules/@createjs/docs && npm run gen",
-    "prepublishOnly": "npm test; npm run build -- --production;"
+    "docs": "cd node_modules/@createjs/docs && npm run gen"
   },
   "dependencies": {
-    "@createjs/core": "github:createjs/core"
-	},
+    "@createjs/core": "^2.0.0-beta.1"
+  },
   "devDependencies": {
-    "@createjs/build": "github:createjs/build",
-    "@createjs/easeljs": "github:createjs/easeljs#2.0",
+    "@createjs/build": "^2.0.0-beta.3",
+    "@createjs/easeljs": "^2.0.0-beta.2",
     "babel-jest": "^22.0.4",
     "jest": "^22.0.4"
   },
