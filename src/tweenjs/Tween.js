@@ -114,7 +114,6 @@ this.createjs = this.createjs||{};
 	 * @param {Function} [props.onChange] Adds the specified function as a listener to the {{#crossLink "AbstractTween/change:event"}}{{/crossLink}} event
 	 * @param {Function} [props.onComplete] Adds the specified function as a listener to the {{#crossLink "AbstractTween/complete:event"}}{{/crossLink}} event
 	 * @param {boolean} [props.override=false] Removes all existing tweens for the target when set to `true`.
-	 * </UL>
 	 * @extends AbstractTween
 	 * @constructor
 	 */
@@ -233,7 +232,7 @@ this.createjs = this.createjs||{};
 		if (!this.pluginData) { this.pluginData = {}; }
 		
 		this._init(props);
-	};
+	}
 
 	var p = createjs.extend(Tween, createjs.AbstractTween);
 
@@ -262,7 +261,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	Tween._plugins = null;
-	
+
 	/**
 	 * @property _tweenHead
 	 * @type Tween
@@ -270,7 +269,7 @@ this.createjs = this.createjs||{};
 	 * @protected
 	 */
 	Tween._tweenHead = null;
-	
+
 	/**
 	 * @property _tweenTail
 	 * @type Tween
@@ -280,7 +279,7 @@ this.createjs = this.createjs||{};
 	Tween._tweenTail = null;
 
 
-// static methods	
+// static methods
 	/**
 	 * Returns a new tween instance. This is functionally identical to using `new Tween(...)`, but may look cleaner
 	 * with the chained syntax of TweenJS.
@@ -440,12 +439,12 @@ this.createjs = this.createjs||{};
 		} else if (paused && !tween._paused) {
 			if (target) { target.tweenjs_count--; }
 			var next = tween._next, prev = tween._prev;
-			
+
 			if (next) { next._prev = prev; }
 			else { Tween._tweenTail = prev; } // was tail
 			if (prev) { prev._next = next; }
 			else { Tween._tweenHead = next; } // was head.
-			
+
 			tween._next = tween._prev = null;
 		}
 		tween._paused = paused;
@@ -498,20 +497,20 @@ this.createjs = this.createjs||{};
 		this._appendProps(props, step);
 		return this;
 	};
-	
+
 	/**
 	 * Adds a label that can be used with {{#crossLink "Tween/gotoAndPlay"}}{{/crossLink}}/{{#crossLink "Tween/gotoAndStop"}}{{/crossLink}}
 	 * at the current point in the tween. For example:
-	 * 
+	 *
 	 * 	var tween = createjs.Tween.get(foo)
 	 * 					.to({x:100}, 1000)
 	 * 					.label("myLabel")
 	 * 					.to({x:200}, 1000);
 	 * // ...
 	 * tween.gotoAndPlay("myLabel"); // would play from 1000ms in.
-	 * 
+	 *
 	 * @method label
-	 * @param {String} label The label name.
+	 * @param {String} name The label name.
 	 * @return {Tween} This tween instance (for chaining calls).
 	 * @chainable
 	 **/
@@ -574,17 +573,17 @@ this.createjs = this.createjs||{};
 
 	/**
 	 * Adds an action to pause the specified tween.
-	 * 
+	 *
 	 * 	myTween.pause(otherTween).to({alpha:1}, 1000).play(otherTween);
-	 * 
+	 *
 	 * Note that this executes at the end of a tween update, so the tween may advance beyond the time the pause
 	 * action was inserted at. For example:
-	 * 
+	 *
 	 * myTween.to({foo:0}, 1000).pause().to({foo:1}, 1000);
-	 * 
+	 *
 	 * At 60fps the tween will advance by ~16ms per tick, if the tween above was at 999ms prior to the current tick, it
 	 * will advance to 1015ms (15ms into the second "step") and then pause.
-	 * 
+	 *
 	 * @method pause
 	 * @param {Tween} [tween] The tween to pause. Defaults to this tween.
 	 * @return {Tween} This tween instance (for chaining calls)
@@ -628,7 +627,7 @@ this.createjs = this.createjs||{};
 	p._addPlugin = function(plugin) {
 		var ids = this._pluginIds || (this._pluginIds = {}), id = plugin.ID;
 		if (!id || ids[id]) { return; } // already added
-		
+
 		ids[id] = true;
 		var plugins = this._plugins || (this._plugins = []), priority = plugin.priority || 0;
 		for (var i=0,l=plugins.length; i<l; i++) {
@@ -639,7 +638,7 @@ this.createjs = this.createjs||{};
 		}
 		plugins.push(plugin);
 	};
-	
+
 	// Docced in AbstractTween
 	p._updatePosition = function(jump, end) {
 		var step = this._stepHead.next, t=this.position, d=this.duration;
@@ -652,7 +651,7 @@ this.createjs = this.createjs||{};
 		}
 		this._stepPosition = step ? t-step.t : 0;
 	};
-	
+
 	/**
 	 * @method _updateTargetProps
 	 * @param {Object} step
@@ -662,24 +661,24 @@ this.createjs = this.createjs||{};
 	 */
 	p._updateTargetProps = function(step, ratio, end) {
 		if (this.passive = !!step.passive) { return; } // don't update props.
-		
+
 		var v, v0, v1, ease;
 		var p0 = step.prev.props;
 		var p1 = step.props;
 		if (ease = step.ease) { ratio = ease(ratio,0,1,1); }
-		
+
 		var plugins = this._plugins;
 		proploop : for (var n in p0) {
 			v0 = p0[n];
 			v1 = p1[n];
-			
+
 			// values are different & it is numeric then interpolate:
 			if (v0 !== v1 && (typeof(v0) === "number")) {
 				v = v0+(v1-v0)*ratio;
 			} else {
 				v = ratio >= 1 ? v1 : v0;
 			}
-			
+
 			if (plugins) {
 				for (var i=0,l=plugins.length;i<l;i++) {
 					var value = plugins[i].change(this, step, n, v, ratio, end);
@@ -691,11 +690,12 @@ this.createjs = this.createjs||{};
 		}
 
 	};
-	
+
 	/**
 	 * @method _runActionsRange
 	 * @param {Number} startPos
 	 * @param {Number} endPos
+	 * @param {Boolean} jump
 	 * @param {Boolean} includeStart
 	 * @protected
 	 */
@@ -718,6 +718,8 @@ this.createjs = this.createjs||{};
 	/**
 	 * @method _appendProps
 	 * @param {Object} props
+	 * @param {Object} step
+	 * @param {Array} stepPlugins
 	 * @protected
 	 */
 	p._appendProps = function(props, step, stepPlugins) {
@@ -751,7 +753,7 @@ this.createjs = this.createjs||{};
 				oldProps[n] = (initValue === undefined) ? null : initValue;
 			}
 		}
-		
+
 		for (n in cleanProps) {
 			value = props[n];
 
@@ -763,19 +765,19 @@ this.createjs = this.createjs||{};
 				prev.props[n] = oldProps[n];
 			}
 		}
-		
+
 		if (stepPlugins !== false && (plugins = this._plugins)) {
 			for (i = plugins.length-1; i >= 0; i--) {
 				plugins[i].step(this, step, cleanProps);
 			}
 		}
-		
+
 		if (inject = this._injected) {
 			this._injected = null;
 			this._appendProps(inject, step, false);
 		}
 	};
-	
+
 	/**
 	 * Used by plugins to inject properties onto the current step. Called from within `Plugin.step` calls.
 	 * For example, a plugin dealing with color, could read a hex color, and inject red, green, and blue props into the tween.
@@ -842,7 +844,7 @@ this.createjs = this.createjs||{};
 	};
 
 	createjs.Tween = createjs.promote(Tween, "AbstractTween");
-	
+
 	function TweenStep(prev, t, d, props, ease, passive) {
 		this.next = null;
 		this.prev = prev;
@@ -852,8 +854,8 @@ this.createjs = this.createjs||{};
 		this.ease = ease;
 		this.passive = passive;
 		this.index = prev ? prev.index+1 : 0;
-	};
-	
+	}
+
 	function TweenAction(prev, t, scope, funct, params) {
 		this.next = null;
 		this.prev = prev;
@@ -862,5 +864,6 @@ this.createjs = this.createjs||{};
 		this.scope = scope;
 		this.funct = funct;
 		this.params = params;
-	};
+	}
+
 }());
