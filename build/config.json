@@ -11,6 +11,7 @@
 		"../src/tweenjs/Timeline.js",
 		"../src/tweenjs/Ease.js",
 		"../src/tweenjs/plugins/MotionGuidePlugin.js",
+		"../src/tweenjs/TweenGroup.js",
 		"../src/tweenjs/version.js"
 	],
 
