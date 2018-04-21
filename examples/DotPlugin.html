@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>TweenJS: Relative Plugin Example</title>
+	<title>TweenJS: Dot Plugin Example</title>
 
 	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
 	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
@@ -10,7 +10,7 @@
 
 	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
 	<script type="text/javascript" src="../lib/tweenjs-NEXT.js"></script>
-	<script type="text/javascript" src="../src/tweenjs/plugins/RelativePlugin.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/plugins/DotPlugin.js"></script>
 	<!-- We also provide hosted minified versions of all CreateJS libraries.
 	  http://code.createjs.com -->
 
@@ -18,21 +18,20 @@
 	function init() {
 		// set up our stage:
 		stage = new createjs.Stage("canvas1");
+		var w = stage.canvas.width, h=stage.canvas.height;
 
 		var circle = new createjs.Shape();
 		circle.graphics.beginFill("#FF0000").drawCircle(0, 0, 50);
-		circle.x = 100;
-		circle.y = stage.canvas.height/2;
+		circle.transformMatrix = new createjs.Matrix2D(1,0,0,1, w*0.1, h/2)
 
 		stage.addChild(circle);
 		
 		// install the plugin:
-		createjs.RelativePlugin.install();
+		createjs.DotPlugin.install();
 
-		// set up a tween that tweens between scale 0.3 and 1 every second.
+		// tween the tx property of the transformMatrix property of circle:
 		createjs.Tween.get(circle, {loop: -1, bounce:true})
-			.to({x:"+100"}, 1000) // move 100px to the right
-			.to({alpha:"-0.5", y:"-50"}, 1000); // fade out 50% and move 50px up
+			.to({".transformMatrix.tx": w*0.9, alpha: 0.1}, 1000);
 
 		createjs.Ticker.timingMode = createjs.Ticker.RAF;
 		createjs.Ticker.addEventListener("tick", stage);
@@ -43,9 +42,9 @@
 <body onload="init();">
 
 <header class="TweenJS">
-	<h1>RelativePlugin Example</h1>
+	<h1>DotPlugin Example</h1>
 
-	<p>This example demonstrates the RelativePlugin, which lets you specify relative values in a tween by using a string ("+200", "-50").</p>
+	<p>This example demonstrates the DotPlugin, which lets you use dot syntax to tween nested properties (ex. <code>myShape.transformMatrix.tx</code>).</p>
 </header>
 
 <canvas id="canvas1" width="960" height="350"></canvas>
