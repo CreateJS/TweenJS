@@ -38,7 +38,7 @@ this.createjs = this.createjs||{};
 	/**
 	 * The RelativePlugin for TweenJS enables relative numeric values for tweens. Install using:
 	 * 
-	 * 	RotationPlugin.install();
+	 * 	RelativePlugin.install();
 	 * 
 	 * Once installed, you can pass in relative numeric property values as strings beginning with "+" or "-". For example,
 	 * the following tween would tween the x position of `foo` from its initial value of `200` to `50` (200-150), then to
