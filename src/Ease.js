@@ -48,19 +48,19 @@
  */
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function linear (t) {
+export function linear (t) {
 	return t;
 }
 
 /**
  * Mimics the simple -100 to 100 easing in Flash Pro.
- * @param {number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
+ * @param {Number} amount A value from -1 (ease in) to 1 (ease out) indicating the strength and direction of the ease.
  * @return {Function}
  */
-function get (amount) {
+export function get (amount) {
 	if (amount < -1) { amount = -1; } else if (amount > 1) { amount = 1; }
 	return function (t) {
 		if (amount == 0) { return t; }
@@ -71,10 +71,10 @@ function get (amount) {
 
 /**
  * Configurable exponential ease.
- * @param {number} pow The exponent to use (ex. 3 would return a cubic ease).
+ * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @return {Function}
  */
-function getPowIn (pow) {
+export function getPowIn (pow) {
 	return function (t) {
 		return Math.pow(t, pow);
 	};
@@ -82,10 +82,10 @@ function getPowIn (pow) {
 
 /**
  * Configurable exponential ease.
- * @param {number} pow The exponent to use (ex. 3 would return a cubic ease).
+ * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @return {Function}
  */
-function getPowOut (pow) {
+export function getPowOut (pow) {
 	return function (t) {
 		return 1 - Math.pow(1 - t, pow);
 	};
@@ -93,10 +93,10 @@ function getPowOut (pow) {
 
 /**
  * Configurable exponential ease.
- * @param {number} pow The exponent to use (ex. 3 would return a cubic ease).
+ * @param {Number} pow The exponent to use (ex. 3 would return a cubic ease).
  * @return {Function}
  */
-function getPowInOut (pow) {
+export function getPowInOut (pow) {
 	return function (t) {
 		if ((t *= 2) < 1) return 0.5 * Math.pow(t, pow);
 		return 1 - 0.5 * Math.abs(Math.pow(2 - t, pow));
@@ -104,35 +104,35 @@ function getPowInOut (pow) {
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function sineIn (t) {
+export function sineIn (t) {
 	return 1 - Math.cos(t * Math.PI / 2);
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function sineOut (t) {
+export function sineOut (t) {
 	return Math.sin(t * Math.PI / 2);
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function sineInOut (t) {
+export function sineInOut (t) {
 	return -0.5 * (Math.cos(Math.PI * t) - 1);
 }
 
 /**
  * Configurable "back in" ease.
- * @param {number} amount The strength of the ease.
+ * @param {Number} amount The strength of the ease.
  * @return {Function}
  */
-function getBackIn (amount) {
+export function getBackIn (amount) {
 	return function (t) {
 		return t * t * ((amount + 1) * t - amount);
 	};
@@ -140,10 +140,10 @@ function getBackIn (amount) {
 
 /**
  * Configurable "back out" ease.
- * @param {number} amount The strength of the ease.
+ * @param {Number} amount The strength of the ease.
  * @return {Function}
  */
-function getBackOut (amount) {
+export function getBackOut (amount) {
 	return function (t) {
 		return (--t * t * ((amount + 1) * t + amount) + 1);
 	};
@@ -151,10 +151,10 @@ function getBackOut (amount) {
 
 /**
  * Configurable "back in out" ease.
- * @param {number} amount The strength of the ease.
+ * @param {Number} amount The strength of the ease.
  * @return {Function}
  */
-function getBackInOut (amount) {
+export function getBackInOut (amount) {
 	amount *= 1.525;
 	return function (t) {
 		if ((t *= 2) < 1) return 0.5 * (t * t * ((amount + 1) * t - amount));
@@ -163,43 +163,43 @@ function getBackInOut (amount) {
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function circIn (t) {
+export function circIn (t) {
 	return -(Math.sqrt(1 - t * t) - 1);
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function circOut (t) {
+export function circOut (t) {
 	return Math.sqrt(1 - --t * t);
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function circInOut (t) {
+export function circInOut (t) {
 	if ((t *= 2) < 1) return -0.5 * (Math.sqrt(1 - t * t) - 1);
 	return 0.5 * (Math.sqrt(1 - (t -= 2) * t) + 1);
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function bounceIn (t) {
+export function bounceIn (t) {
 	return 1 - Ease.bounceOut(1 - t);
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function bounceOut (t) {
+export function bounceOut (t) {
 	if (t < 1 / 2.75) {
 		return 7.5625 * t * t;
 	} else if (t < 2 / 2.75) {
@@ -212,21 +212,21 @@ function bounceOut (t) {
 }
 
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-function bounceInOut (t) {
+export function bounceInOut (t) {
 	if (t < 0.5) return Ease.bounceIn(t * 2) * 0.5;
 	return Ease.bounceOut(t * 2 - 1) * 0.5 + 0.5;
 }
 
 /**
  * Configurable elastic ease.
- * @param {number} amplitude
- * @param {number} period
+ * @param {Number} amplitude
+ * @param {Number} period
  * @return {Function}
  */
-function getElasticIn (amplitude, period) {
+export function getElasticIn (amplitude, period) {
 	let pi2 = Math.PI * 2;
 	return function (t) {
 		if (t === 0 || t === 1) return t;
@@ -237,11 +237,11 @@ function getElasticIn (amplitude, period) {
 
 /**
  * Configurable elastic ease.
- * @param {number} amplitude
- * @param {number} period
+ * @param {Number} amplitude
+ * @param {Number} period
  * @return {Function}
  */
-function getElasticOut (amplitude, period) {
+export function getElasticOut (amplitude, period) {
 	let pi2 = Math.PI * 2;
 	return function (t) {
 		if (t === 0 || t === 1) return t;
@@ -252,11 +252,11 @@ function getElasticOut (amplitude, period) {
 
 /**
  * Configurable elastic ease.
- * @param {number} amplitude
- * @param {number} period
+ * @param {Number} amplitude
+ * @param {Number} period
  * @return {Function}
  */
-function getElasticInOut (amplitude, period) {
+export function getElasticInOut (amplitude, period) {
 	let pi2 = Math.PI * 2;
 	return function (t) {
 		let s = period / pi2 * Math.asin(1 / amplitude);
@@ -267,140 +267,97 @@ function getElasticInOut (amplitude, period) {
 
 /**
  * Identical to linear.
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const none = linear;
+export const none = linear;
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quadIn = getPowIn(2);
+export const quadIn = getPowIn(2);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quadOut = getPowOut(2);
+export const quadOut = getPowOut(2);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quadInOut = getPowInOut(2);
+export const quadInOut = getPowInOut(2);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const cubicIn = getPowIn(3);
+export const cubicIn = getPowIn(3);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const cubicOut = getPowOut(3);
+export const cubicOut = getPowOut(3);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const cubicInOut = getPowInOut(3);
+export const cubicInOut = getPowInOut(3);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quartIn = getPowIn(4);
+export const quartIn = getPowIn(4);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quartOut = getPowOut(4);
+export const quartOut = getPowOut(4);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quartInOut = getPowInOut(4);
+export const quartInOut = getPowInOut(4);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quintIn = getPowIn(5);
+export const quintIn = getPowIn(5);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quintOut = getPowOut(5);
+export const quintOut = getPowOut(5);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const quintInOut = getPowInOut(5);
+export const quintInOut = getPowInOut(5);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const backIn = getBackIn(1.7);
+export const backIn = getBackIn(1.7);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const backOut = getBackOut(1.7);
+export const backOut = getBackOut(1.7);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const backInOut = getBackInOut(1.7);
+export const backInOut = getBackInOut(1.7);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const elasticIn = getElasticIn(1, 0.3);
+export const elasticIn = getElasticIn(1, 0.3);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const elasticOut = getElasticOut(1, 0.3);
+export const elasticOut = getElasticOut(1, 0.3);
 /**
- * @param {number} t
- * @return {number}
+ * @param {Number} t
+ * @return {Number}
  */
-const elasticInOut = getElasticInOut(1, 0.3 * 1.5);
-
-export {
-	linear,
-	get,
-	getPowIn,
-	getPowOut,
-	getPowInOut,
-	sineIn,
-	sineOut,
-	sineInOut,
-	getBackIn,
-	getBackOut,
-	getBackInOut,
-	circIn,
-	circOut,
-	circInOut,
-	bounceIn,
-	bounceOut,
-	bounceInOut,
-	getElasticIn,
-	getElasticOut,
-	getElasticInOut,
-
-	none,
-	quadIn,
-	quadOut,
-	quadInOut,
-	cubicIn,
-	cubicOut,
-	cubicInOut,
-	quartIn,
-	quartOut,
-	quartInOut,
-	quintIn,
-	quintOut,
-	quintInOut,
-	backIn,
-	backOut,
-	backInOut,
-	elasticIn,
-	elasticOut,
-	elasticInOut
-};
+export const elasticInOut = getElasticInOut(1, 0.3 * 1.5);

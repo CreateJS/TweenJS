@@ -41,7 +41,7 @@
  * @memberof tweenjs
  * @static
  */
-class RelativePlugin {
+export default class RelativePlugin {
 
 	constructor () {
 		throw "RelativePlugin is static and cannot be instantiated.";
@@ -113,10 +113,8 @@ class RelativePlugin {
 
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
- * @type {string}
+ * @type {String}
  * @static
  * @readonly
  */
 RelativePlugin.ID = "Relative";
-
-export { RelativePlugin };

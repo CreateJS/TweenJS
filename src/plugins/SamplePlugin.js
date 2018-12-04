@@ -38,7 +38,7 @@
  * @memberof tweenjs
  * @static
  */
-class SamplePlugin {
+export default class SamplePlugin {
 
 	constructor () {
 		throw "SamplePlugin is static and cannot be instantiated.";
@@ -170,7 +170,7 @@ class SamplePlugin {
 	 * @param {TweenStep} step The related tween step. This class is currently undocumented. See the bottom of Tween.js for info.
 	 * @param {String} prop The name of the property being tweened.
 	 * @param {any} value The current tweened value of the property, as calculated by TweenJS. Previous plugins may have modified this value.
-	 * @param {Number} ratio A value indicating the eased progress through the current step. This number is generally between 0 and 1,
+	 * @param {Number} ratio A value indicating the eased progress through the current step. This Number is generally between 0 and 1,
 	 * though some eases will generate values outside this range.
 	 * @param {Boolean} end Indicates that the tween has reached the end and is about to deregister itself.
 	 * @return {any} Return the value that should be assigned to the target property.
@@ -221,7 +221,7 @@ class SamplePlugin {
  * For example, if plugin A has `priority=0`, and plugin B has `priority=9` then B's `init` and `step` methods would
  * be called before A's, but B's `change` method would be called *after* A's.
  *
- * @type {number}
+ * @type {Number}
  * @default 0
  * @static
  */
@@ -230,9 +230,7 @@ SamplePlugin.priority = 0;
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
  * If you're going to be installing instances of this plugin, you should ensure they have the same id as the class.
- * @type {string}
+ * @type {String}
  * @static
  */
 SamplePlugin.ID = "Sample";
-
-export { SamplePlugin };

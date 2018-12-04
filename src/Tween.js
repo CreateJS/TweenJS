@@ -52,27 +52,27 @@ import Ticker from "@createjs/core/src/utils/Ticker";
  * 		// The tween changed.
  * 	}
  *
- * @see tweenjs.Tween.get
+ * @see {@link tweenjs.Tween.get}
  *
  * @memberof tweenjs
- * @extends AbstractTween
+ * @extends tweenjs.AbstractTween
  *
  * @param {Object} target The target object that will have its properties tweened.
  * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
- * @param {boolean} [props.useTicks]
- * @param {boolean} [props.ignoreGlobalPause]
- * @param {number|boolean} [props.loop]
- * @param {boolean} [props.reversed]
- * @param {boolean} [props.bounce]
- * @param {number} [props.timeScale]
+ * @param {Boolean} [props.useTicks]
+ * @param {Boolean} [props.ignoreGlobalPause]
+ * @param {Number|Boolean} [props.loop]
+ * @param {Boolean} [props.reversed]
+ * @param {Boolean} [props.bounce]
+ * @param {Number} [props.timeScale]
  * @param {Object} [props.pluginData]
- * @param {boolean} [props.paused]
+ * @param {Boolean} [props.paused]
  * @param {*} [props.position] indicates the initial position for this tween
  * @param {*} [props.onChange] adds the specified function as a listener to the `change` event
  * @param {*} [props.onComplete] adds the specified function as a listener to the `complete` event
  * @param {*} [props.override] if true, removes all existing tweens for the target
  */
-class Tween extends AbstractTween {
+export default class Tween extends AbstractTween {
 
 	constructor (target, props) {
 		super(props);
@@ -105,7 +105,7 @@ class Tween extends AbstractTween {
 
 		/**
 		 * Indicates the tween's current position is within a passive wait.
-		 * @type {boolean}
+		 * @type {Boolean}
 		 * @default false
 		 * @readonly
 		 */
@@ -126,7 +126,7 @@ class Tween extends AbstractTween {
 		/**
 		 * The position within the current step. Used by MovieClip.
 		 * @private
-		 * @type {number}
+		 * @type {Number}
 		 * @default 0
 		 */
 		this._stepPosition = 0;
@@ -191,14 +191,14 @@ class Tween extends AbstractTween {
 	 *
 	 * @param {Object} target The target object that will have its properties tweened.
 	 * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
-	 * @param {boolean} [props.useTicks]
-	 * @param {boolean} [props.ignoreGlobalPause]
-	 * @param {number|boolean} [props.loop]
-	 * @param {boolean} [props.reversed]
-	 * @param {boolean} [props.bounce]
-	 * @param {number} [props.timeScale]
+	 * @param {Boolean} [props.useTicks]
+	 * @param {Boolean} [props.ignoreGlobalPause]
+	 * @param {Number|Boolean} [props.loop]
+	 * @param {Boolean} [props.reversed]
+	 * @param {Boolean} [props.bounce]
+	 * @param {Number} [props.timeScale]
 	 * @param {Object} [props.pluginData]
-	 * @param {boolean} [props.paused]
+	 * @param {Boolean} [props.paused]
 	 * @param {*} [props.position] indicates the initial position for this tween
 	 * @param {*} [props.onChange] adds the specified function as a listener to the `change` event
 	 * @param {*} [props.onComplete] adds the specified function as a listener to the `complete` event
@@ -215,9 +215,9 @@ class Tween extends AbstractTween {
 	 *
 	 * @static
 	 *
-	 * @param {number} delta The change in time in milliseconds since the last tick. Required unless all tweens have
+	 * @param {Number} delta The change in time in milliseconds since the last tick. Required unless all tweens have
 	 * `useTicks` set to true.
-	 * @param {boolean} paused Indicates whether a global pause is in effect. Tweens with {@link tweenjs.Tween#ignoreGlobalPause}
+	 * @param {Boolean} paused Indicates whether a global pause is in effect. Tweens with {@link tweenjs.Tween#ignoreGlobalPause}
 	 * will ignore this, but all others will pause if this is `true`.
 	 */
 	static tick (delta, paused) {
@@ -291,7 +291,7 @@ class Tween extends AbstractTween {
 	 *
 	 * @param {Object} [target] The target to check for active tweens. If not specified, the return value will indicate
 	 * if there are any active tweens on any target.
-	 * @return {boolean} Indicates if there are active tweens.
+	 * @return {Boolean} Indicates if there are active tweens.
 	 */
 	static hasActiveTweens (target) {
 		if (target) { return !!target.tweenjs_count; }
@@ -324,7 +324,7 @@ class Tween extends AbstractTween {
 	 * @static
 	 *
 	 * @param {Tween} tween The tween instance to register or unregister.
-	 * @param {boolean} paused If `false`, the tween is registered. If `true` the tween is unregistered.
+	 * @param {Boolean} paused If `false`, the tween is registered. If `true` the tween is unregistered.
 	 */
 	static _register (tween, paused) {
 		const target = tween.target;
@@ -360,8 +360,8 @@ class Tween extends AbstractTween {
 	 *   .wait(1000)
 	 *   .to({ alpha: 0 }, 1000);
 	 *
-	 * @param {number} duration The duration of the wait in milliseconds (or in ticks if `useTicks` is true).
-	 * @param {boolean} [passive=false] Tween properties will not be updated during a passive wait. This
+	 * @param {Number} duration The duration of the wait in milliseconds (or in ticks if `useTicks` is true).
+	 * @param {Boolean} [passive=false] Tween properties will not be updated during a passive wait. This
 	 * is mostly useful for use with {@link tweenjs.Timeline} instances that contain multiple tweens
 	 * affecting the same target at different times.
 	 * @chainable
@@ -382,7 +382,7 @@ class Tween extends AbstractTween {
 	 *
 	 * @param {Object} props An object specifying property target values for this tween (Ex. `{x:300}` would tween the x
 	 * property of the target to 300).
-	 * @param {number} [duration=0] The duration of the tween in milliseconds (or in ticks if `useTicks` is true).
+	 * @param {Number} [duration=0] The duration of the tween in milliseconds (or in ticks if `useTicks` is true).
 	 * @param {Function} [ease=Ease.linear] The easing function to use for this tween. See the {@link tweenjs.Ease}
 	 * class for a list of built-in ease functions.
 	 * @chainable
@@ -406,7 +406,7 @@ class Tween extends AbstractTween {
 	 * // ...
 	 * tween.gotoAndPlay("myLabel"); // would play from 1000ms in.
 	 *
-	 * @param {string} label The label name.
+	 * @param {String} label The label name.
 	 * @chainable
 	 */
 	label (name) {
@@ -517,7 +517,7 @@ class Tween extends AbstractTween {
 	/**
 	 * @private
 	 * @param {} jump
-	 * @param {boolean} end
+	 * @param {Boolean} end
    */
 	_updatePosition (jump, end) {
 		let step = this._stepHead.next, t = this.position, d = this.duration;
@@ -535,7 +535,7 @@ class Tween extends AbstractTween {
 	 * @private
 	 * @param {Object} step
 	 * @param {Number} ratio
-	 * @param {boolean} end Indicates to plugins that the full tween has ended.
+	 * @param {Boolean} end Indicates to plugins that the full tween has ended.
 	 */
 	_updateTargetProps (step, ratio, end) {
 		if (this.passive = !!step.passive) { return; } // don't update props.
@@ -571,9 +571,9 @@ class Tween extends AbstractTween {
 
 	/**
 	 * @private
-	 * @param {number} startPos
-	 * @param {number} endPos
-	 * @param {boolean} includeStart
+	 * @param {Number} startPos
+	 * @param {Number} endPos
+	 * @param {Boolean} includeStart
 	 */
 	_runActionsRange (startPos, endPos, jump, includeStart) {
 		let rev = startPos > endPos;
@@ -659,7 +659,7 @@ class Tween extends AbstractTween {
 	 * See the SamplePlugin for more info.
 	 * @see tweenjs.SamplePlugin
 	 * @private
-	 * @param {string} name
+	 * @param {String} name
 	 * @param {Object} value
 	 */
 	_injectProp (name, value) {
@@ -669,10 +669,10 @@ class Tween extends AbstractTween {
 
 	/**
 	 * @private
-	 * @param {number} duration
+	 * @param {Number} duration
 	 * @param {Object} props
 	 * @param {Function} ease
-	 * @param {boolean} [passive=false]
+	 * @param {Boolean} [passive=false]
 	 */
 	_addStep (duration, props, ease, passive = false) {
 		let step = new TweenStep(this._stepTail, this.duration, duration, props, ease, passive);
@@ -813,5 +813,3 @@ class TweenAction {
 	}
 
 }
-
-export default Tween;

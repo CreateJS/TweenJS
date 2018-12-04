@@ -36,7 +36,7 @@ const RGB = "rgb";
  * @memberof tweenjs/plugins
  * @static
  */
-class ColorPlugin {
+export default class ColorPlugin {
 	constructor() {
 		throw "ColorPlugin is static and cannot be instantiated.";
 	}
@@ -44,7 +44,7 @@ class ColorPlugin {
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @static
-	 * @param {String} mode A string equalling either "rgb" or "hsl" indicating what color mode should be used for calculations
+	 * @param {String} mode A String equalling either "rgb" or "hsl" indicating what color mode should be used for calculations
 	 * and output. You can input any color type regardless of the mode setting.
 	 */
 	static install(props) {
@@ -165,7 +165,7 @@ ColorPlugin.HEX_RE = /^#((?:[a-f0-9]{3}){1,2})$/i;
 
 /**
  * The color tween mode. Supported values are "rgb" and "hsl".
- * @type {string}
+ * @type {String}
  * @private
  * @static
  * @default rgb
@@ -175,7 +175,7 @@ ColorPlugin._mode = RGB;
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
  * @property ID
- * @type {string}
+ * @type {String}
  * @static
  * @readonly
  */
@@ -303,5 +303,3 @@ function hue2rgb(p, q, t) {
 	}
 	return p;
 }
-
-export { ColorPlugin };

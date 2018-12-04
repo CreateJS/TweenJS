@@ -58,7 +58,7 @@
  * @memberof tweenjs
  * @static
  */
-class MotionGuidePlugin {
+export default class MotionGuidePlugin {
 
 	constructor () {
 		throw "MotionGuidePlugin is static and cannot be instantiated.";
@@ -189,7 +189,7 @@ class MotionGuidePlugin {
 	 * @param {Object} guideData All the information describing the guide to be followed.
 	 * @param {DrawingContext2D} [ctx=undefined] The context to draw the object into.
 	 * @param {Array} [higlight=undefined] Array of ratio positions to highlight
-	 * @returns {undefined|String}
+	 * @returns {String}
 	 */
 	static debug (guideData, ctx, higlight) {
 		guideData = guideData.guide || guideData;
@@ -268,7 +268,7 @@ class MotionGuidePlugin {
 	 * Calculate and store optimization data about the desired path to improve performance and accuracy of positions.
 	 * @param {Object} source The guide data provided to the tween call
 	 * @param {Object} storage the guide data used by the step calls and plugin to do the job, will be overwritten
-	 * @returns {undefined|String} Can return an error if unable to generate the data.
+	 * @returns {String} Can return an error if unable to generate the data.
 	 * @private
 	 */
 	static _solveGuideData (source, storage) {
@@ -456,7 +456,7 @@ class MotionGuidePlugin {
 	/**
 	 * Perform a check to validate path information so plugin can avoid later error checking.
 	 * @param {Object} guideData All the information describing the guide to be followed.
-	 * @returns {undefined|String} The problem found, or undefined if no problems.
+	 * @returns {String} The problem found, or undefined if no problems.
 	 * @private
 	 */
 	static _findPathProblems (guideData) {
@@ -514,5 +514,3 @@ MotionGuidePlugin.priority = 0; // high priority, should run sooner
  * @readonly
  */
 MotionGuidePlugin.ID = "MotionGuide";
-
-export { MotionGuidePlugin };

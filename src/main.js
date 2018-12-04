@@ -6,6 +6,12 @@
  * This is explained here: https://github.com/rollup/rollup/issues/845#issuecomment-240277194
  */
 
+/**
+ * @namespace tweenjs
+ */
+
+export { Event, EventDispatcher, Ticker } from "@createjs/core";
+
 export { default as Tween } from "./Tween";
 export { default as AbstractTween } from "./AbstractTween";
 export { default as Timeline } from "./Timeline";

@@ -47,7 +47,7 @@
  * @memberof tweenjs
  * @static
  */
-class RotationPlugin {
+export default class RotationPlugin {
 
 	constructor () {
 		throw "RotationPlugin is static and cannot be instantiated.";
@@ -146,10 +146,8 @@ RotationPlugin.props = { rotation: 1, rotationX: 1, rotationY: 1, rotationZ: 1 }
 
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
- * @type {string}
+ * @type {String}
  * @static
  * @readonly
  */
 RotationPlugin.ID = "Rotation";
-
-export { RotationPlugin };

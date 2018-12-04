@@ -26,26 +26,26 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import EventDispatcher from "@createjs/core/src/events/EventDispatcher";
+import { EventDispatcher } from "@createjs/core";
 import Tween from "./Tween";
 
 /**
  * Base class that both {@link tweenjs.Tween} and {@link tweenjs.Timeline} extend. Should not be instantiated directly.
  *
  * @memberof tweenjs
- * @extends EventDispatcher
+ * @extends core.EventDispatcher
  *
  * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
- * @param {boolean} [props.useTicks=false] See the {@link tweenjs.AbstractTween#useTicks} property for more information.
- * @param {boolean} [props.ignoreGlobalPause=false] See the {@link tweenjs.AbstractTween#ignoreGlobalPause} for more information.
- * @param {number|boolean} [props.loop=0] See the {@link tweenjs.AbstractTween#loop} for more information.
- * @param {boolean} [props.reversed=false] See the {@link tweenjs.AbstractTween#reversed} for more information.
- * @param {boolean} [props.bounce=false] See the {@link tweenjs.AbstractTween#bounce} for more information.
- * @param {number} [props.timeScale=1] See the {@link tweenjs.AbstractTween#timeScale} for more information.
+ * @param {Boolean} [props.useTicks=false] See the {@link tweenjs.AbstractTween#useTicks} property for more information.
+ * @param {Boolean} [props.ignoreGlobalPause=false] See the {@link tweenjs.AbstractTween#ignoreGlobalPause} for more information.
+ * @param {Number|Boolean} [props.loop=0] See the {@link tweenjs.AbstractTween#loop} for more information.
+ * @param {Boolean} [props.reversed=false] See the {@link tweenjs.AbstractTween#reversed} for more information.
+ * @param {Boolean} [props.bounce=false] See the {@link tweenjs.AbstractTween#bounce} for more information.
+ * @param {Number} [props.timeScale=1] See the {@link tweenjs.AbstractTween#timeScale} for more information.
  * @param {Function} [props.onChange] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:change} event.
  * @param {Function} [props.onComplete] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:complete} event.
  */
-class AbstractTween extends EventDispatcher {
+export default class AbstractTween extends EventDispatcher {
 
   constructor (props) {
     super();
@@ -54,14 +54,14 @@ class AbstractTween extends EventDispatcher {
 		 * Causes this tween to continue playing when a global pause is active. For example, if TweenJS is using {@link core.Ticker},
 		 * then setting this to false (the default) will cause this tween to be paused when `Ticker.setPaused(true)`
 		 * is called. See the {@link tweenjs.Tween#tick} method for more info. Can be set via the `props` parameter.
-		 * @type {boolean}
+		 * @type {Boolean}
 		 * @default false
 		 */
 		this.ignoreGlobalPause = false;
 
 		/**
 		 * Indicates the number of times to loop. If set to -1, the tween will loop continuously.
-		 * @type {number}
+		 * @type {Number}
 		 * @default 0
 		 */
 		this.loop = 0;
@@ -69,7 +69,7 @@ class AbstractTween extends EventDispatcher {
 		/**
 		 * Uses ticks for all durations instead of milliseconds. This also changes the behaviour of some actions (such as `call`).
 		 * Changing this value on a running tween could have unexpected results.
-		 * @type {boolean}
+		 * @type {Boolean}
 		 * @default false
 		 * @readonly
 		 */
@@ -77,14 +77,14 @@ class AbstractTween extends EventDispatcher {
 
 		/**
 		 * Causes the tween to play in reverse.
-		 * @type {boolean}
+		 * @type {Boolean}
 		 * @default false
 		 */
 		this.reversed = false;
 
 		/**
 		 * Causes the tween to reverse direction at the end of each loop.
-		 * @type {boolean}
+		 * @type {Boolean}
 		 * @default false
 		 */
 		this.bounce = false;
@@ -92,7 +92,7 @@ class AbstractTween extends EventDispatcher {
 		/**
 		 * Changes the rate at which the tween advances. For example, a `timeScale` value of `2` will double the
 		 * playback speed, a value of `0.5` would halve it.
-		 * @type {number}
+		 * @type {Number}
 		 * @default 1
 		 */
 		this.timeScale = 1;
@@ -101,7 +101,7 @@ class AbstractTween extends EventDispatcher {
 		 * Indicates the duration of this tween in milliseconds (or ticks if `useTicks` is true), irrespective of `loops`.
 		 * This value is automatically updated as you modify the tween. Changing it directly could result in unexpected
 		 * behaviour.
-		 * @type {number}
+		 * @type {Number}
 		 * @default 0
 		 * @readonly
 		 */
@@ -118,7 +118,7 @@ class AbstractTween extends EventDispatcher {
 
 		/**
 		 * The raw tween position. This value will be between `0` and `loops * duration` while the tween is active, or -1 before it activates.
-		 * @type {number}
+		 * @type {Number}
 		 * @default -1
 		 * @readonly
 		 */
@@ -193,7 +193,6 @@ class AbstractTween extends EventDispatcher {
 		}
 		return list;
 	}
-
 	set labels (labels) {
 		this._labels = labels;
 		this._labelList = null;
@@ -208,7 +207,7 @@ class AbstractTween extends EventDispatcher {
    *   <li>"first" if the current position is 7.</li>
    *   <li>"second" if the current position is 15.</li>
    * </ul>
-   * @type {string}
+   * @type {String}
    * @readonly
    */
   get currentLabel () {
@@ -221,27 +220,18 @@ class AbstractTween extends EventDispatcher {
   /**
    * Pauses or unpauses the tween. A paused tween is removed from the global registry and is eligible for garbage collection
    * if no other references to it exist.
-   * @type {boolean}
+   * @type {Boolean}
 	 */
-	get paused () {
-		return this._paused;
-	}
-
+	get paused () { return this._paused; }
   set paused (paused) {
     Tween._register(this, paused);
 		this._paused = paused;
   }
 
 	/**
-	 * Advances the tween by a specified amount.
-	 *
-	 * @example
-	 * `var a = 2 + 2;`
-	 * Some words
-	 * `var b = 5;`
-	 *
-	 * @param {number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
-	 * @param {boolean} [ignoreActions=false] If true, actions will not be executed due to this change in position.
+	 * Advances the tween by a specified amount.	 *
+	 * @param {Number} delta The amount to advance in milliseconds (or ticks if useTicks is true). Negative values are supported.
+	 * @param {Boolean} [ignoreActions=false] If true, actions will not be executed due to this change in position.
 	 */
 	advance (delta, ignoreActions = false) {
 		this.setPosition(this.rawPosition + delta * this.timeScale, ignoreActions);
@@ -253,9 +243,9 @@ class AbstractTween extends EventDispatcher {
 	 * @emits tweenjs.AbstractTween#event:change
 	 * @emits tweenjs.AbstractTween#event:complete
 	 *
-	 * @param {number} rawPosition The raw position to seek to in milliseconds (or ticks if useTicks is true).
-	 * @param {boolean} [ignoreActions=false] If true, do not run any actions that would be triggered by this operation.
-	 * @param {boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
+	 * @param {Number} rawPosition The raw position to seek to in milliseconds (or ticks if useTicks is true).
+	 * @param {Boolean} [ignoreActions=false] If true, do not run any actions that would be triggered by this operation.
+	 * @param {Boolean} [jump=false] If true, only actions at the new position will be run. If false, actions between the old and new position are run.
 	 * @param {Function} [callback] Primarily for use with MovieClip, this callback is called after properties are updated, but before actions are run.
 	 */
 	setPosition (rawPosition, ignoreActions = false, jump = false, callback) {
@@ -303,7 +293,7 @@ class AbstractTween extends EventDispatcher {
 	 * // given a tween with a duration of 3000ms set to loop:
 	 * console.log(myTween.calculatePosition(3700); // 700
 	 *
-	 * @param {number} rawPosition A raw position.
+	 * @param {Number} rawPosition A raw position.
 	 */
 	calculatePosition (rawPosition) {
 		// largely duplicated from setPosition, but necessary to avoid having to instantiate generic objects to pass values (end, loop, position) back.
@@ -327,8 +317,8 @@ class AbstractTween extends EventDispatcher {
 	/**
 	 * Adds a label that can be used with {@link tweenjs.Timeline#gotoAndPlay}/{@link tweenjs.Timeline#gotoAndStop}.
 	 *
-	 * @param {string} label The label name.
-	 * @param {number} position The position this label represents.
+	 * @param {String} label The label name.
+	 * @param {Number} position The position this label represents.
 	 */
 	addLabel (label, position) {
 		if (!this._labels) { this._labels = {}; }
@@ -343,7 +333,7 @@ class AbstractTween extends EventDispatcher {
 	/**
 	 * Unpauses this timeline and jumps to the specified position or label.
 	 *
-	 * @param {string|number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
+	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`)
 	 * or label to jump to.
 	 */
 	gotoAndPlay (positionOrLabel) {
@@ -354,7 +344,7 @@ class AbstractTween extends EventDispatcher {
 	/**
 	 * Pauses this timeline and jumps to the specified position or label.
 	 *
-	 * @param {string|number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`) or label
+	 * @param {String|Number} positionOrLabel The position in milliseconds (or ticks if `useTicks` is `true`) or label
 	 * to jump to.
 	 */
 	gotoAndStop (positionOrLabel) {
@@ -366,7 +356,7 @@ class AbstractTween extends EventDispatcher {
 	 * If a numeric position is passed, it is returned unchanged. If a string is passed, the position of the
 	 * corresponding frame label will be returned, or `null` if a matching label is not defined.
 	 *
-	 * @param {string|number} positionOrLabel A numeric position value or label string.
+	 * @param {String|Number} positionOrLabel A numeric position value or label String.
 	 */
 	resolve (positionOrLabel) {
 		const pos = Number(positionOrLabel);
@@ -376,7 +366,7 @@ class AbstractTween extends EventDispatcher {
 	/**
 	 * Returns a string representation of this object.
 	 *
-	 * @return {string} a string representation of the instance.
+	 * @return {String} a string representation of the instance.
 	 */
 	toString () {
 		return `[${this.constructor.name}${this.name ? ` (name=${this.name})` : ""}]`;
@@ -403,7 +393,7 @@ class AbstractTween extends EventDispatcher {
 
 	/**
 	 * @private
-	 * @param {string|number} positionOrLabel
+	 * @param {String|Number} positionOrLabel
 	 */
 	_goto (positionOrLabel) {
 		const pos = this.resolve(positionOrLabel);
@@ -415,10 +405,10 @@ class AbstractTween extends EventDispatcher {
    *
 	 * @private
 	 *
-	 * @param {number} startRawPos
-	 * @param {number} endRawPos
-	 * @param {boolean} jump
-	 * @param {boolean} includeStart
+	 * @param {Number} startRawPos
+	 * @param {Number} endRawPos
+	 * @param {Boolean} jump
+	 * @param {Boolean} includeStart
 	 */
 	_runActions (startRawPos, endRawPos, jump, includeStart) {
 	  // console.log(this.passive === false ? " > Tween" : "Timeline", "run", startRawPos, endRawPos, jump, includeStart);
@@ -501,5 +491,3 @@ class AbstractTween extends EventDispatcher {
  * tweens that loop continuously will never fire a complete event.
  * @event tweenjs.AbstractTween#complete
  */
-
-export default AbstractTween;

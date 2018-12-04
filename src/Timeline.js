@@ -1,30 +1,30 @@
-/*
-* Timeline
-* Visit http://createjs.com/ for documentation, updates and examples.
-*
-* Copyright (c) 2010 gskinner.com, inc.
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-*
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*/
+/**
+ * @license Timeline
+ * Visit http://createjs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2010 gskinner.com, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
 
 import AbstractTween from "./AbstractTween";
 
@@ -36,36 +36,23 @@ import AbstractTween from "./AbstractTween";
  * compatibility only and will be removed in the future. Include tweens and labels as properties on the props object.
  *
  * @memberof tweenjs
- * @extends AbstractTween
+ * @extends tweenjs.AbstractTween
  *
- * @param {Object} [props] The configuration properties to apply to this instance (ex. `{loop:-1, paused:true}`).
- * @param {boolean} [props.useTicks=false] See the {@link tweenjs.AbstractTween#useTicks} property for more information.
- * @param {boolean} [props.ignoreGlobalPause=false] See the {@link tweenjs.AbstractTween#ignoreGlobalPause} for more information.
- * @param {number|boolean} [props.loop=0] See the {@link tweenjs.AbstractTween#loop} for more information.
- * @param {boolean} [props.reversed=false] See the {@link tweenjs.AbstractTween#reversed} for more information.
- * @param {boolean} [props.bounce=false] See the {@link tweenjs.AbstractTween#bounce} for more information.
- * @param {number} [props.timeScale=1] See the {@link tweenjs.AbstractTween#timeScale} for more information.
- * @param {boolean} [props.paused=false] See the {@link tweenjs.AbstractTween#paused} for more information.
- * @param {number} [props.position] See the {@link tweenjs.AbstractTween#position} for more information.
- * @param {boolean} [props.tweens]
- * @param {number} [props.labels]
+ * @param {Object} [props] The configuration properties to apply to this instance
+ * @param {Boolean} [props.useTicks=false] See the {@link tweenjs.AbstractTween#useTicks} property for more information.
+ * @param {Boolean} [props.ignoreGlobalPause=false] See the {@link tweenjs.AbstractTween#ignoreGlobalPause} for more information.
+ * @param {Number|Boolean} [props.loop=0] See the {@link tweenjs.AbstractTween#loop} for more information.
+ * @param {Boolean} [props.reversed=false] See the {@link tweenjs.AbstractTween#reversed} for more information.
+ * @param {Boolean} [props.bounce=false] See the {@link tweenjs.AbstractTween#bounce} for more information.
+ * @param {Number} [props.timeScale=1] See the {@link tweenjs.AbstractTween#timeScale} for more information.
+ * @param {Boolean} [props.paused=false] See the {@link tweenjs.AbstractTween#paused} for more information.
+ * @param {Number} [props.position] See the {@link tweenjs.AbstractTween#position} for more information.
+ * @param {Boolean} [props.tweens]
+ * @param {Number} [props.labels]
  * @param {Function} [props.onChange] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:change} event.
  * @param {Function} [props.onComplete] Adds the specified function as a listener to the {@link tweenjs.AbstractTween#event:complete} event.
- * Supported props are listed below. These props are set on the corresponding instance properties except where
- * specified.<UL>
- *    <LI> `useTicks`</LI>
- *    <LI> `ignoreGlobalPause`</LI>
- *    <LI> `loop`</LI>
- *    <LI> `reversed`</LI>
- *    <LI> `bounce`</LI>
- *    <LI> `timeScale`</LI>
- *    <LI> `paused`</LI>
- *    <LI> `position`: indicates the initial position for this tween.</LI>
- *    <LI> `onChange`: adds the specified function as a listener to the `change` event</LI>
- *    <LI> `onComplete`: adds the specified function as a listener to the `complete` event</LI>
- * </UL>
  */
-class Timeline extends AbstractTween {
+export default class Timeline extends AbstractTween {
 
 	constructor (props = {}) {
 		super(props);
@@ -116,7 +103,7 @@ class Timeline extends AbstractTween {
 	 * Removes one or more tweens from this timeline.
 	 *
 	 * @param {Tween} ...tweens The tween(s) to remove. Accepts multiple arguments.
-	 * @return {boolean} Returns `true` if all of the tweens were successfully removed.
+	 * @return {Boolean} Returns `true` if all of the tweens were successfully removed.
 	 */
 	removeTween (...tweens) {
 		const l = tweens.length;
@@ -186,5 +173,3 @@ class Timeline extends AbstractTween {
 	}
 
 }
-
-export default Timeline;

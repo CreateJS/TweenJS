@@ -1,8 +1,6 @@
 ### 2.0 BETA
 
-This branch is in beta. Reporting issues is appreciated, please mention that it is for 2.0 in the issue body.
-
-TweenJS is currently not on NPM. To use 2.0 in your projects, install with the git commit-ish syntax `npm install github:createjs/tweenjs#2.0`
+**This branch is in beta. Reporting issues is appreciated, please mention that it is for 2.0 in the issue body.**
 
 Unit tests failing is a known issue, please don't report this.
 
@@ -16,7 +14,17 @@ Plugin architecture is incomplete, as such they are expected to break.
 
 TweenJS is a simple tweening library for use in JavaScript. It was developed to integrate well with the EaselJS library, but is not dependent on or specific to it (though it uses the same Ticker and Event classes by default). It supports tweening of both numeric object properties & CSS style properties.
 
-## Example
+## Installation
+
+#### NPM
+
+`npm install @createjs/tweenjs --save`
+
+#### CDN
+
+`<script src="https://code.createjs.com/2.0/tweenjs.min.js"></script>`
+
+## Simple Example
 The API is simple but very powerful, making it easy to create complex tweens by chaining commands.
 
 ```javascript

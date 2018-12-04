@@ -1,6 +1,6 @@
 {
   "name": "@createjs/tweenjs",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.4",
   "description": "A simple but powerful tweening / animation library for Javascript. Part of the CreateJS suite of libraries.",
   "keywords": [
     "html5",
@@ -23,9 +23,8 @@
     "Wes Gorgichuk <wes@gskinner.com> (https://github.com/wdamien)",
     "Patrick McGuckin <p.mcgooks@gmail.com> (https://github.com/tehvgg)"
   ],
-  "main": "dist/tweenjs.common.js",
-  "module": "dist/tweenjs.module.js",
-  "browser": "dist/tweenjs.min.js",
+  "main": "dist/tweenjs.cjs.js",
+  "module": "src/main.js",
   "logo": "assets/icon.png",
   "repository": {
     "type": "git",
@@ -47,21 +46,18 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest -c ./tests/jest.config.js",
-    "lint": "cd node_modules/@createjs/build && gulp lint",
-    "dev": "cd node_modules/@createjs/build && gulp dev --format=global",
+    "dev": "cd node_modules/@createjs/build && gulp dev --format=iife",
     "build": "cd node_modules/@createjs/build && gulp build",
-    "plugins": "cd node_modules/@createjs/build && gulp plugins",
+		"plugins": "cd node_modules/@createjs/build && gulp plugins",
     "docs": "cd node_modules/@createjs/docs && npm run gen"
   },
   "dependencies": {
-    "@createjs/core": "^2.0.0-beta.1"
+    "@createjs/core": "^2.0.0-beta.4"
   },
   "devDependencies": {
-    "@createjs/build": "^2.0.0-beta.3",
-    "@createjs/easeljs": "^2.0.0-beta.2",
-    "babel-jest": "^22.0.4",
-    "jest": "^22.0.4"
+    "@createjs/build": "^2.0.0-beta.4",
+		"@createjs/docs": "^2.0.0-beta.4",
+    "@createjs/easeljs": "^2.0.0-beta.4"
   },
-  "engine": "node >= 8.9.4"
+  "engine": "node >= 8.9.0"
 }

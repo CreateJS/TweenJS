@@ -67,7 +67,7 @@ const TRANSFORM = "transform";
  * @memberof tweenjs
  * @static
  */
-class CSSPlugin {
+export default class CSSPlugin {
 	constructor() {
 		throw "CSSPlugin is static and cannot be instanitated.";
 	}
@@ -167,7 +167,7 @@ class CSSPlugin {
 }
 
 /**
- * @type {number}
+ * @type {Number}
  * @readonly
  * @static
  */
@@ -175,7 +175,7 @@ CSSPlugin.priority = 100; // high priority, should read first and write last
 
 /**
  * A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
- * @type {string}
+ * @type {String}
  * @static
  * @readonly
  */
@@ -235,7 +235,7 @@ CSSPlugin.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/;
  *
  *     Given the considerations for `compute`, it is recommended that you keep the default global setting of `false` and override it
  *     in specific cases via `pluginData`.
- * @type {boolean}
+ * @type {Boolean}
  * @default false
  * @static
  */
@@ -380,5 +380,3 @@ function writeSingleTransform (list) {
   return str;
 }
 */
-
-export { CSSPlugin };
