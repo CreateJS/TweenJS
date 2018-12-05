@@ -248,7 +248,7 @@ this.createjs = this.createjs||{};
 	Tween.IGNORE = {};
 
 	/**
-	 * @property _listeners
+	 * @property _tweens
 	 * @type Array[Tween]
 	 * @static
 	 * @protected
