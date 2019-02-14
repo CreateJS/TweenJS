@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TweenJS: Dot Plugin Example</title>
+
+	<link href="../_assets/css/shared.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/examples.css" rel="stylesheet" type="text/css"/>
+	<link href="../_assets/css/tweenjs.css" rel="stylesheet" type="text/css"/>
+	<script src="../_assets/js/examples.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="../_assets/libs/easeljs-NEXT.min.js"></script>
+	<script type="text/javascript" src="../lib/tweenjs-NEXT.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/plugins/DotPlugin.js"></script>
+	<!-- We also provide hosted minified versions of all CreateJS libraries.
+	  http://code.createjs.com -->
+
+<script id="editable">
+	function init() {
+		// set up our stage:
+		stage = new createjs.Stage("canvas1");
+		var w = stage.canvas.width, h=stage.canvas.height;
+
+		var circle = new createjs.Shape();
+		circle.graphics.beginFill("#FF0000").drawCircle(0, 0, 50);
+		circle.transformMatrix = new createjs.Matrix2D(1,0,0,1, w*0.1, h/2)
+
+		stage.addChild(circle);
+		
+		// install the plugin:
+		createjs.DotPlugin.install();
+
+		// tween the tx property of the transformMatrix property of circle:
+		createjs.Tween.get(circle, {loop: -1, bounce:true})
+			.to({".transformMatrix.tx": w*0.9, alpha: 0.1}, 1000);
+
+		createjs.Ticker.timingMode = createjs.Ticker.RAF;
+		createjs.Ticker.addEventListener("tick", stage);
+	}
+</script>
+</head>
+
+<body onload="init();">
+
+<header class="TweenJS">
+	<h1>DotPlugin Example</h1>
+
+	<p>This example demonstrates the DotPlugin, which lets you use dot syntax to tween nested properties (ex. <code>myShape.transformMatrix.tx</code>).</p>
+</header>
+
+<canvas id="canvas1" width="960" height="350"></canvas>
+<br/>
+<input type="button" value="toggle paused"
+	   onclick="createjs.Ticker.paused = !createjs.Ticker.paused;">
+</body>
+</html>

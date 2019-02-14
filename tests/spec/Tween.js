@@ -98,6 +98,46 @@ describe("TweenJS", () => {
 		});
 	});
 
+	describe("Race Conditions", function () {
+		it("don't run newly added tweens", function (done) {
+				var counter = 10;
+				function addAnother() {
+						if (counter < 0) { return; }
+						counter--;
+						createjs.Tween.get().wait(10).call(addAnother);
+				}
+				for (var i=0; i<counter; i++) {
+						createjs.Tween.get().wait(10).call(addAnother);
+				}
+				createjs.Tween.tick(1000, false);
+				expect(counter).toBe(0);
+				done();
+
+		});
+
+		it("don't run removed tweens", function (done) {
+				var counter = 1;
+				function ended() { counter--; }
+				var tween = createjs.Tween.get().wait(10).call(ended);
+				var tween2 = createjs.Tween.get().wait(10).call(ended);
+				tween.call(function() { tween2.paused = true; });
+				createjs.Tween.tick(1000, false)
+				expect(counter).toBe(0);
+				done();
+		});
+
+		it("do run tweens after a removed tween", function (done) {
+				var counter = 2;
+				function ended() { counter--; }
+				var tween = createjs.Tween.get().wait(10).call(ended);
+				var tween2 = createjs.Tween.get().wait(10).call(ended);
+				var tween3 = createjs.Tween.get().wait(10).call(ended);
+				tween.call(function() { tween2.paused = true; });
+				createjs.Tween.tick(1000, false)
+				expect(counter).toBe(0);
+				done();
+		});
+	});
 
 
 	describe("Events", () => {
