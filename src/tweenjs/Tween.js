@@ -793,6 +793,9 @@ this.createjs = this.createjs||{};
 			this._injected = null;
 			this._appendProps(inject, step, false);
 		}
+		
+		// added by Dan Zen 03/27/21 to provide for dynamically adjusted tweens
+		this.step = step; 
 	};
 	
 	/**
