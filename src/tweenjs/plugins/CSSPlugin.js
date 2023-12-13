@@ -30,9 +30,9 @@
 * @module TweenJS
 */
 
-this.createjs = this.createjs||{};
+this.createjs = this.createjs || {};
 
-(function() {
+(function () {
 	"use strict";
 
 	/**
@@ -74,18 +74,18 @@ this.createjs = this.createjs||{};
 	 * @constructor
 	 **/
 	function CSSPlugin() {
-		throw("CSSPlugin cannot be instantiated.")
+		throw ("CSSPlugin cannot be instantiated.")
 	}
 	var s = CSSPlugin;
 
-// static properties
+	// static properties
 	/**
 	 * @property priority
 	 * @protected
 	 * @static
 	 **/
 	s.priority = 100; // high priority, should read first and write last
-	
+
 	/**
 	 * READ-ONLY. A unique identifying string for this plugin. Used by TweenJS to ensure duplicate plugins are not installed on a tween.
 	 * @property ID
@@ -94,22 +94,8 @@ this.createjs = this.createjs||{};
 	 * @readonly
 	 **/
 	s.ID = "CSS";
-	
-	/**
-	 * READ-ONLY.
-	 * @property VALUE_RE
-	 * @type {RegExp}
-	 * @static
-	 * @readonly
-	 */
-	s.VALUE_RE = /^(-?[\d.]+)([a-z%]*)$/; // extracts the numeric value and suffix from a single CSS value
-	
-	s.TRANSFORM_VALUE_RE = /(?:^| |,)(-?[\d.]+)([a-z%]*)/g; // extracts the numeric value and suffix from comma delimited lists
-	
-	s.TRANSFORM_RE = /(\w+?)\(([^)]+)\)|(?:^| )(\*)(?:$| )/g; // extracts the components of a transform
-	
-	
-	
+
+
 	/**
 	 * By default, CSSPlugin uses only inline styles on the target element (ie. set via the style attribute, `style` property, or `cssText`)
 	 * to determine which properties should be tweened via CSS, and what units to use.
@@ -139,13 +125,13 @@ this.createjs = this.createjs||{};
 	s.compute = false;
 
 
-// static methods
+	// static methods
 	/**
 	 * Installs this plugin for use with TweenJS. Call this once after TweenJS is loaded to enable this plugin.
 	 * @method install
 	 * @static
 	 **/
-	s.install = function() {
+	s.install = function () {
 		createjs.Tween._installPlugin(CSSPlugin);
 	};
 
@@ -159,31 +145,36 @@ this.createjs = this.createjs||{};
 	 * @return {any}
 	 * @static
 	 **/
-	s.init = function(tween, prop, value) {
+	s.init = function (tween, prop, value) {
 		var data = tween.pluginData;
 		if (data.CSS_disabled || !(tween.target instanceof HTMLElement)) { return; }
-		var initVal = value||getStyle(tween.target, prop, data.CSS_compute);
-		if (initVal === undefined) { return;  }
-		
+		var initVal = value || getStyle(tween.target, prop, data.CSS_compute);
+
+
+		if (initVal === undefined) { return; }
+
 		tween._addPlugin(CSSPlugin);
 		var cssData = data.CSS || (data.CSS = {});
 		if (prop === "transform") {
 			cssData[prop] = "_t";
 			return parseTransform(initVal);
 		}
-		
-		var result = s.VALUE_RE.exec(initVal);
+
+		let result = null;
+		if (initVal)
+			result = CSSNumericValue.parse(initVal);
+
 		if (result === null) {
 			// a string we can't handle numerically, so add it to the CSSData without a suffix.
 			cssData[prop] = "";
 			return initVal;
 		} else {
-			cssData[prop] = result[2];
-			return parseFloat(result[1]);
+			cssData[prop] = result.unit;
+			return result.value;
 		}
 	};
 
-	
+
 	/**
 	 * Called when a new step is added to a tween (ie. a new "to" action is added to a tween).
 	 * See {{#crossLink "SamplePlugin/step"}}{{/crossLink}} for more info.
@@ -193,7 +184,7 @@ this.createjs = this.createjs||{};
 	 * @param {Object} props
 	 * @static
 	 **/
-	s.step = function(tween, step, props) {
+	s.step = function (tween, step, props) {
 		if (props.transform) {
 			step.props.transform = parseTransform(step.props.transform, step.prev.props.transform);
 		}
@@ -212,7 +203,7 @@ this.createjs = this.createjs||{};
 	 * @return {any}
 	 * @static
 	 **/
-	s.change = function(tween, step, prop, value, ratio, end) {
+	s.change = function (tween, step, prop, value, ratio, end) {
 		var sfx = tween.pluginData.CSS[prop];
 		if (sfx === undefined) { return; }
 		if (prop === "transform") {
@@ -223,9 +214,9 @@ this.createjs = this.createjs||{};
 		tween.target.style[prop] = value;
 		return createjs.Tween.IGNORE;
 	};
-	
-	
-// private helper methods:
+
+
+	// private helper methods:
 	function getStyle(target, prop, compute) {
 		if (compute || (compute == null && s.compute)) {
 			return window.getComputedStyle(target)[prop];
@@ -234,104 +225,63 @@ this.createjs = this.createjs||{};
 		}
 	}
 
-	function parseTransform(str, compare) {
-		var result, list = [false, str];
-		do {
-			// pull out the next "component" of the transform (ex. "translate(10px, 20px)")
-			result = s.TRANSFORM_RE.exec(str);
-			if (!result) { break; }
-			if (result[3] === "*") {
-				// reuse previous value:
-				list.push(compare[list.length]);
-				continue;
+	const parseTransform = (str, compare) => {
+		let list = [false];
+		let result = CSSStyleValue.parse("transform", str);
+		list.push(result);
+
+		if (compare && compare.length === result.length) {
+			for (let i = 0; i < result.length; i++) {
+				if (compare[1][i].constructor !== result[i].constructor) {
+					console.log("transforms don't match: ", result[0].constructor.name, compare[1][i].constructor.name);
+					compare = null;
+				} // component doesn't match
 			}
-			var component = [result[1]], compareComp = compare && compare[list.length];
-			
-			// check that the operation type matches (ex. "translate" vs "rotate"):
-			if (compare && (!compareComp || component[0] !== compareComp[0])) {
-				console.log("transforms don't match: ", component[0], compareComp&&compareComp[0]);
-				compare=null;
-			} // component doesn't match
-			
-			parseMulti(result[2], compareComp, component);
+		}
 
-			list.push(component);
-		} while(true);
-
+		// Return false when compare is undefined/null
 		list[0] = !!compare;
-		return list;
-	}
-	
-	// this was separated so that it can be used for other multi element styles in the future
-	// ex. transform-origin, border, etc.
-	function parseMulti(str, compare, arr) {
-		// TODO: add logic to deal with "0" values? Troublesome because the browser automatically appends a unit for some 0 values.
-		do {
-			// pull out the next value (ex. "20px", "12.4rad"):
-			var result = s.TRANSFORM_VALUE_RE.exec(str);
-			if (!result) { return arr; }
-			if (!arr) { arr = []; }
-			arr.push(+result[1], result[2]);
-
-			// check that the units match (ex. "px" vs "em"):
-			if (compare && (compare[arr.length-1] !== result[2])) { console.log("transform units don't match: ",arr[0], compare[arr.length-1], result[2]); compare=null;  } // unit doesn't match
-		} while(true);
+		return (list);
 	}
 
 	function writeTransform(list0, list1, ratio) {
 		// check if we should just use the original transform strings:
-		if (ratio === 1) { return list1[1]; }
-		if (ratio === 0 || !list1[0]) { return list0[1]; }
+		if (ratio === 1) { return list1[1].toString(); }
+		if (ratio === 0 || !list1[0]) { return list0[1].toString(); }
 
 		// they match, we want to apply the ratio:
-		var str = "", l=list0.length, i, j, jl;
-		for (i=2; i<l; i++) {
-			var component0 = list0[i], component1 = list1[i];
-			str += component0[0]+"(";
-			for (j=1, jl=component0.length; j<jl; j+=2) {
-				str += component0[j]+(component1[j]-component0[j])*ratio; // value
-				str += component1[j+1] || component0[j+1]; // unit
-				if (j < jl-2) { str += ", "; }
+		let original = list0[1];
+		let modifiedValue = CSSStyleValue.parse("transform", original.toString());
+		let newValue = list1[1];
+
+		// Only works for rotate, scale and translate, skew or metrix do not have x,y,z
+		for (let i = 0; i < original.length; i++) {
+			switch (original[i].constructor) {
+				case CSSRotate:
+					modifiedValue[i].angle.value += (newValue[i].angle.value - original[i].angle.value) * ratio;
+					// Fall down to CSSScale to set x,y,z
+				case CSSTranslate:
+					// Fall down to CSSScale to set x,y,z
+				case CSSScale:
+					modifiedValue[i].x.value += (newValue[i].x.value - original[i].x.value) * ratio;
+					modifiedValue[i].y.value += (newValue[i].y.value - original[i].y.value) * ratio;
+					modifiedValue[i].z.value += (newValue[i].z.value - original[i].z.value) * ratio;
+					break;
+				case CSSSkew:
+					modifiedValue[i].ax.value += (newValue[i].ax.value - original[i].ax.value) * ratio;
+					modifiedValue[i].ay.value += (newValue[i].ay.value - original[i].ay.value) * ratio;
+					break;
+				case CSSSkewX:
+					modifiedValue[i].ax.value += (newValue[i].ax.value - original[i].ax.value) * ratio;
+					break;
+				case CSSSkewY:
+					modifiedValue[i].ay.value += (newValue[i].ay.value - original[i].ay.value) * ratio;
+					break;
 			}
-			str += ")";
-			if (i < l-1) { str += " "; }
 		}
-		return str;
+		return modifiedValue.toString();
 	}
-	
-	/*
-	
-	// this was part of an attempt to handle multi element css values, ex. margin="10px 10px 20px 30px"
-	// discarded because the browser likes to collapse values, which makes a generic solution infeasible.
-	// for example, margin="10px 10px 10px 10px" will collapse to just "10px"
-	// requires custom logic to handle each scenario.
-	s.MULTI_RE = /((?:^| )-?[\d.]+[a-z%]*){2,}/; // matches CSS values that consist of two or more values with suffixes
-	function writeMulti(arr0, arr1, ratio) {
-		var str = "", l=arr0.length, i;
-		for (i=0; i<l; i+=2) {
-			str += arr0[i]+(arr1[i]-arr0[i])*ratio+arr0[i+1];
-			if (i < l-2) { str += " "; }
-		}
-		return str;
-	}
-	
-	// this method is really only needed for roundtrip tests.
-	function writeSingleTransform(list) {
-		var str = "", l=list.length, i, j, jl, component;
-		for (i=2; i<l; i++) {
-			component = list[i];
-			str += component[0]+"(";
-			for (j=1, jl=component.length; j<jl; j+=2) {
-				str += component[j]+component[j+1];
-				if (j < jl-2) { str += ", "; }
-			}
-			str += ")";
-			if (i < l-1) { str += " "; }
-		}
-		return str;
-	}
-	*/
-	
+
 	createjs.CSSPlugin = s;
 
 }());
