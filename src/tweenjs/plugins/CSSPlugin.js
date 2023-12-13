@@ -235,6 +235,7 @@ this.createjs = this.createjs || {};
 				if (compare[1][i].constructor !== result[i].constructor) {
 					console.log("transforms don't match: ", result[0].constructor.name, compare[1][i].constructor.name);
 					compare = null;
+					break;
 				} // component doesn't match
 			}
 		}
@@ -250,36 +251,36 @@ this.createjs = this.createjs || {};
 		if (ratio === 0 || !list1[0]) { return list0[1].toString(); }
 
 		// they match, we want to apply the ratio:
-		let original = list0[1];
-		let modifiedValue = CSSStyleValue.parse("transform", original.toString());
-		let newValue = list1[1];
+		let startValue = list0[1];
+		let newValue = CSSStyleValue.parse("transform", startValue.toString());
+		let endValue = list1[1];
 
 		// Only works for rotate, scale and translate, skew or metrix do not have x,y,z
-		for (let i = 0; i < original.length; i++) {
-			switch (original[i].constructor) {
+		for (let i = 0; i < startValue.length; i++) {
+			switch (startValue[i].constructor) {
 				case CSSRotate:
-					modifiedValue[i].angle.value += (newValue[i].angle.value - original[i].angle.value) * ratio;
+					newValue[i].angle.value += (endValue[i].angle.value - startValue[i].angle.value) * ratio;
 					// Fall down to CSSScale to set x,y,z
 				case CSSTranslate:
 					// Fall down to CSSScale to set x,y,z
 				case CSSScale:
-					modifiedValue[i].x.value += (newValue[i].x.value - original[i].x.value) * ratio;
-					modifiedValue[i].y.value += (newValue[i].y.value - original[i].y.value) * ratio;
-					modifiedValue[i].z.value += (newValue[i].z.value - original[i].z.value) * ratio;
+					newValue[i].x.value += (endValue[i].x.value - startValue[i].x.value) * ratio;
+					newValue[i].y.value += (endValue[i].y.value - startValue[i].y.value) * ratio;
+					newValue[i].z.value += (endValue[i].z.value - startValue[i].z.value) * ratio;
 					break;
 				case CSSSkew:
-					modifiedValue[i].ax.value += (newValue[i].ax.value - original[i].ax.value) * ratio;
-					modifiedValue[i].ay.value += (newValue[i].ay.value - original[i].ay.value) * ratio;
+					newValue[i].ax.value += (endValue[i].ax.value - startValue[i].ax.value) * ratio;
+					newValue[i].ay.value += (endValue[i].ay.value - startValue[i].ay.value) * ratio;
 					break;
 				case CSSSkewX:
-					modifiedValue[i].ax.value += (newValue[i].ax.value - original[i].ax.value) * ratio;
+					newValue[i].ax.value += (endValue[i].ax.value - startValue[i].ax.value) * ratio;
 					break;
 				case CSSSkewY:
-					modifiedValue[i].ay.value += (newValue[i].ay.value - original[i].ay.value) * ratio;
+					newValue[i].ay.value += (endValue[i].ay.value - startValue[i].ay.value) * ratio;
 					break;
 			}
 		}
-		return modifiedValue.toString();
+		return newValue.toString();
 	}
 
 	createjs.CSSPlugin = s;
