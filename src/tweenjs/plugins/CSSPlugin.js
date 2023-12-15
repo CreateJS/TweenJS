@@ -169,7 +169,11 @@ this.createjs = this.createjs || {};
 			cssData[prop] = "";
 			return initVal;
 		} else {
-			cssData[prop] = result.unit;
+			if (result.unit == 'number')
+				cssData[prop] = '';
+			else
+				cssData[prop] = result.unit;
+
 			return result.value;
 		}
 	};
