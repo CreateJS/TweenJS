@@ -1,0 +1,36 @@
+<html>
+
+<head>
+	<script type="text/javascript" src="../lib/tweenjs-NEXT.js"></script>
+	<script type="text/javascript" src="../src/tweenjs/plugins/CSSPlugin.js"></script>
+</head>
+
+<body>
+</body>
+
+<script>
+    timeMs = 0
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.init();
+    createjs.CSSPlugin.install();
+    var box = document.createElement('div');
+    box.style.setProperty('background-color', '#008800');
+    box.style.setProperty('width', '100px');
+    box.style.setProperty('height', '100px');
+    box.style.setProperty('opacity', '0.4');
+    box.style.setProperty('margin-left', '0');
+    box.style.setProperty('transform', 'skew(30deg, 20deg) scale(0.5, 0.5) rotate(0.2turn)');
+    document.body.appendChild(box);
+
+    createjs.Tween.get(box)
+        .to({ "margin-left": 240, "top": 0 }, 1000, createjs.Ease["sineIn"]) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "opacity": 1.0 }, 1000, createjs.Ease["sineIn"])}, 1000) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "margin-left": 0, "top": 0 }, 1000, createjs.Ease["sineIn"])}, 1000) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "margin-left": 240, "top": 0 }, 1000, createjs.Ease["sineIn"])}, 3000) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "margin-left": 0, "top": 0 }, 1000, createjs.Ease["sineIn"])}, 5000) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "margin-left": 240, "top": 0 }, 1000, createjs.Ease["sineIn"])}, 7000) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "margin-left": 0, "top": 0 }, 1000, createjs.Ease["sineIn"])}, 9000) // Move to (300, 200) in 1 second.
+   setTimeout(() => {createjs.Tween.get(box).to({ "transform": "skew(1deg, 1deg) scale(1, 1) rotate(0turn)" }, 1000, createjs.Ease["sineIn"])}, 1000) // Move to (300, 200) in 1 second.
+</script>
+
+</html>
